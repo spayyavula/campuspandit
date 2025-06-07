@@ -26,9 +26,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  LearnHub
+                  CampusPandit
                 </h1>
-                <p className="text-xs text-gray-500 -mt-1">Academy</p>
+                <p className="text-xs text-gray-500 -mt-1">Learning Platform</p>
               </div>
             </div>
             
