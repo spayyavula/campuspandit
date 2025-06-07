@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import CourseList from './components/CourseList';
@@ -8,9 +8,12 @@ import GameDashboard from './components/GameDashboard';
 import TournamentView from './components/TournamentView';
 import TeamsView from './components/TeamsView';
 import QuizBattle from './components/QuizBattle';
+import PWAPrompt from './components/PWAPrompt';
+import MobileOptimized from './components/MobileOptimized';
 import { courses as initialCourses } from './data/courses';
 import { tournaments, activeBattles } from './data/gameData';
 import { Course } from './types';
+import { offlineManager } from './utils/offline';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -20,6 +23,27 @@ function App() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Initialize offline capabilities
+  useEffect(() => {
+    offlineManager.init().catch(console.error);
+    
+    const handleOnline = () => {
+      setIsOnline(true);
+      offlineManager.syncWhenOnline();
+    };
+    
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const handleSelectSubject = (subject: string) => {
     setSelectedSubject(subject);
@@ -30,14 +54,23 @@ function App() {
     setSelectedCourse(courseId);
   };
 
-  const handleSelectLesson = (courseId: string, topicId: string, lessonId: string) => {
+  const handleSelectLesson = async (courseId: string, topicId: string, lessonId: string) => {
     setSelectedCourse(courseId);
     setSelectedTopic(topicId);
     setSelectedLesson(lessonId);
     setCurrentView('lesson');
+
+    // Cache lesson content for offline access
+    const course = courses.find(c => c.id === courseId);
+    const topic = course?.topics.find(t => t.id === topicId);
+    const lesson = topic?.lessons.find(l => l.id === lessonId);
+    
+    if (lesson) {
+      await offlineManager.cacheLessonContent(lessonId, lesson);
+    }
   };
 
-  const handleCompleteLesson = (courseId: string, lessonId: string) => {
+  const handleCompleteLesson = async (courseId: string, lessonId: string) => {
     setCourses(prevCourses => {
       return prevCourses.map(course => {
         if (course.id === courseId) {
@@ -65,6 +98,13 @@ function App() {
         return course;
       });
     });
+
+    // Save progress offline
+    try {
+      await offlineManager.saveProgress(courseId, lessonId, { completed: true });
+    } catch (error) {
+      console.error('Error saving progress offline:', error);
+    }
   };
 
   const handleBackToCourses = () => {
@@ -108,66 +148,84 @@ function App() {
     console.log('Creating new team');
   };
 
-  const handleTournamentComplete = (score: number) => {
+  const handleTournamentComplete = async (score: number) => {
     console.log('Tournament completed with score:', score);
+    
+    // Save tournament result offline
+    try {
+      await offlineManager.saveQuizResult(selectedTournament || 'tournament', score, {});
+    } catch (error) {
+      console.error('Error saving tournament result offline:', error);
+    }
   };
 
-  const handleBattleComplete = (score: number) => {
+  const handleBattleComplete = async (score: number) => {
     console.log('Battle completed with score:', score);
+    
+    // Save battle result offline
+    try {
+      await offlineManager.saveQuizResult('battle', score, {});
+    } catch (error) {
+      console.error('Error saving battle result offline:', error);
+    }
   };
 
   const currentCourse = courses.find(course => course.id === selectedCourse);
   const currentTournament = tournaments.find(t => t.id === selectedTournament);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header currentView={currentView} onViewChange={handleViewChange} />
-      
-      {currentView === 'lesson' && selectedCourse && selectedTopic && selectedLesson && currentCourse ? (
-        <LessonViewer
-          course={currentCourse}
-          topicId={selectedTopic}
-          lessonId={selectedLesson}
-          onBack={handleBackToCourses}
-          onComplete={handleCompleteLesson}
-        />
-      ) : currentView === 'courses' ? (
-        <CourseList
-          courses={courses}
-          selectedSubject={selectedSubject}
-          onSelectCourse={handleSelectCourse}
-          onSelectLesson={handleSelectLesson}
-        />
-      ) : currentView === 'progress' ? (
-        <ProgressTracker courses={courses} />
-      ) : currentView === 'gaming' ? (
-        <GameDashboard
-          onJoinTournament={handleJoinTournament}
-          onJoinBattle={handleJoinBattle}
-          onViewTeams={handleViewTeams}
-        />
-      ) : currentView === 'tournament' && currentTournament ? (
-        <TournamentView
-          tournament={currentTournament}
-          onBack={() => setCurrentView('gaming')}
-          onComplete={handleTournamentComplete}
-        />
-      ) : currentView === 'teams' ? (
-        <TeamsView
-          onBack={() => setCurrentView('gaming')}
-          onJoinTeam={handleJoinTeam}
-          onCreateTeam={handleCreateTeam}
-        />
-      ) : currentView === 'battle' ? (
-        <QuizBattle
-          battle={activeBattles[0]}
-          onBack={() => setCurrentView('gaming')}
-          onComplete={handleBattleComplete}
-        />
-      ) : (
-        <Dashboard courses={courses} onSelectSubject={handleSelectSubject} />
-      )}
-    </div>
+    <MobileOptimized>
+      <div className="min-h-screen bg-gray-50 safe-area-top safe-area-bottom">
+        <Header currentView={currentView} onViewChange={handleViewChange} />
+        
+        {currentView === 'lesson' && selectedCourse && selectedTopic && selectedLesson && currentCourse ? (
+          <LessonViewer
+            course={currentCourse}
+            topicId={selectedTopic}
+            lessonId={selectedLesson}
+            onBack={handleBackToCourses}
+            onComplete={handleCompleteLesson}
+          />
+        ) : currentView === 'courses' ? (
+          <CourseList
+            courses={courses}
+            selectedSubject={selectedSubject}
+            onSelectCourse={handleSelectCourse}
+            onSelectLesson={handleSelectLesson}
+          />
+        ) : currentView === 'progress' ? (
+          <ProgressTracker courses={courses} />
+        ) : currentView === 'gaming' ? (
+          <GameDashboard
+            onJoinTournament={handleJoinTournament}
+            onJoinBattle={handleJoinBattle}
+            onViewTeams={handleViewTeams}
+          />
+        ) : currentView === 'tournament' && currentTournament ? (
+          <TournamentView
+            tournament={currentTournament}
+            onBack={() => setCurrentView('gaming')}
+            onComplete={handleTournamentComplete}
+          />
+        ) : currentView === 'teams' ? (
+          <TeamsView
+            onBack={() => setCurrentView('gaming')}
+            onJoinTeam={handleJoinTeam}
+            onCreateTeam={handleCreateTeam}
+          />
+        ) : currentView === 'battle' ? (
+          <QuizBattle
+            battle={activeBattles[0]}
+            onBack={() => setCurrentView('gaming')}
+            onComplete={handleBattleComplete}
+          />
+        ) : (
+          <Dashboard courses={courses} onSelectSubject={handleSelectSubject} />
+        )}
+        
+        <PWAPrompt />
+      </div>
+    </MobileOptimized>
   );
 }
 
