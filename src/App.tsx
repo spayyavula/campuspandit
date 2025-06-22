@@ -1,310 +1,179 @@
-import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import Dashboard from './components/Dashboard';
-import CourseList from './components/CourseList';
-import BoardSelector from './components/BoardSelector';
-import BoardSpecificCourseList from './components/BoardSpecificCourseList';
-import LessonViewer from './components/LessonViewer';
-import ProgressTracker from './components/ProgressTracker';
-import GameDashboard from './components/GameDashboard';
-import TournamentView from './components/TournamentView';
-import TeamsView from './components/TeamsView';
-import QuizBattle from './components/QuizBattle';
-import PWAPrompt from './components/PWAPrompt';
-import MobileOptimized from './components/MobileOptimized';
-import QuestionManager from './components/QuestionManager';
-import { courses as initialCourses } from './data/courses';
-import { allCoursesWithCompetitive } from './data/boardCourses';
-import { tournaments, activeBattles } from './data/gameData';
-import { Course } from './types';
-import { offlineManager } from './utils/offline';
-import { config, debugLog, isFeatureEnabled } from './config/env';
+import React from 'react';
+import { BookOpen, User, Settings, Gamepad2, Coins, Bell, Search } from 'lucide-react';
+import { config, isFeatureEnabled } from '../config/env';
 
-function App() {
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
-  const [selectedTournament, setSelectedTournament] = useState<string | null>(null);
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
-  const [boardCourses, setBoardCourses] = useState<Course[]>(allCoursesWithCompetitive);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-
-  // Log app initialization in development
-  React.useEffect(() => {
-    debugLog('App initialized with config:', {
-      environment: config.app.environment,
-      version: config.app.version,
-      features: config.features
-    });
-  }, []);
-
-  // Initialize offline capabilities
-  useEffect(() => {
-    if (isFeatureEnabled('offlineMode')) {
-      offlineManager.init().catch(console.error);
-    }
-    
-    const handleOnline = () => {
-      setIsOnline(true);
-      if (isFeatureEnabled('offlineMode')) {
-        offlineManager.syncWhenOnline();
-      }
-    };
-    
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  const handleSelectBoard = (board: string) => {
-    setSelectedBoard(board);
-    setCurrentView('board-courses');
-    setSelectedSubject(null);
-    setSelectedCourse(null);
-    setSelectedTopic(null);
-    setSelectedLesson(null);
-  };
-
-  const handleSelectSubject = (subject: string) => {
-    setSelectedSubject(subject);
-    if (selectedBoard) {
-      setCurrentView('board-courses');
-    } else {
-      setCurrentView('courses');
-    }
-  };
-
-  const handleSelectCourse = (courseId: string) => {
-    setSelectedCourse(courseId);
-  };
-
-  const handleSelectLesson = async (courseId: string, topicId: string, lessonId: string) => {
-    setSelectedCourse(courseId);
-    setSelectedTopic(topicId);
-    setSelectedLesson(lessonId);
-    setCurrentView('lesson');
-
-    // Cache lesson content for offline access
-    const allCourses = [...courses, ...boardCourses];
-    const course = allCourses.find(c => c.id === courseId);
-    const topic = course?.topics.find(t => t.id === topicId);
-    const lesson = topic?.lessons.find(l => l.id === lessonId);
-    
-    if (lesson) {
-      await offlineManager.cacheLessonContent(lessonId, lesson);
-    }
-  };
-
-  const handleCompleteLesson = async (courseId: string, lessonId: string) => {
-    const updateCourses = (prevCourses: Course[]) => {
-      return prevCourses.map(course => {
-        if (course.id === courseId) {
-          const updatedTopics = course.topics.map(topic => {
-            const updatedLessons = topic.lessons.map(lesson => {
-              if (lesson.id === lessonId) {
-                return { ...lesson, isCompleted: true };
-              }
-              return lesson;
-            });
-            return { ...topic, lessons: updatedLessons };
-          });
-          
-          // Update completed lessons count
-          const completedCount = updatedTopics.reduce((count, topic) => {
-            return count + topic.lessons.filter(lesson => lesson.isCompleted).length;
-          }, 0);
-          
-          return { 
-            ...course, 
-            topics: updatedTopics,
-            completedLessons: completedCount
-          };
-        }
-        return course;
-      });
-    };
-
-    // Update both regular courses and board courses
-    setCourses(updateCourses);
-    setBoardCourses(updateCourses);
-
-    // Save progress offline
-    try {
-      if (isFeatureEnabled('offlineMode')) {
-        await offlineManager.saveProgress(courseId, lessonId, { completed: true });
-      }
-    } catch (error) {
-      console.error('Error saving progress offline:', error);
-    }
-  };
-
-  const handleBackToCourses = () => {
-    setSelectedLesson(null);
-    setSelectedTopic(null);
-    if (selectedBoard) {
-      setCurrentView('board-courses');
-    } else {
-      setCurrentView('courses');
-    }
-  };
-
-  const handleViewChange = (view: string) => {
-    setCurrentView(view);
-    if (view === 'dashboard') {
-      setSelectedSubject(null);
-      setSelectedCourse(null);
-      setSelectedTopic(null);
-      setSelectedLesson(null);
-      setSelectedTournament(null);
-    } else if (view === 'board-selector') {
-      setSelectedBoard(null);
-      setSelectedSubject(null);
-      setSelectedCourse(null);
-      setSelectedTopic(null);
-      setSelectedLesson(null);
-      setSelectedTournament(null);
-    }
-  };
-
-  const handleJoinTournament = (tournamentId: string) => {
-    setSelectedTournament(tournamentId);
-    setCurrentView('tournament');
-  };
-
-  const handleJoinBattle = () => {
-    setCurrentView('battle');
-  };
-
-  const handleViewTeams = () => {
-    setCurrentView('teams');
-  };
-
-  const handleJoinTeam = (teamId: string) => {
-    // Handle team joining logic
-    console.log('Joining team:', teamId);
-    setCurrentView('gaming');
-  };
-
-  const handleCreateTeam = () => {
-    // Handle team creation logic
-    console.log('Creating new team');
-  };
-
-  const handleTournamentComplete = async (score: number) => {
-    console.log('Tournament completed with score:', score);
-    
-    // Save tournament result offline
-    try {
-      if (isFeatureEnabled('offlineMode')) {
-        await offlineManager.saveQuizResult(selectedTournament || 'tournament', score, {});
-      }
-    } catch (error) {
-      console.error('Error saving tournament result offline:', error);
-    }
-  };
-
-  const handleBattleComplete = async (score: number) => {
-    console.log('Battle completed with score:', score);
-    
-    // Save battle result offline
-    try {
-      if (isFeatureEnabled('offlineMode')) {
-        await offlineManager.saveQuizResult('battle', score, {});
-      }
-    } catch (error) {
-      console.error('Error saving battle result offline:', error);
-    }
-  };
-
-  const allCourses = [...courses, ...boardCourses];
-  const currentCourse = allCourses.find(course => course.id === selectedCourse);
-  const currentTournament = tournaments.find(t => t.id === selectedTournament);
-
-  return (
-    <MobileOptimized>
-      <div className="min-h-screen bg-gray-50 safe-area-top safe-area-bottom">
-        <Header currentView={currentView} onViewChange={handleViewChange} />
-        
-        {currentView === 'lesson' && selectedCourse && selectedTopic && selectedLesson && currentCourse ? (
-          <LessonViewer
-            course={currentCourse}
-            topicId={selectedTopic}
-            lessonId={selectedLesson}
-            onBack={handleBackToCourses}
-            onComplete={handleCompleteLesson}
-          />
-        ) : currentView === 'board-selector' ? (
-          <BoardSelector
-            selectedBoard={selectedBoard}
-            onSelectBoard={handleSelectBoard}
-          />
-        ) : currentView === 'board-courses' && selectedBoard ? (
-          <BoardSpecificCourseList
-            courses={boardCourses}
-            selectedBoard={selectedBoard}
-            selectedSubject={selectedSubject}
-            onSelectCourse={handleSelectCourse}
-            onSelectLesson={handleSelectLesson}
-          />
-        ) : currentView === 'courses' ? (
-          <CourseList
-            courses={courses}
-            selectedSubject={selectedSubject}
-            onSelectCourse={handleSelectCourse}
-            onSelectLesson={handleSelectLesson}
-          />
-        ) : currentView === 'progress' ? (
-          <ProgressTracker courses={courses} />
-        ) : currentView === 'gaming' ? (
-          isFeatureEnabled('gaming') ? <GameDashboard
-            onJoinTournament={handleJoinTournament}
-            onJoinBattle={handleJoinBattle}
-            onViewTeams={handleViewTeams}
-          /> : <div className="text-center py-12">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Gaming Feature Disabled</h3>
-            <p className="text-gray-600">Gaming features are currently disabled in this environment.</p>
-          </div>
-        ) : currentView === 'tournament' && currentTournament ? (
-          isFeatureEnabled('gaming') ? <TournamentView
-            tournament={currentTournament}
-            onBack={() => setCurrentView('gaming')}
-            onComplete={handleTournamentComplete}
-          /> : null
-        ) : currentView === 'teams' ? (
-          isFeatureEnabled('gaming') ? <TeamsView
-            onBack={() => setCurrentView('gaming')}
-            onJoinTeam={handleJoinTeam}
-            onCreateTeam={handleCreateTeam}
-          /> : null
-        ) : currentView === 'battle' ? (
-          isFeatureEnabled('gaming') ? <QuizBattle
-            battle={activeBattles[0]}
-            onBack={() => setCurrentView('gaming')}
-            onComplete={handleBattleComplete}
-          /> : null
-        ) : currentView === 'questions' ? (
-          <QuestionManager />
-        ) : (
-          <Dashboard 
-            courses={courses} 
-            onSelectSubject={handleSelectSubject}
-            onSelectBoard={handleSelectBoard}
-          />
-        )}
-        
-        {isFeatureEnabled('pwaPrompts') && <PWAPrompt />}
-      </div>
-    </MobileOptimized>
-  );
+interface HeaderProps {
+  currentView: string;
+  onViewChange: (view: string) => void;
 }
 
-export default App;
+const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
+  return (
+    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center space-x-4">
+            <div 
+              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity group"
+              onClick={() => onViewChange('dashboard')}
+            >
+              <div className="relative">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-purple-500 to-green-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
+                  <span className="text-xs">✨</span>
+                </div>
+              </div>
+              <div>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  {config.app.title.split(' - ')[0]}
+                </h1>
+                <p className="text-xs text-gray-500 -mt-1">Learning Platform</p>
+                {config.app.environment !== 'production' && (
+                  <span className="text-xs bg-yellow-100 text-yellow-800 px-1 rounded">
+                    {config.app.environment}
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            <nav className="hidden md:flex space-x-2 ml-8">
+              <button
+                onClick={() => onViewChange('dashboard')}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                  currentView === 'dashboard'
+                    ? 'text-blue-600 bg-blue-50 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <div className="w-5 h-5 bg-gradient-to-br from-blue-400 to-blue-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs">🏠</span>
+                </div>
+                <span>Dashboard</span>
+              </button>
+              <button
+                onClick={() => onViewChange('board-selector')}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                  currentView === 'board-selector' || currentView === 'board-courses' 
+                    ? 'text-purple-600 bg-purple-50 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <div className="w-5 h-5 bg-gradient-to-br from-purple-400 to-purple-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs">🎓</span>
+                </div>
+                <span>Boards & Exams</span>
+              </button>
+              <button
+                onClick={() => onViewChange('courses')}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                  currentView === 'courses'
+                    ? 'text-blue-600 bg-blue-50 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <div className="w-5 h-5 bg-gradient-to-br from-green-400 to-green-600 rounded flex items-center justify-center">
+                  <BookOpen className="w-3 h-3 text-white" />
+                </div>
+                <span>Courses</span>
+              </button>
+              <button
+                onClick={() => isFeatureEnabled('gaming') && onViewChange('gaming')}
+                disabled={!isFeatureEnabled('gaming')}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                  !isFeatureEnabled('gaming') ? 'opacity-50 cursor-not-allowed' :
+                  currentView === 'gaming' || currentView === 'tournament' || currentView === 'teams' || currentView === 'battle'
+                    ? 'text-purple-600 bg-purple-50 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <div className="w-5 h-5 bg-gradient-to-br from-purple-400 to-pink-600 rounded flex items-center justify-center">
+                  <Gamepad2 className="w-3 h-3 text-white" />
+                </div>
+                <span>Gaming</span>
+                {isFeatureEnabled('gaming') && (
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                )}
+              </button>
+              <button
+                onClick={() => onViewChange('progress')}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                  currentView === 'progress'
+                    ? 'text-blue-600 bg-blue-50 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+              >
+                <div className="w-5 h-5 bg-gradient-to-br from-orange-400 to-red-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs">📊</span>
+                </div>
+                <span>Progress</span>
+              </button>
+            </nav>
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            {/* Search */}
+            <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              <Search className="w-5 h-5" />
+            </button>
+            
+            {/* Notifications */}
+            <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              <Bell className="w-5 h-5" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+            </button>
+            
+            {/* Coins */}
+            <div className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
+              <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <Coins className="w-3 h-3" />
+              </div>
+              <span className="text-sm font-bold">1,850</span>
+            </div>
+            
+            {/* Settings */}
+            <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              <Settings className="w-5 h-5" />
+            </button>
+            
+            {/* Profile */}
+            <button className="flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-white" />
+              </div>
+            </button>
+            <button
+              onClick={() => onViewChange('questions')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                currentView === 'questions'
+                  ? 'text-blue-600 bg-blue-50 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <div className="w-5 h-5 bg-gradient-to-br from-indigo-400 to-purple-600 rounded flex items-center justify-center">
+                <span className="text-white text-xs">📝</span>
+              </div>
+              <span>Questions</span>
+            </button>
+            <button
+              onClick={() => onViewChange('admin')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                currentView === 'admin'
+                  ? 'text-red-600 bg-red-50 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <div className="w-5 h-5 bg-gradient-to-br from-red-400 to-pink-600 rounded flex items-center justify-center">
+                <span className="text-white text-xs">👑</span>
+              </div>
+              <span>Admin</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
