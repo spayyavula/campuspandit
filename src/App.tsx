@@ -12,6 +12,7 @@ import TeamsView from './components/TeamsView';
 import QuizBattle from './components/QuizBattle';
 import PWAPrompt from './components/PWAPrompt';
 import MobileOptimized from './components/MobileOptimized';
+import QuestionManager from './components/QuestionManager';
 import { courses as initialCourses } from './data/courses';
 import { allCoursesWithCompetitive } from './data/boardCourses';
 import { tournaments, activeBattles } from './data/gameData';
@@ -290,6 +291,8 @@ function App() {
             onBack={() => setCurrentView('gaming')}
             onComplete={handleBattleComplete}
           /> : null
+        ) : currentView === 'questions' ? (
+          <QuestionManager />
         ) : (
           <Dashboard 
             courses={courses} 
