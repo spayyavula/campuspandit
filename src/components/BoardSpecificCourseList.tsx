@@ -2,6 +2,7 @@ import React from 'react';
 import { BookOpen, Clock, CheckCircle, Play, Star, Award, Target, Globe, GraduationCap } from 'lucide-react';
 import { Course, Topic } from '../types';
 import { calculateCourseProgress } from '../utils/progress';
+import JEEMainDashboard from './JEEMainDashboard';
 
 interface BoardSpecificCourseListProps {
   courses: Course[];
@@ -144,6 +145,16 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
   };
 
   const boardConfig = getBoardConfig(selectedBoard);
+
+  // Special handling for JEE Main
+  if (selectedBoard === 'jee') {
+    return (
+      <JEEMainDashboard
+        onSelectCourse={onSelectCourse}
+        onSelectLesson={onSelectLesson}
+      />
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

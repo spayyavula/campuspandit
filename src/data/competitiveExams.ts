@@ -1,6 +1,8 @@
 import { Course } from '../types';
+import { jeeMainCourses } from './jeeMainContent';
 
-export const competitiveExamCourses: Course[] = [
+// Legacy JEE courses (keeping for backward compatibility)
+const legacyJEECourses: Course[] = [
   // JEE Main & Advanced (IIT) Courses
   {
     id: 'jee-physics-11',
@@ -351,6 +353,12 @@ export const competitiveExamCourses: Course[] = [
       }
     ]
   }
+];
+
+// Export comprehensive JEE Main courses
+export const competitiveExamCourses: Course[] = [
+  ...jeeMainCourses,
+  ...legacyJEECourses.filter(course => !jeeMainCourses.find(jee => jee.id === course.id))
 ];
 
 // Exam-specific study plans and strategies
