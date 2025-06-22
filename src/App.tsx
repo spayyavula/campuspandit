@@ -11,10 +11,12 @@ import QuizBattle from './components/QuizBattle';
 import ProgressTracker from './components/ProgressTracker';
 import QuestionManager from './components/QuestionManager';
 import AdminDashboard from './components/AdminDashboard';
+import { allCoursesWithCompetitive } from './data/boardCourses';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
 
   const handleViewChange = (view: string) => {
     setCurrentView(view);
@@ -25,22 +27,51 @@ const App: React.FC = () => {
     setCurrentView('board-courses');
   };
 
+  const handleSelectSubject = (subject: string) => {
+    setSelectedSubject(subject);
+  };
   const renderCurrentView = () => {
     switch (currentView) {
       case 'dashboard':
-        return <Dashboard onViewChange={handleViewChange} />;
+        return (
+          <Dashboard 
+            courses={allCoursesWithCompetitive}
+            onViewChange={handleViewChange}
+            onSelectSubject={handleSelectSubject}
+            onSelectBoard={handleBoardSelect}
+          />
+        );
       case 'courses':
-        return <CourseList />;
+        return (
+          <CourseList 
+            courses={allCoursesWithCompetitive}
+            selectedSubject={selectedSubject}
+            onSelectCourse={() => {}}
+            onSelectLesson={() => {}}
+          />
+        );
       case 'board-selector':
-        return <BoardSelector onBoardSelect={handleBoardSelect} />;
+        return (
+          <BoardSelector 
+            courses={allCoursesWithCompetitive}
+            onBoardSelect={handleBoardSelect} 
+          />
+        );
       case 'board-courses':
         return selectedBoard ? (
           <BoardSpecificCourseList 
+            courses={allCoursesWithCompetitive}
             board={selectedBoard} 
+            selectedSubject={selectedSubject}
             onBack={() => setCurrentView('board-selector')} 
+            onSelectCourse={() => {}}
+            onSelectLesson={() => {}}
           />
         ) : (
-          <BoardSelector onBoardSelect={handleBoardSelect} />
+          <BoardSelector 
+            courses={allCoursesWithCompetitive}
+            onBoardSelect={handleBoardSelect} 
+          />
         );
       case 'gaming':
         return <GameDashboard onViewChange={handleViewChange} />;
@@ -57,7 +88,14 @@ const App: React.FC = () => {
       case 'admin':
         return <AdminDashboard />;
       default:
-        return <Dashboard onViewChange={handleViewChange} />;
+        return (
+          <Dashboard 
+            courses={allCoursesWithCompetitive}
+            onViewChange={handleViewChange}
+            onSelectSubject={handleSelectSubject}
+            onSelectBoard={handleBoardSelect}
+          />
+        );
     }
   };
 
