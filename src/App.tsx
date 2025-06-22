@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import CourseList from './components/CourseList';
 import BoardSelector from './components/BoardSelector';
@@ -10,7 +11,6 @@ import QuizBattle from './components/QuizBattle';
 import ProgressTracker from './components/ProgressTracker';
 import QuestionManager from './components/QuestionManager';
 import AdminDashboard from './components/AdminDashboard';
-import Sidebar from './components/Sidebar';
 import { allCoursesWithCompetitive } from './data/boardCourses';
 
 const App: React.FC = () => {
@@ -100,13 +100,11 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar currentView={currentView} onViewChange={handleViewChange} />
-      <div className="flex-1 overflow-auto">
-        <main className="py-4">
-          {renderCurrentView()}
-        </main>
-      </div>
+    <div className="min-h-screen bg-gray-50 safe-area-top safe-area-bottom">
+      <Header currentView={currentView} onViewChange={handleViewChange} />
+      <main>
+        {renderCurrentView()}
+      </main>
     </div>
   );
 };
