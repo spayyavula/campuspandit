@@ -20,7 +20,8 @@ import {
   Crown,
   GraduationCap,
   BookOpen,
-  Database
+  Database,
+  FileText
 } from 'lucide-react';
 import UserManagement from './UserManagement';
 import RoleManagement from './RoleManagement';
