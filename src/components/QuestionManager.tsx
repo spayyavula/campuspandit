@@ -57,19 +57,6 @@ const QuestionManager: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [showLatexExamples, setShowLatexExamples] = useState(false);
-  const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
-  const [currentView, setCurrentView] = useState<'list' | 'create' | 'edit'>('list');
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({
-    subject: '',
-    board: '',
-    difficulty: '',
-    questionType: '',
-    isPublished: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [showLatexExamples, setShowLatexExamples] = useState(false);
 
   // Mock data for demonstration
   useEffect(() => {
