@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, User, Settings, Gamepad2, Coins, Bell, Search } from 'lucide-react';
+import { config, isFeatureEnabled } from '../config/env';
 
 interface HeaderProps {
   currentView: string;
@@ -26,9 +27,14 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  CampusPandit
+                  {config.app.title.split(' - ')[0]}
                 </h1>
                 <p className="text-xs text-gray-500 -mt-1">Learning Platform</p>
+                {config.app.environment !== 'production' && (
+                  <span className="text-xs bg-yellow-100 text-yellow-800 px-1 rounded">
+                    {config.app.environment}
+                  </span>
+                )}
               </div>
             </div>
             
@@ -73,8 +79,10 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                 <span>Courses</span>
               </button>
               <button
-                onClick={() => onViewChange('gaming')}
+                onClick={() => isFeatureEnabled('gaming') && onViewChange('gaming')}
+                disabled={!isFeatureEnabled('gaming')}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
+                  !isFeatureEnabled('gaming') ? 'opacity-50 cursor-not-allowed' :
                   currentView === 'gaming' || currentView === 'tournament' || currentView === 'teams' || currentView === 'battle'
                     ? 'text-purple-600 bg-purple-50 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
@@ -84,7 +92,9 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                   <Gamepad2 className="w-3 h-3 text-white" />
                 </div>
                 <span>Gaming</span>
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                {isFeatureEnabled('gaming') && (
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                )}
               </button>
               <button
                 onClick={() => onViewChange('progress')}

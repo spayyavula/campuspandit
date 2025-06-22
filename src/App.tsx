@@ -17,6 +17,7 @@ import { allCoursesWithCompetitive } from './data/boardCourses';
 import { tournaments, activeBattles } from './data/gameData';
 import { Course } from './types';
 import { offlineManager } from './utils/offline';
+import { config, debugLog, isFeatureEnabled } from './config/env';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
@@ -30,13 +31,26 @@ function App() {
   const [boardCourses, setBoardCourses] = useState<Course[]>(allCoursesWithCompetitive);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
+  // Log app initialization in development
+  React.useEffect(() => {
+    debugLog('App initialized with config:', {
+      environment: config.app.environment,
+      version: config.app.version,
+      features: config.features
+    });
+  }, []);
+
   // Initialize offline capabilities
   useEffect(() => {
-    offlineManager.init().catch(console.error);
+    if (isFeatureEnabled('offlineMode')) {
+      offlineManager.init().catch(console.error);
+    }
     
     const handleOnline = () => {
       setIsOnline(true);
-      offlineManager.syncWhenOnline();
+      if (isFeatureEnabled('offlineMode')) {
+        offlineManager.syncWhenOnline();
+      }
     };
     
     const handleOffline = () => setIsOnline(false);
@@ -124,7 +138,9 @@ function App() {
 
     // Save progress offline
     try {
-      await offlineManager.saveProgress(courseId, lessonId, { completed: true });
+      if (isFeatureEnabled('offlineMode')) {
+        await offlineManager.saveProgress(courseId, lessonId, { completed: true });
+      }
     } catch (error) {
       console.error('Error saving progress offline:', error);
     }
@@ -187,7 +203,9 @@ function App() {
     
     // Save tournament result offline
     try {
-      await offlineManager.saveQuizResult(selectedTournament || 'tournament', score, {});
+      if (isFeatureEnabled('offlineMode')) {
+        await offlineManager.saveQuizResult(selectedTournament || 'tournament', score, {});
+      }
     } catch (error) {
       console.error('Error saving tournament result offline:', error);
     }
@@ -198,7 +216,9 @@ function App() {
     
     // Save battle result offline
     try {
-      await offlineManager.saveQuizResult('battle', score, {});
+      if (isFeatureEnabled('offlineMode')) {
+        await offlineManager.saveQuizResult('battle', score, {});
+      }
     } catch (error) {
       console.error('Error saving battle result offline:', error);
     }
@@ -244,29 +264,32 @@ function App() {
         ) : currentView === 'progress' ? (
           <ProgressTracker courses={courses} />
         ) : currentView === 'gaming' ? (
-          <GameDashboard
+          isFeatureEnabled('gaming') ? <GameDashboard
             onJoinTournament={handleJoinTournament}
             onJoinBattle={handleJoinBattle}
             onViewTeams={handleViewTeams}
-          />
+          /> : <div className="text-center py-12">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Gaming Feature Disabled</h3>
+            <p className="text-gray-600">Gaming features are currently disabled in this environment.</p>
+          </div>
         ) : currentView === 'tournament' && currentTournament ? (
-          <TournamentView
+          isFeatureEnabled('gaming') ? <TournamentView
             tournament={currentTournament}
             onBack={() => setCurrentView('gaming')}
             onComplete={handleTournamentComplete}
-          />
+          /> : null
         ) : currentView === 'teams' ? (
-          <TeamsView
+          isFeatureEnabled('gaming') ? <TeamsView
             onBack={() => setCurrentView('gaming')}
             onJoinTeam={handleJoinTeam}
             onCreateTeam={handleCreateTeam}
-          />
+          /> : null
         ) : currentView === 'battle' ? (
-          <QuizBattle
+          isFeatureEnabled('gaming') ? <QuizBattle
             battle={activeBattles[0]}
             onBack={() => setCurrentView('gaming')}
             onComplete={handleBattleComplete}
-          />
+          /> : null
         ) : (
           <Dashboard 
             courses={courses} 
@@ -275,7 +298,7 @@ function App() {
           />
         )}
         
-        <PWAPrompt />
+        {isFeatureEnabled('pwaPrompts') && <PWAPrompt />}
       </div>
     </MobileOptimized>
   );

@@ -3,6 +3,7 @@ import { Clock, Award, Target, TrendingUp, Zap, BookOpen, Users, Trophy } from '
 import { Course } from '../types';
 import { getTotalProgress } from '../utils/progress';
 import SubjectCard from './SubjectCard';
+import { config, isFeatureEnabled } from '../config/env';
 
 interface DashboardProps {
   courses: Course[];
@@ -66,7 +67,14 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject, onSelec
         <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent mb-3">
           Welcome back, Student!
         </h2>
-        <p className="text-gray-600 text-lg">Continue your learning journey across Physics, Math, and Chemistry</p>
+        <p className="text-gray-600 text-lg">
+          Continue your learning journey across Physics, Math, and Chemistry
+          {config.app.environment !== 'production' && (
+            <span className="block text-sm mt-1 text-yellow-600">
+              Running in {config.app.environment} mode • v{config.app.version}
+            </span>
+          )}
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -104,7 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject, onSelec
         </div>
         
         {/* Board Selection Option */}
-        {onSelectBoard && (
+        {onSelectBoard && isFeatureEnabled('competitiveExams') && (
           <div className="mb-8">
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200">
               <div className="text-center">
