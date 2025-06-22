@@ -3,6 +3,7 @@ import { BookOpen, Clock, CheckCircle, Play, Star, Award, Target, Globe, Graduat
 import { Course, Topic } from '../types';
 import { calculateCourseProgress } from '../utils/progress';
 import JEEMainDashboard from './JEEMainDashboard';
+import IBToJEEBridgeProgram from './IBToJEEBridgeProgram';
 
 interface BoardSpecificCourseListProps {
   courses: Course[];
@@ -156,6 +157,15 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
     );
   }
 
+  // Special handling for IB to JEE Bridge Program
+  if (selectedBoard === 'ib-jee-bridge') {
+    return (
+      <IBToJEEBridgeProgram
+        onSelectCourse={onSelectCourse}
+        onSelectLesson={onSelectLesson}
+      />
+    );
+  }
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Board Header */}
