@@ -13,9 +13,11 @@ import {
   Clock,
   Award,
   Users,
-  BarChart3
+  BarChart3,
+  ArrowLeft
 } from 'lucide-react';
 import QuestionEditor from './QuestionEditor';
+import LatexExamples from './LatexExamples';
 
 interface Question {
   id: string;
@@ -54,6 +56,7 @@ const QuestionManager: React.FC = () => {
     isPublished: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showLatexExamples, setShowLatexExamples] = useState(false);
 
   // Mock data for demonstration
   useEffect(() => {
@@ -219,6 +222,10 @@ const QuestionManager: React.FC = () => {
     setQuestions(prev => [duplicatedQuestion, ...prev]);
   };
 
+  const handleShowLatexExamples = () => {
+    setShowLatexExamples(true);
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy': return 'bg-green-100 text-green-800';
@@ -248,6 +255,23 @@ const QuestionManager: React.FC = () => {
     );
   }
 
+  if (showLatexExamples) {
+    return (
+      <div>
+        <div className="mb-4">
+          <button
+            onClick={() => setShowLatexExamples(false)}
+            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Question Manager
+          </button>
+        </div>
+        <LatexExamples />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
@@ -266,6 +290,14 @@ const QuestionManager: React.FC = () => {
           <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
             <Download className="w-4 h-4" />
             <span>Export</span>
+          </button>
+          
+          <button
+            onClick={handleShowLatexExamples}
+            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <span className="font-serif italic">∑</span>
+            <span>LaTeX Examples</span>
           </button>
           
           <button

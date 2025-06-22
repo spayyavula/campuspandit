@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* LaTeX styles */
+.latex-inline {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0.1em;
+}
+
+.latex-block {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
+  width: 100%;
+}
+
 /* PWA specific styles */
 @layer utilities {
   .animate-slide-up {
