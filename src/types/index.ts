@@ -3,6 +3,9 @@ export interface Course {
   title: string;
   description: string;
   subject: 'physics' | 'math' | 'chemistry';
+  board: 'cambridge' | 'ib' | 'cbse' | 'isc';
+  grade: string;
+  syllabus?: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   totalLessons: number;
   completedLessons: number;
@@ -15,6 +18,12 @@ export interface Topic {
   description: string;
   lessons: Lesson[];
   isCompleted: boolean;
+  boardSpecific?: {
+    cambridge?: { paperType?: string; assessmentObjectives?: string[] };
+    ib?: { assessmentCriteria?: string[]; internalAssessment?: boolean };
+    cbse?: { chapterCode?: string; ncertReference?: string };
+    isc?: { unitCode?: string; practicalComponent?: boolean };
+  };
 }
 
 export interface Lesson {
@@ -25,6 +34,12 @@ export interface Lesson {
   duration: number;
   isCompleted: boolean;
   exercises?: Exercise[];
+  boardAlignment?: {
+    cambridge?: { learningObjectives?: string[]; paperRelevance?: string[] };
+    ib?: { conceptualUnderstanding?: string[]; skillsDeveloped?: string[] };
+    cbse?: { learningOutcomes?: string[]; competencyBased?: boolean };
+    isc?: { skillsAssessed?: string[]; applicationFocus?: string[] };
+  };
 }
 
 export interface Exercise {
@@ -33,6 +48,13 @@ export interface Exercise {
   options: string[];
   correctAnswer: number;
   explanation: string;
+  questionType?: 'mcq' | 'structured' | 'essay' | 'practical' | 'data-analysis';
+  boardStyle?: 'cambridge' | 'ib' | 'cbse' | 'isc';
+  markingScheme?: {
+    totalMarks: number;
+    partialMarks?: { [key: string]: number };
+    markingCriteria?: string[];
+  };
 }
 
 export interface UserProgress {

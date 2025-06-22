@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import CourseList from './components/CourseList';
+import BoardSelector from './components/BoardSelector';
+import BoardSpecificCourseList from './components/BoardSpecificCourseList';
 import LessonViewer from './components/LessonViewer';
 import ProgressTracker from './components/ProgressTracker';
 import GameDashboard from './components/GameDashboard';
@@ -11,18 +13,21 @@ import QuizBattle from './components/QuizBattle';
 import PWAPrompt from './components/PWAPrompt';
 import MobileOptimized from './components/MobileOptimized';
 import { courses as initialCourses } from './data/courses';
+import { allBoardCourses } from './data/boardCourses';
 import { tournaments, activeBattles } from './data/gameData';
 import { Course } from './types';
 import { offlineManager } from './utils/offline';
 
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
+  const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [boardCourses, setBoardCourses] = useState<Course[]>(allBoardCourses);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Initialize offline capabilities
@@ -45,9 +50,22 @@ function App() {
     };
   }, []);
 
+  const handleSelectBoard = (board: string) => {
+    setSelectedBoard(board);
+    setCurrentView('board-courses');
+    setSelectedSubject(null);
+    setSelectedCourse(null);
+    setSelectedTopic(null);
+    setSelectedLesson(null);
+  };
+
   const handleSelectSubject = (subject: string) => {
     setSelectedSubject(subject);
-    setCurrentView('courses');
+    if (selectedBoard) {
+      setCurrentView('board-courses');
+    } else {
+      setCurrentView('courses');
+    }
   };
 
   const handleSelectCourse = (courseId: string) => {
@@ -61,7 +79,8 @@ function App() {
     setCurrentView('lesson');
 
     // Cache lesson content for offline access
-    const course = courses.find(c => c.id === courseId);
+    const allCourses = [...courses, ...boardCourses];
+    const course = allCourses.find(c => c.id === courseId);
     const topic = course?.topics.find(t => t.id === topicId);
     const lesson = topic?.lessons.find(l => l.id === lessonId);
     
@@ -71,7 +90,7 @@ function App() {
   };
 
   const handleCompleteLesson = async (courseId: string, lessonId: string) => {
-    setCourses(prevCourses => {
+    const updateCourses = (prevCourses: Course[]) => {
       return prevCourses.map(course => {
         if (course.id === courseId) {
           const updatedTopics = course.topics.map(topic => {
@@ -97,7 +116,11 @@ function App() {
         }
         return course;
       });
-    });
+    };
+
+    // Update both regular courses and board courses
+    setCourses(updateCourses);
+    setBoardCourses(updateCourses);
 
     // Save progress offline
     try {
@@ -110,12 +133,23 @@ function App() {
   const handleBackToCourses = () => {
     setSelectedLesson(null);
     setSelectedTopic(null);
-    setCurrentView('courses');
+    if (selectedBoard) {
+      setCurrentView('board-courses');
+    } else {
+      setCurrentView('courses');
+    }
   };
 
   const handleViewChange = (view: string) => {
     setCurrentView(view);
     if (view === 'dashboard') {
+      setSelectedSubject(null);
+      setSelectedCourse(null);
+      setSelectedTopic(null);
+      setSelectedLesson(null);
+      setSelectedTournament(null);
+    } else if (view === 'board-selector') {
+      setSelectedBoard(null);
       setSelectedSubject(null);
       setSelectedCourse(null);
       setSelectedTopic(null);
@@ -170,7 +204,8 @@ function App() {
     }
   };
 
-  const currentCourse = courses.find(course => course.id === selectedCourse);
+  const allCourses = [...courses, ...boardCourses];
+  const currentCourse = allCourses.find(course => course.id === selectedCourse);
   const currentTournament = tournaments.find(t => t.id === selectedTournament);
 
   return (
@@ -185,6 +220,19 @@ function App() {
             lessonId={selectedLesson}
             onBack={handleBackToCourses}
             onComplete={handleCompleteLesson}
+          />
+        ) : currentView === 'board-selector' ? (
+          <BoardSelector
+            selectedBoard={selectedBoard}
+            onSelectBoard={handleSelectBoard}
+          />
+        ) : currentView === 'board-courses' && selectedBoard ? (
+          <BoardSpecificCourseList
+            courses={boardCourses}
+            selectedBoard={selectedBoard}
+            selectedSubject={selectedSubject}
+            onSelectCourse={handleSelectCourse}
+            onSelectLesson={handleSelectLesson}
           />
         ) : currentView === 'courses' ? (
           <CourseList
@@ -220,7 +268,11 @@ function App() {
             onComplete={handleBattleComplete}
           />
         ) : (
-          <Dashboard courses={courses} onSelectSubject={handleSelectSubject} />
+          <Dashboard 
+            courses={courses} 
+            onSelectSubject={handleSelectSubject}
+            onSelectBoard={handleSelectBoard}
+          />
         )}
         
         <PWAPrompt />

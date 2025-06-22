@@ -7,9 +7,10 @@ import SubjectCard from './SubjectCard';
 interface DashboardProps {
   courses: Course[];
   onSelectSubject: (subject: string) => void;
+  onSelectBoard?: (board: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject }) => {
+const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject, onSelectBoard }) => {
   const totalProgress = getTotalProgress(courses);
   const totalLessons = courses.reduce((sum, course) => sum + course.totalLessons, 0);
   const completedLessons = courses.reduce((sum, course) => sum + course.completedLessons, 0);
@@ -98,9 +99,40 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject }) => {
               <BookOpen className="w-6 h-6 text-white" />
             </div>
           </div>
-          <h3 className="text-3xl font-bold text-gray-900 mb-2">Choose Your Subject</h3>
-          <p className="text-gray-600">Select a subject to start your learning adventure</p>
+          <h3 className="text-3xl font-bold text-gray-900 mb-2">Start Learning</h3>
+          <p className="text-gray-600">Choose your curriculum board or explore subjects directly</p>
         </div>
+        
+        {/* Board Selection Option */}
+        {onSelectBoard && (
+          <div className="mb-8">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <span className="text-2xl">🎓</span>
+                </div>
+                <h4 className="text-2xl font-bold text-gray-900 mb-3">Curriculum-Aligned Learning</h4>
+                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                  Get board-specific content for Cambridge, IB, CBSE, and ISC with tailored assessments, 
+                  exam preparation, and curriculum-aligned learning paths.
+                </p>
+                <button
+                  onClick={() => onSelectBoard('board-selector')}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl px-8 py-3 font-medium hover:opacity-90 transition-opacity shadow-lg flex items-center space-x-2 mx-auto"
+                >
+                  <span>Choose Your Board</span>
+                  <span className="text-lg">🌍</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <div className="text-center mb-6">
+          <h4 className="text-xl font-semibold text-gray-900 mb-2">Or Explore by Subject</h4>
+          <p className="text-gray-600">Browse our general curriculum courses</p>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <SubjectCard subject="physics" courses={courses} onSelectSubject={onSelectSubject} />
           <SubjectCard subject="math" courses={courses} onSelectSubject={onSelectSubject} />
