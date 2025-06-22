@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
-import { User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus, Github, Mail as MailIcon } from 'lucide-react';
 
 interface AuthProps {
