@@ -1,6 +1,6 @@
 import React from 'react';
 import { BookOpen, User, Settings, Gamepad2, Coins, Bell, Search } from 'lucide-react';
-import { config, isFeatureEnabled } from '../config/env.ts';
+import { config, isFeatureEnabled } from '../config/env';
 
 interface HeaderProps {
   currentView: string;

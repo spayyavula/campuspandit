@@ -3,7 +3,7 @@ import { Clock, Award, Target, TrendingUp, Zap, BookOpen, Users, Trophy } from '
 import { Course } from '../types';
 import { getTotalProgress } from '../utils/progress';
 import SubjectCard from './SubjectCard';
-import { config, isFeatureEnabled } from '../config/env.ts';
+import { config, isFeatureEnabled } from '../config/env';
 
 interface DashboardProps {
   courses: Course[];

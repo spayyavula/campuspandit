@@ -25,7 +25,7 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
   const filteredCourses = courses.filter(course => {
     const boardMatch = course.board === board;
     const subjectMatch = selectedSubject ? course.subject === selectedSubject : true;
-    return boardMatch && subjectMatch;
+    return boardMatch && subjectMatch && course.topics && course.topics.length > 0;
   });
 
   const getBoardConfig = (board: string) => {
