@@ -3,15 +3,16 @@ import { Clock, Award, Target, TrendingUp, Zap, BookOpen, Users, Trophy } from '
 import { Course } from '../types';
 import { getTotalProgress } from '../utils/progress';
 import SubjectCard from './SubjectCard';
-import { config, isFeatureEnabled } from '../config/env';
+import { config, isFeatureEnabled } from '../config/env.ts';
 
 interface DashboardProps {
   courses: Course[];
-  onSelectSubject: (subject: string) => void;
-  onSelectBoard?: (board: string) => void;
+  onViewChange: (view: string) => void;
+  onSelectSubject: (subject: string) => void; 
+  onSelectBoard: (board: string) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject, onSelectBoard }) => {
+const Dashboard: React.FC<DashboardProps> = ({ courses, onViewChange, onSelectSubject, onSelectBoard }) => {
   const totalProgress = getTotalProgress(courses);
   const totalLessons = courses.reduce((sum, course) => sum + course.totalLessons, 0);
   const completedLessons = courses.reduce((sum, course) => sum + course.completedLessons, 0);
@@ -119,13 +120,13 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject, onSelec
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <span className="text-2xl">🎓</span>
                 </div>
-                <h4 className="text-2xl font-bold text-gray-900 mb-3">Curriculum-Aligned Learning</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-3">Curriculum-Aligned Learning</h4>
                 <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
                   Get board-specific content for Cambridge, IB, CBSE, ISC plus competitive exam preparation 
                   for JEE and NEET with expert guidance and mock tests.
                 </p>
                 <button
-                  onClick={() => onSelectBoard('board-selector')}
+                  onClick={() => onViewChange('board-selector')}
                   className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl px-8 py-3 font-medium hover:opacity-90 transition-opacity shadow-lg flex items-center space-x-2 mx-auto"
                 >
                   <span>Choose Board/Exam</span>

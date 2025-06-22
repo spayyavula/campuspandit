@@ -2,11 +2,13 @@ import React from 'react';
 import { GraduationCap, Globe, BookOpen, Award } from 'lucide-react';
 
 interface BoardSelectorProps {
-  selectedBoard: string | null;
-  onSelectBoard: (board: string) => void;
+  courses: Course[];
+  onBoardSelect: (board: string) => void;
 }
 
-const BoardSelector: React.FC<BoardSelectorProps> = ({ selectedBoard, onSelectBoard }) => {
+const BoardSelector: React.FC<BoardSelectorProps> = ({ courses, onBoardSelect }) => {
+  const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
+  
   const boards = [
     {
       id: 'cambridge',
@@ -137,7 +139,16 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ selectedBoard, onSelectBo
             className={`relative bg-gradient-to-br ${board.bgGradient} rounded-2xl p-8 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl border-2 ${
               selectedBoard === board.id ? 'border-blue-500 ring-4 ring-blue-200' : 'border-gray-200'
             } group overflow-hidden`}
-            onClick={() => onSelectBoard(board.id)}
+            onClick={() => {
+              setSelectedBoard(board.id);
+              onBoardSelect(board.id);
+            onClick={() => {
+              setSelectedBoard(exam.id);
+              onBoardSelect(exam.id);
+            onClick={() => {
+              setSelectedBoard(program.id);
+              onBoardSelect(program.id);
+            }}
           >
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-5">

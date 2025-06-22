@@ -4,8 +4,6 @@ import {
   User, 
   Settings, 
   Gamepad2, 
-  Bell, 
-  Search, 
   ChevronRight, 
   ChevronLeft,
   Home,
@@ -23,7 +21,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(true);
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
@@ -46,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
   return (
     <>
       {/* Mobile menu button */}
-      <div className="fixed top-4 left-4 z-50 md:hidden">
+      <div className="fixed top-4 left-4 z-50 lg:hidden">
         <button
           onClick={toggleMobileMenu}
           className="p-2 bg-white rounded-lg shadow-md text-gray-700 hover:bg-gray-100"
@@ -58,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
       {/* Mobile sidebar overlay */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         ></div>
       )}
@@ -67,9 +65,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
       <aside 
         className={`
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-          md:translate-x-0
-          fixed md:static
-          z-50 md:z-0
+          lg:translate-x-0
+          fixed lg:static
+          z-50 lg:z-0
           h-full
           ${collapsed ? 'w-20' : 'w-64'}
           bg-white border-r border-gray-200 shadow-sm
@@ -96,7 +94,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
           {/* Toggle button */}
           <button 
             onClick={toggleSidebar}
-            className="p-1 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors md:block hidden"
+            className="p-1 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors lg:block hidden"
           >
             {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
           </button>
@@ -104,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
 
         {/* Navigation */}
         <nav className="flex-1 py-6 px-3 overflow-y-auto">
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -114,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
                       onViewChange(item.id);
                       if (mobileMenuOpen) setMobileMenuOpen(false);
                     }}
-                    className={`
+                    className={`text-base
                       w-full flex items-center ${collapsed ? 'justify-center' : 'justify-start'} 
                       p-3 rounded-lg transition-colors
                       ${currentView === item.id

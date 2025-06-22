@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import CourseList from './components/CourseList';
 import BoardSelector from './components/BoardSelector';
@@ -100,11 +100,13 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 safe-area-top safe-area-bottom">
-      <Header currentView={currentView} onViewChange={handleViewChange} />
-      <main>
-        {renderCurrentView()}
-      </main>
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar currentView={currentView} onViewChange={handleViewChange} />
+      <div className="flex-1 min-w-0 safe-area-top safe-area-bottom">
+        <main className="p-4 md:p-8">
+          {renderCurrentView()}
+        </main>
+      </div>
     </div>
   );
 };
