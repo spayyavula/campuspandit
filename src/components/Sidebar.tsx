@@ -10,16 +10,16 @@ import {
   GraduationCap,
   BarChart3,
   FileText,
-  Shield,
+  Shield, 
+  LogOut,
   Menu
 } from 'lucide-react';
-import { User as SupabaseUser } from '@supabase/supabase-js';
 import { supabase } from '../utils/supabase';
 
 interface SidebarProps {
   currentView: string;
   onViewChange: (view: string) => void;
-  user: SupabaseUser;
+  user: any;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) => {

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
-import type { User } from '@supabase/supabase-js';
+import { User, LogOut } from 'lucide-react';
 import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus, Github, Mail as MailIcon } from 'lucide-react';
 
 interface AuthProps {
-  onAuthStateChange: (user: User | null) => void;
+  onAuthStateChange: (user: any | null) => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {

@@ -13,13 +13,12 @@ import AdminDashboard from './components/AdminDashboard';
 import { allCoursesWithCompetitive } from './data/boardCourses';
 import Auth from './components/Auth';
 import { supabase } from './utils/supabase';
-import { User } from '@supabase/supabase-js';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
