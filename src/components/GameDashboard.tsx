@@ -3,16 +3,10 @@ import { Trophy, Users, Zap, Target, Crown, Sword, Star, Flame, Award, Play, Clo
 import { teams, tournaments, achievements, activeBattles } from '../data/gameData';
 
 interface GameDashboardProps {
-  onJoinTournament: (tournamentId: string) => void;
-  onJoinBattle: () => void;
-  onViewTeams: () => void;
+  onViewChange: (view: string) => void;
 }
 
-const GameDashboard: React.FC<GameDashboardProps> = ({ 
-  onJoinTournament, 
-  onJoinBattle, 
-  onViewTeams 
-}) => {
+const GameDashboard: React.FC<GameDashboardProps> = ({ onViewChange }) => {
   const [liveLeaderboard, setLiveLeaderboard] = useState([
     { id: 1, name: 'You', avatar: '👨‍🎓', score: 1850, streak: 7, isBot: false, status: 'online', change: '+50' },
     { id: 2, name: 'Einstein Bot', avatar: '🧠', score: 2100, streak: 12, isBot: true, status: 'active', change: '+25' },
@@ -303,8 +297,8 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               ))}
             </div>
             
-            <button
-              onClick={onJoinBattle}
+            <button 
+              onClick={() => onViewChange('battle')}
               className="w-full mt-4 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl py-3 hover:opacity-90 transition-opacity font-medium shadow-lg flex items-center justify-center space-x-2"
             >
               <Play className="w-5 h-5" />
@@ -374,7 +368,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
             </div>
             <div className="space-y-3">
               <button
-                onClick={onJoinBattle}
+                onClick={() => onViewChange('battle')}
                 className="w-full bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl p-4 hover:opacity-90 transition-opacity flex items-center justify-center space-x-3 shadow-lg"
               >
                 <Sword className="w-5 h-5" />
@@ -383,7 +377,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
               </button>
               
               <button
-                onClick={onViewTeams}
+                onClick={() => onViewChange('teams')}
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl p-4 hover:opacity-90 transition-opacity flex items-center justify-center space-x-3 shadow-lg"
               >
                 <Users className="w-5 h-5" />
@@ -410,7 +404,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({
                     <span>💰 {tournament.entryFee} coins</span>
                   </div>
                   <button
-                    onClick={() => onJoinTournament(tournament.id)}
+                    onClick={() => onViewChange('tournament')}
                     className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg py-2 text-sm hover:opacity-90 transition-opacity"
                   >
                     Join Now 🚀

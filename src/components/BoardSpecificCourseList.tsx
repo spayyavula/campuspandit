@@ -7,21 +7,23 @@ import IBToJEEBridgeProgram from './IBToJEEBridgeProgram';
 
 interface BoardSpecificCourseListProps {
   courses: Course[];
-  selectedBoard: string;
+  board: string;
   selectedSubject: string | null;
+  onBack: () => void;
   onSelectCourse: (courseId: string) => void;
   onSelectLesson: (courseId: string, topicId: string, lessonId: string) => void;
 }
 
 const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({ 
   courses, 
-  selectedBoard,
+  board,
   selectedSubject, 
+  onBack,
   onSelectCourse, 
   onSelectLesson 
 }) => {
   const filteredCourses = courses.filter(course => {
-    const boardMatch = course.board === selectedBoard;
+    const boardMatch = course.board === board;
     const subjectMatch = selectedSubject ? course.subject === selectedSubject : true;
     return boardMatch && subjectMatch;
   });
@@ -145,10 +147,10 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
     }
   };
 
-  const boardConfig = getBoardConfig(selectedBoard);
+  const boardConfig = getBoardConfig(board);
 
   // Special handling for JEE Main
-  if (selectedBoard === 'jee') {
+  if (board === 'jee') {
     return (
       <JEEMainDashboard
         onSelectCourse={onSelectCourse}
@@ -158,7 +160,7 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
   }
 
   // Special handling for IB to JEE Bridge Program
-  if (selectedBoard === 'ib-jee-bridge') {
+  if (board === 'ib-jee-bridge') {
     return (
       <IBToJEEBridgeProgram
         onSelectCourse={onSelectCourse}
@@ -168,6 +170,14 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
   }
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <button 
+        onClick={onBack}
+        className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+      >
+        <span className="mr-2">←</span>
+        Back to Board Selection
+      </button>
+      
       {/* Board Header */}
       <div className="mb-8 text-center">
         <div className="flex items-center justify-center mb-4">
@@ -298,22 +308,22 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
                             {/* Board-specific indicators */}
                             {topic.boardSpecific && (
                               <div className="flex items-center space-x-1">
-                                {selectedBoard === 'cambridge' && topic.boardSpecific.cambridge && (
+                                {board === 'cambridge' && topic.boardSpecific.cambridge && (
                                   <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                     {topic.boardSpecific.cambridge.paperType}
                                   </span>
                                 )}
-                                {selectedBoard === 'ib' && topic.boardSpecific.ib?.internalAssessment && (
+                                {board === 'ib' && topic.boardSpecific.ib?.internalAssessment && (
                                   <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
                                     IA Component
                                   </span>
                                 )}
-                                {selectedBoard === 'cbse' && topic.boardSpecific.cbse && (
+                                {board === 'cbse' && topic.boardSpecific.cbse && (
                                   <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
                                     {topic.boardSpecific.cbse.chapterCode}
                                   </span>
                                 )}
-                                {selectedBoard === 'isc' && topic.boardSpecific.isc?.practicalComponent && (
+                                {board === 'isc' && topic.boardSpecific.isc?.practicalComponent && (
                                   <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
                                     Practical
                                   </span>

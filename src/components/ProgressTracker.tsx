@@ -3,11 +3,49 @@ import { Trophy, Target, Clock, TrendingUp, Award } from 'lucide-react';
 import { Course } from '../types';
 import { calculateCourseProgress, getSubjectProgress } from '../utils/progress';
 
-interface ProgressTrackerProps {
-  courses: Course[];
-}
+interface ProgressTrackerProps {}
 
-const ProgressTracker: React.FC<ProgressTrackerProps> = ({ courses }) => {
+const ProgressTracker: React.FC<ProgressTrackerProps> = () => {
+  // Mock courses data
+  const courses: Course[] = [
+    {
+      id: 'physics-basics',
+      title: 'Physics Fundamentals',
+      description: 'Master the fundamental concepts of physics from motion to energy',
+      subject: 'physics',
+      board: 'general',
+      grade: 'Grade 10',
+      difficulty: 'beginner',
+      totalLessons: 12,
+      completedLessons: 8,
+      topics: []
+    },
+    {
+      id: 'math-algebra',
+      title: 'Algebra Essentials',
+      description: 'Build strong algebraic foundations from linear equations to quadratics',
+      subject: 'math',
+      board: 'general',
+      grade: 'Grade 9',
+      difficulty: 'beginner',
+      totalLessons: 15,
+      completedLessons: 10,
+      topics: []
+    },
+    {
+      id: 'chemistry-atoms',
+      title: 'Atomic Structure',
+      description: 'Discover the building blocks of matter and chemical bonding',
+      subject: 'chemistry',
+      board: 'general',
+      grade: 'Grade 11',
+      difficulty: 'beginner',
+      totalLessons: 10,
+      completedLessons: 5,
+      topics: []
+    }
+  ];
+  
   const physicsProgress = getSubjectProgress(courses, 'physics');
   const mathProgress = getSubjectProgress(courses, 'math');
   const chemistryProgress = getSubjectProgress(courses, 'chemistry');

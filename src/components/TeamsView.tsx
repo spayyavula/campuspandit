@@ -5,11 +5,9 @@ import { Team } from '../types';
 
 interface TeamsViewProps {
   onBack: () => void;
-  onJoinTeam: (teamId: string) => void;
-  onCreateTeam: () => void;
 }
 
-const TeamsView: React.FC<TeamsViewProps> = ({ onBack, onJoinTeam, onCreateTeam }) => {
+const TeamsView: React.FC<TeamsViewProps> = ({ onBack }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
 
@@ -37,7 +35,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({ onBack, onJoinTeam, onCreateTeam 
           </div>
           
           <button
-            onClick={onCreateTeam}
+            onClick={() => console.log('Create team')}
             className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg px-6 py-3 hover:opacity-90 transition-opacity flex items-center space-x-2"
           >
             <Plus className="w-5 h-5" />
@@ -121,7 +119,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({ onBack, onJoinTeam, onCreateTeam 
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onJoinTeam(team.id);
+                    console.log('Join team:', team.id);
                   }}
                   className={`w-full bg-gradient-to-r ${team.color} text-white rounded-lg py-2 hover:opacity-90 transition-opacity`}
                 >
@@ -187,7 +185,7 @@ const TeamsView: React.FC<TeamsViewProps> = ({ onBack, onJoinTeam, onCreateTeam 
               </div>
 
               <button
-                onClick={() => onJoinTeam(selectedTeam.id)}
+                onClick={() => console.log('Join team:', selectedTeam.id)}
                 className={`w-full bg-gradient-to-r ${selectedTeam.color} text-white rounded-lg py-3 hover:opacity-90 transition-opacity`}
               >
                 Join {selectedTeam.name}

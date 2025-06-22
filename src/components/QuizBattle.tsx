@@ -3,17 +3,50 @@ import { ArrowLeft, Clock, Zap, Trophy, Target, Users, Star, Crown, Medal } from
 import { QuizBattle as QuizBattleType, BattleParticipant } from '../types';
 
 interface QuizBattleProps {
-  battle: QuizBattleType;
   onBack: () => void;
-  onComplete: (score: number) => void;
 }
 
-const QuizBattle: React.FC<QuizBattleProps> = ({ battle, onBack, onComplete }) => {
+const QuizBattle: React.FC<QuizBattleProps> = ({ onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [userScore, setUserScore] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(30);
   const [battleComplete, setBattleComplete] = useState(false);
+  
+  // Mock battle data
+  const battle: QuizBattleType = {
+    id: 'battle-1',
+    title: 'Physics Quick Battle',
+    subject: 'physics',
+    participants: [
+      { id: 'p1', name: 'You', avatar: '👨‍🎓', score: 0, isBot: false, timeRemaining: 30 },
+      { id: 'p2', name: 'Einstein Bot', avatar: '🧠', score: 0, isBot: true, timeRemaining: 30 }
+    ],
+    questions: [
+      {
+        id: 'q1',
+        question: 'What is the acceleration due to gravity on Earth?',
+        options: ['5.6 m/s²', '7.8 m/s²', '9.8 m/s²', '11.2 m/s²'],
+        correctAnswer: 2,
+        points: 10,
+        timeLimit: 30,
+        difficulty: 'easy'
+      },
+      {
+        id: 'q2',
+        question: 'Which of these is NOT a vector quantity?',
+        options: ['Velocity', 'Force', 'Displacement', 'Temperature'],
+        correctAnswer: 3,
+        points: 10,
+        timeLimit: 30,
+        difficulty: 'medium'
+      }
+    ],
+    status: 'active',
+    startTime: new Date(),
+    duration: 300
+  };
+  
   const [participants, setParticipants] = useState<BattleParticipant[]>(battle.participants);
   const [recentAnswers, setRecentAnswers] = useState<Array<{
     player: string;
@@ -107,7 +140,8 @@ const QuizBattle: React.FC<QuizBattleProps> = ({ battle, onBack, onComplete }) =
 
     if (isLastQuestion) {
       setBattleComplete(true);
-      onComplete(newUserScore);
+      // Handle completion
+      console.log('Battle completed with score:', userScore);
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);

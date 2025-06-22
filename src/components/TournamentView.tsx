@@ -3,18 +3,52 @@ import { ArrowLeft, Clock, Users, Trophy, Zap, Target } from 'lucide-react';
 import { Tournament, TournamentQuestion } from '../types';
 
 interface TournamentViewProps {
-  tournament: Tournament;
   onBack: () => void;
-  onComplete: (score: number) => void;
 }
 
-const TournamentView: React.FC<TournamentViewProps> = ({ tournament, onBack, onComplete }) => {
+const TournamentView: React.FC<TournamentViewProps> = ({ onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(30);
   const [answers, setAnswers] = useState<{[key: string]: number}>({});
   const [showResults, setShowResults] = useState(false);
+  
+  // Mock tournament data
+  const tournament: Tournament = {
+    id: '1',
+    title: 'Physics Championship',
+    description: 'Test your physics knowledge',
+    subject: 'physics',
+    difficulty: 'medium',
+    startTime: new Date(),
+    endTime: new Date(Date.now() + 3600000),
+    status: 'active',
+    participants: [],
+    questions: [
+      {
+        id: 't1',
+        question: 'What is the SI unit of force?',
+        options: ['Watt', 'Newton', 'Joule', 'Pascal'],
+        correctAnswer: 1,
+        points: 10,
+        timeLimit: 30,
+        difficulty: 'easy'
+      },
+      {
+        id: 't2',
+        question: 'What is the formula for kinetic energy?',
+        options: ['E = mc²', 'KE = ½mv²', 'F = ma', 'P = mv'],
+        correctAnswer: 1,
+        points: 10,
+        timeLimit: 30,
+        difficulty: 'medium'
+      }
+    ],
+    rewards: [{ id: 'r1', type: 'points', value: 100, description: 'Winner points', icon: '🏆', rarity: 'common' }],
+    maxParticipants: 10,
+    entryFee: 0
+  };
 
   const currentQuestion = tournament.questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === tournament.questions.length - 1;
@@ -44,7 +78,8 @@ const TournamentView: React.FC<TournamentViewProps> = ({ tournament, onBack, onC
 
     if (isLastQuestion) {
       setShowResults(true);
-      onComplete(score);
+      // Handle completion
+      console.log('Tournament completed with score:', score);
     } else {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer(null);
