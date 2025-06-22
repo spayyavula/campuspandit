@@ -142,12 +142,6 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ courses, onBoardSelect })
             onClick={() => {
               setSelectedBoard(board.id);
               onBoardSelect(board.id);
-            onClick={() => {
-              setSelectedBoard(exam.id);
-              onBoardSelect(exam.id);
-            onClick={() => {
-              setSelectedBoard(program.id);
-              onBoardSelect(program.id);
             }}
           >
             {/* Background Pattern */}
@@ -251,7 +245,10 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ courses, onBoardSelect })
               className={`relative bg-gradient-to-br ${exam.bgGradient} rounded-2xl p-8 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl border-2 ${
                 selectedBoard === exam.id ? 'border-blue-500 ring-4 ring-blue-200' : 'border-gray-200'
               } group overflow-hidden`}
-              onClick={() => onSelectBoard(exam.id)}
+              onClick={() => {
+                setSelectedBoard(exam.id);
+                onBoardSelect(exam.id);
+              }}
             >
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-5">
@@ -354,7 +351,10 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ courses, onBoardSelect })
               className={`relative bg-gradient-to-br ${program.bgGradient} rounded-2xl p-8 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl border-2 ${
                 selectedBoard === program.id ? 'border-blue-500 ring-4 ring-blue-200' : 'border-gray-200'
               } group overflow-hidden`}
-              onClick={() => onSelectBoard(program.id)}
+              onClick={() => {
+                setSelectedBoard(program.id);
+                onBoardSelect(program.id);
+              }}
             >
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-5">
