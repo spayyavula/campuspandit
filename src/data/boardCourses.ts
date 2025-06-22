@@ -1,5 +1,6 @@
 import { Course } from '../types';
 import { competitiveExamCourses } from './competitiveExams';
+import { ibToJeeBridgeCourses } from './ibToJeeBridge';
 
 export const boardCourses: Course[] = [
   // Cambridge Board Courses
@@ -290,4 +291,5 @@ export const allBoardCourses = [...boardCourses, ...mathCourses, ...chemistryCou
 
 // Export competitive exam courses separately and combined
 export { competitiveExamCourses };
-export const allCoursesWithCompetitive = [...allBoardCourses, ...competitiveExamCourses];
+export { ibToJeeBridgeCourses };
+export const allCoursesWithCompetitive = [...allBoardCourses, ...competitiveExamCourses, ...ibToJeeBridgeCourses];
