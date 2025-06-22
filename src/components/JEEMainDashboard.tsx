@@ -444,5 +444,3 @@ const JEEMainDashboard: React.FC<JEEMainDashboardProps> = ({ onSelectCourse, onS
 };
 
 export default JEEMainDashboard;
-
-export default JEEMainDashboard
