@@ -25,6 +25,8 @@ import {
   Subscript,
   Superscript
 } from 'lucide-react';
+import 'katex/dist/katex.min.css';
+import { InlineMath, BlockMath } from 'react-katex';
 
 interface QuestionOption {
   id: string;
@@ -81,6 +83,9 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ initialData, onSave, on
   const [activeOptionId, setActiveOptionId] = useState<string>('');
   const [newTag, setNewTag] = useState('');
   const [preview, setPreview] = useState(false);
+  const [latexInput, setLatexInput] = useState('');
+  const [showLatexModal, setShowLatexModal] = useState(false);
+  const [latexType, setLatexType] = useState<'inline' | 'block'>('inline');
 
   const contentEditorRef = useRef<HTMLDivElement>(null);
   const optionEditorRef = useRef<HTMLDivElement>(null);
@@ -123,6 +128,25 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ initialData, onSave, on
         )
       }));
     }
+  };
+
+  const insertLatex = () => {
+    if (!latexInput.trim()) return;
+    
+    const latexHtml = latexType === 'inline' 
+      ? `<span class="latex-inline" data-latex="${latexInput}">\\(${latexInput}\\)</span>`
+      : `<div class="latex-block" data-latex="${latexInput}">\\[${latexInput}\\]</div>`;
+    
+    document.execCommand('insertHTML', false, latexHtml);
+    updateContent();
+    setLatexInput('');
+    setShowLatexModal(false);
+  };
+
+  const openLatexModal = (type: 'inline' | 'block') => {
+    setLatexType(type);
+    setLatexInput('');
+    setShowLatexModal(true);
   };
 
   const addOption = () => {
@@ -260,6 +284,19 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ initialData, onSave, on
 
       <div className="flex items-center space-x-1 border-r border-gray-300 pr-2 mr-2">
         <ToolbarButton
+          onClick={() => openLatexModal('inline')}
+          icon={<span className="font-serif italic">∑</span>}
+          title="Insert Inline LaTeX"
+        />
+        <ToolbarButton
+          onClick={() => openLatexModal('block')}
+          icon={<span className="font-serif italic">∫</span>}
+          title="Insert Block LaTeX"
+        />
+      </div>
+
+      <div className="flex items-center space-x-1 border-r border-gray-300 pr-2 mr-2">
+        <ToolbarButton
           onClick={() => formatText('insertUnorderedList')}
           icon={<List className="w-4 h-4" />}
           title="Bullet List"
@@ -341,6 +378,62 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ initialData, onSave, on
     </div>
   );
 
+  // LaTeX Modal
+  const LatexModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-6 max-w-2xl w-full mx-4">
+        <h3 className="text-xl font-semibold text-gray-900 mb-4">
+          Insert {latexType === 'inline' ? 'Inline' : 'Block'} LaTeX
+        </h3>
+        
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            LaTeX Expression
+          </label>
+          <textarea
+            value={latexInput}
+            onChange={(e) => setLatexInput(e.target.value)}
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+            placeholder={latexType === 'inline' ? 'e.g., x^2 + y^2 = z^2' : 'e.g., \\frac{d}{dx}\\left( \\int_{0}^{x} f(u)\\,du\\right)=f(x)'}
+          />
+        </div>
+        
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Preview
+          </label>
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 min-h-16 flex items-center justify-center">
+            {latexInput ? (
+              latexType === 'inline' ? (
+                <InlineMath math={latexInput} />
+              ) : (
+                <BlockMath math={latexInput} />
+              )
+            ) : (
+              <span className="text-gray-400">LaTeX preview will appear here</span>
+            )}
+          </div>
+        </div>
+        
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={() => setShowLatexModal(false)}
+            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={insertLatex}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Insert
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-2xl shadow-lg border border-gray-200">
       {/* Header */}
@@ -381,6 +474,9 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ initialData, onSave, on
           </button>
         </div>
       </div>
+
+      {/* LaTeX Modal */}
+      {showLatexModal && <LatexModal />}
 
       {!preview ? (
         <div className="space-y-8">
@@ -722,7 +818,9 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ initialData, onSave, on
             <div 
               className="prose max-w-none mb-4"
               dangerouslySetInnerHTML={{ __html: questionData.content }}
-            />
+            >
+              {/* LaTeX rendering will be handled by the HTML content */}
+            </div>
 
             {questionData.topicTags.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -756,15 +854,19 @@ const QuestionEditor: React.FC<QuestionEditorProps> = ({ initialData, onSave, on
                     <div className="flex-1">
                       <div 
                         className="prose max-w-none"
-                        dangerouslySetInnerHTML={{ __html: option.text }}
-                      />
+                        dangerouslySetInnerHTML={{ __html: option.text }} 
+                      >
+                        {/* LaTeX rendering will be handled by the HTML content */}
+                      </div>
                       {option.explanation && (
                         <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
                           <strong>Explanation:</strong>
                           <div 
                             className="mt-1"
                             dangerouslySetInnerHTML={{ __html: option.explanation }}
-                          />
+                          >
+                            {/* LaTeX rendering will be handled by the HTML content */}
+                          </div>
                         </div>
                       )}
                     </div>
