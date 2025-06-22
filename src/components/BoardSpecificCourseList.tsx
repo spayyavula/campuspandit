@@ -26,6 +26,22 @@ const BoardSpecificCourseList: React.FC<BoardSpecificCourseListProps> = ({
 
   const getBoardConfig = (board: string) => {
     switch (board) {
+      case 'jee':
+        return {
+          name: 'JEE Main & Advanced',
+          icon: '🏗️',
+          color: 'from-indigo-500 to-blue-600',
+          bgColor: 'from-indigo-50 to-blue-50',
+          features: ['IIT Entrance', 'Engineering Focus', 'Problem Solving']
+        };
+      case 'neet':
+        return {
+          name: 'NEET UG',
+          icon: '🏥',
+          color: 'from-red-500 to-pink-600',
+          bgColor: 'from-red-50 to-pink-50',
+          features: ['Medical Entrance', 'Conceptual Focus', 'AIIMS/JIPMER']
+        };
       case 'cambridge':
         return {
           name: 'Cambridge International',

@@ -58,6 +58,33 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ selectedBoard, onSelectBo
     }
   ];
 
+  const competitiveExams = [
+    {
+      id: 'jee',
+      name: 'JEE',
+      fullName: 'Joint Entrance Examination',
+      description: 'IIT, NIT & Engineering College Entrance',
+      icon: '🏗️',
+      gradient: 'from-indigo-600 to-blue-700',
+      bgGradient: 'from-indigo-50 to-blue-50',
+      features: ['JEE Main', 'JEE Advanced', 'IIT Admission', 'Engineering Focus'],
+      subjects: ['Physics', 'Chemistry', 'Mathematics'],
+      assessmentStyle: 'Problem-solving, analytical thinking'
+    },
+    {
+      id: 'neet',
+      name: 'NEET',
+      fullName: 'National Eligibility cum Entrance Test',
+      description: 'Medical & Dental College Entrance',
+      icon: '🏥',
+      gradient: 'from-red-600 to-pink-700',
+      bgGradient: 'from-red-50 to-pink-50',
+      features: ['MBBS Admission', 'BDS Admission', 'Medical Focus', 'All India Quota'],
+      subjects: ['Physics', 'Chemistry', 'Biology'],
+      assessmentStyle: 'Conceptual understanding, application'
+    }
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="text-center mb-12">
@@ -72,9 +99,23 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ selectedBoard, onSelectBo
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
           Select your curriculum board to access tailored content, assessments, and learning paths designed specifically for your educational system
         </p>
+        
+        <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-600">
+          <span className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <span>International Boards</span>
+          </span>
+          <span className="flex items-center space-x-1">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span>Competitive Exams</span>
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* International Boards */}
+      <div className="mb-12">
+        <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">International & National Boards</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {boards.map((board) => (
           <div
             key={board.id}
@@ -167,6 +208,110 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ selectedBoard, onSelectBo
             </div>
           </div>
         ))}
+        </div>
+      </div>
+
+      {/* Competitive Exams Section */}
+      <div className="mb-12">
+        <div className="text-center mb-8">
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Competitive Exam Preparation</h3>
+          <p className="text-gray-600">Specialized courses for IIT-JEE and NEET with expert guidance</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {competitiveExams.map((exam) => (
+            <div
+              key={exam.id}
+              className={`relative bg-gradient-to-br ${exam.bgGradient} rounded-2xl p-8 cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl border-2 ${
+                selectedBoard === exam.id ? 'border-blue-500 ring-4 ring-blue-200' : 'border-gray-200'
+              } group overflow-hidden`}
+              onClick={() => onSelectBoard(exam.id)}
+            >
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-4 right-4 text-6xl">{exam.icon}</div>
+                <div className="absolute bottom-4 left-4 text-4xl opacity-50">
+                  <GraduationCap className="w-12 h-12" />
+                </div>
+              </div>
+
+              {/* Selection Indicator */}
+              {selectedBoard === exam.id && (
+                <div className="absolute top-4 right-4 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm">✓</span>
+                </div>
+              )}
+
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-6">
+                  <div className="flex items-center space-x-4">
+                    <div className={`w-16 h-16 bg-gradient-to-br ${exam.gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow text-3xl`}>
+                      {exam.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-900 mb-1">{exam.name}</h3>
+                      <p className="text-sm font-medium text-gray-600">{exam.fullName}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-gray-700 mb-6 leading-relaxed">{exam.description}</p>
+
+                {/* Features */}
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <Award className="w-4 h-4 mr-2" />
+                    Exam Features
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {exam.features.map((feature, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-sm text-gray-700">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Subjects */}
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Subjects Covered
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {exam.subjects.map((subject, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-white bg-opacity-70 rounded-full text-sm font-medium text-gray-700 border border-gray-200"
+                      >
+                        {subject}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Assessment Style */}
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                    <Globe className="w-4 h-4 mr-2" />
+                    Focus Areas
+                  </h4>
+                  <p className="text-sm text-gray-600 italic">{exam.assessmentStyle}</p>
+                </div>
+
+                {/* Action Button */}
+                <button className={`w-full bg-gradient-to-r ${exam.gradient} text-white rounded-xl py-3 font-medium hover:opacity-90 transition-opacity shadow-lg flex items-center justify-center space-x-2`}>
+                  <span>Start {exam.name} Prep</span>
+                  <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <span className="text-xs">🚀</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {selectedBoard && (
@@ -176,14 +321,21 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ selectedBoard, onSelectBo
               <span className="text-white text-xl">✓</span>
             </div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
-              {boards.find(b => b.id === selectedBoard)?.fullName} Selected
+              {[...boards, ...competitiveExams].find(b => b.id === selectedBoard)?.fullName} Selected
             </h3>
             <p className="text-gray-600 mb-6">
-              You'll now see courses, assessments, and content specifically designed for your curriculum board.
+              You'll now see courses, assessments, and content specifically designed for your {
+                competitiveExams.find(e => e.id === selectedBoard) ? 'exam preparation' : 'curriculum board'
+              }.
             </p>
             <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
               <Globe className="w-4 h-4" />
-              <span>Curriculum-aligned content • Board-specific assessments • Exam preparation</span>
+              <span>
+                {competitiveExams.find(e => e.id === selectedBoard) 
+                  ? 'Expert guidance • Mock tests • Previous year questions • Strategy sessions'
+                  : 'Curriculum-aligned content • Board-specific assessments • Exam preparation'
+                }
+              </span>
             </div>
           </div>
         </div>

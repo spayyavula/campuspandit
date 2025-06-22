@@ -3,7 +3,7 @@ export interface Course {
   title: string;
   description: string;
   subject: 'physics' | 'math' | 'chemistry';
-  board: 'cambridge' | 'ib' | 'cbse' | 'isc';
+  board: 'cambridge' | 'ib' | 'cbse' | 'isc' | 'jee' | 'neet';
   grade: string;
   syllabus?: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';

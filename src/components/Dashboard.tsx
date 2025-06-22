@@ -113,15 +113,15 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, onSelectSubject, onSelec
                 </div>
                 <h4 className="text-2xl font-bold text-gray-900 mb-3">Curriculum-Aligned Learning</h4>
                 <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Get board-specific content for Cambridge, IB, CBSE, and ISC with tailored assessments, 
-                  exam preparation, and curriculum-aligned learning paths.
+                  Get board-specific content for Cambridge, IB, CBSE, ISC plus competitive exam preparation 
+                  for JEE and NEET with expert guidance and mock tests.
                 </p>
                 <button
                   onClick={() => onSelectBoard('board-selector')}
                   className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl px-8 py-3 font-medium hover:opacity-90 transition-opacity shadow-lg flex items-center space-x-2 mx-auto"
                 >
-                  <span>Choose Your Board</span>
-                  <span className="text-lg">🌍</span>
+                  <span>Choose Board/Exam</span>
+                  <span className="text-lg">🎯</span>
                 </button>
               </div>
             </div>

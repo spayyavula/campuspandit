@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               <button
                 onClick={() => onViewChange('board-selector')}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
-                  currentView === 'board-selector' || currentView === 'board-courses'
+                  currentView === 'board-selector' || currentView === 'board-courses' 
                     ? 'text-purple-600 bg-purple-50 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
@@ -57,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
                 <div className="w-5 h-5 bg-gradient-to-br from-purple-400 to-purple-600 rounded flex items-center justify-center">
                   <span className="text-white text-xs">🎓</span>
                 </div>
-                <span>Boards</span>
+                <span>Boards & Exams</span>
               </button>
               <button
                 onClick={() => onViewChange('courses')}

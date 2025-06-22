@@ -13,7 +13,7 @@ import QuizBattle from './components/QuizBattle';
 import PWAPrompt from './components/PWAPrompt';
 import MobileOptimized from './components/MobileOptimized';
 import { courses as initialCourses } from './data/courses';
-import { allBoardCourses } from './data/boardCourses';
+import { allCoursesWithCompetitive } from './data/boardCourses';
 import { tournaments, activeBattles } from './data/gameData';
 import { Course } from './types';
 import { offlineManager } from './utils/offline';
@@ -27,7 +27,7 @@ function App() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>(initialCourses);
-  const [boardCourses, setBoardCourses] = useState<Course[]>(allBoardCourses);
+  const [boardCourses, setBoardCourses] = useState<Course[]>(allCoursesWithCompetitive);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   // Initialize offline capabilities

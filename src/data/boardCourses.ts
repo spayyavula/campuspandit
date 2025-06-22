@@ -1,4 +1,5 @@
 import { Course } from '../types';
+import { competitiveExamCourses } from './competitiveExams';
 
 export const boardCourses: Course[] = [
   // Cambridge Board Courses
@@ -286,3 +287,7 @@ export const chemistryCourses: Course[] = [
 ];
 
 export const allBoardCourses = [...boardCourses, ...mathCourses, ...chemistryCourses];
+
+// Export competitive exam courses separately and combined
+export { competitiveExamCourses };
+export const allCoursesWithCompetitive = [...allBoardCourses, ...competitiveExamCourses];
