@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen, Target, Clock, TrendingUp, Award, Calculator, Atom, Zap, Brain, CheckCircle, Play, Star } from 'lucide-react';
 import { jeeMainCourses, jeeMainExamInfo, jeeMainWeightage } from '../data/jeeMainContent';
-import JEEMainMockTest from './JEEMainMockTest';
 
 interface JEEMainDashboardProps {
   onSelectCourse: (courseId: string) => void;
@@ -11,19 +10,6 @@ interface JEEMainDashboardProps {
 const JEEMainDashboard: React.FC<JEEMainDashboardProps> = ({ onSelectCourse, onSelectLesson }) => {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
-  const [showMockTest, setShowMockTest] = useState(false);
-
-  if (showMockTest) {
-    return (
-      <JEEMainMockTest
-        onBack={() => setShowMockTest(false)}
-        onComplete={(score, analysis) => {
-          console.log('Mock test completed:', { score, analysis });
-          setShowMockTest(false);
-        }}
-      />
-    );
-  }
 
   const subjects = [
     {
@@ -157,8 +143,7 @@ const JEEMainDashboard: React.FC<JEEMainDashboardProps> = ({ onSelectCourse, onS
           {[
             { id: 'overview', label: 'Overview', icon: Target },
             { id: 'subjects', label: 'Subjects', icon: BookOpen },
-            { id: 'strategy', label: 'Strategy', icon: Brain },
-            { id: 'practice', label: 'Practice', icon: Play }
+            { id: 'strategy', label: 'Strategy', icon: Brain }
           ].map((tab) => {
             const Icon = tab.icon;
             return (
@@ -454,120 +439,10 @@ const JEEMainDashboard: React.FC<JEEMainDashboardProps> = ({ onSelectCourse, onS
           </div>
         </div>
       )}
-
-      {activeTab === 'practice' && (
-        <div className="space-y-8">
-          {/* Mock Tests */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <Play className="w-6 h-6 mr-3 text-blue-600" />
-              Practice Tests
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="border-2 border-blue-200 rounded-xl p-6 hover:shadow-lg transition-shadow bg-blue-50">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-gray-900">Full Mock Test</h4>
-                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                    <Target className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <p className="text-gray-600 mb-4">Complete JEE Main simulation with 90 questions</p>
-                <div className="space-y-2 mb-4 text-sm text-gray-600">
-                  <div className="flex justify-between">
-                    <span>Duration:</span>
-                    <span>3 hours</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Questions:</span>
-                    <span>90 (30 each)</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Marking:</span>
-                    <span>+4, -1</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowMockTest(true)}
-                  className="w-full bg-blue-500 text-white rounded-lg py-2 hover:bg-blue-600 transition-colors"
-                >
-                  Start Test
-                </button>
-              </div>
-
-              <div className="border-2 border-green-200 rounded-xl p-6 hover:shadow-lg transition-shadow bg-green-50">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-gray-900">Subject Tests</h4>
-                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                    <BookOpen className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <p className="text-gray-600 mb-4">Subject-wise practice tests</p>
-                <div className="space-y-2 mb-4">
-                  {['Physics', 'Chemistry', 'Mathematics'].map((subject) => (
-                    <button
-                      key={subject}
-                      className="w-full text-left p-2 bg-white rounded border hover:bg-gray-50 transition-colors"
-                    >
-                      {subject} Test
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="border-2 border-purple-200 rounded-xl p-6 hover:shadow-lg transition-shadow bg-purple-50">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-gray-900">Previous Years</h4>
-                  <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                </div>
-                <p className="text-gray-600 mb-4">Solve previous year question papers</p>
-                <div className="space-y-2 mb-4">
-                  {['2024', '2023', '2022'].map((year) => (
-                    <button
-                      key={year}
-                      className="w-full text-left p-2 bg-white rounded border hover:bg-gray-50 transition-colors"
-                    >
-                      JEE Main {year}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Performance Analytics */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <TrendingUp className="w-6 h-6 mr-3 text-green-600" />
-              Performance Analytics
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                <h4 className="font-semibold text-blue-900 mb-3">Overall Progress</h4>
-                <div className="text-3xl font-bold text-blue-600 mb-2">75%</div>
-                <p className="text-sm text-blue-700">Syllabus completed</p>
-              </div>
-              
-              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-                <h4 className="font-semibold text-green-900 mb-3">Mock Test Average</h4>
-                <div className="text-3xl font-bold text-green-600 mb-2">245</div>
-                <p className="text-sm text-green-700">Out of 360 marks</p>
-              </div>
-              
-              <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
-                <h4 className="font-semibold text-purple-900 mb-3">Rank Prediction</h4>
-                <div className="text-3xl font-bold text-purple-600 mb-2">15K</div>
-                <p className="text-sm text-purple-700">Expected JEE Main rank</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default JEEMainDashboard;
+
+export default JEEMainDashboard
