@@ -83,7 +83,7 @@ export default defineConfig({
     })
   ],
   optimizeDeps: {
-    exclude: ['lucide-react'],
+    exclude: ['lucide-react', '@supabase/supabase-js'],
   },
   build: {
     rollupOptions: {
