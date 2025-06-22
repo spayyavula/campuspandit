@@ -55,6 +55,19 @@ const QuestionManager: React.FC = () => {
     questionType: '',
     isPublished: ''
   });
+  const [loading, setLoading] = useState(true);
+  const [showLatexExamples, setShowLatexExamples] = useState(false);
+  const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
+  const [currentView, setCurrentView] = useState<'list' | 'create' | 'edit'>('list');
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState({
+    subject: '',
+    board: '',
+    difficulty: '',
+    questionType: '',
+    isPublished: ''
+  });
   const [loading, setLoading] = useState(false);
   const [showLatexExamples, setShowLatexExamples] = useState(false);
 
@@ -275,10 +288,10 @@ const QuestionManager: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Question Bank</h1>
-          <p className="text-gray-600 mt-1">Create, manage, and organize your educational content</p>
+          <h2 className="text-2xl font-bold text-gray-900">Question Bank</h2>
+          <p className="text-gray-600">Create, manage, and organize your educational content</p>
         </div>
         
         <div className="flex items-center space-x-3">

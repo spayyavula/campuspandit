@@ -9,7 +9,6 @@ import TournamentView from './components/TournamentView';
 import TeamsView from './components/TeamsView';
 import QuizBattle from './components/QuizBattle';
 import ProgressTracker from './components/ProgressTracker';
-import QuestionManager from './components/QuestionManager';
 import AdminDashboard from './components/AdminDashboard';
 import { allCoursesWithCompetitive } from './data/boardCourses';
 
@@ -83,8 +82,6 @@ const App: React.FC = () => {
         return <QuizBattle onBack={() => setCurrentView('gaming')} />;
       case 'progress':
         return <ProgressTracker />;
-      case 'questions':
-        return <QuestionManager />;
       case 'admin':
         return <AdminDashboard />;
       default:

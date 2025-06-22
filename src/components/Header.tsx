@@ -144,19 +144,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               </div>
             </button>
             <button
-              onClick={() => onViewChange('questions')}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
-                currentView === 'questions'
-                  ? 'text-blue-600 bg-blue-50 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`}
-            >
-              <div className="w-5 h-5 bg-gradient-to-br from-indigo-400 to-purple-600 rounded flex items-center justify-center">
-                <span className="text-white text-xs">📝</span>
-              </div>
-              <span>Questions</span>
-            </button>
-            <button
               onClick={() => onViewChange('admin')}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-all flex items-center space-x-2 ${
                 currentView === 'admin'

@@ -37,7 +37,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange }) => {
     { id: 'courses', label: 'Courses', icon: BookOpen },
     { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
     { id: 'progress', label: 'Progress', icon: BarChart3 },
-    { id: 'questions', label: 'Questions', icon: FileText },
     { id: 'admin', label: 'Admin', icon: Shield },
   ];
 

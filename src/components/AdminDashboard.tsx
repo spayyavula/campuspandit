@@ -25,6 +25,7 @@ import {
 import UserManagement from './UserManagement';
 import RoleManagement from './RoleManagement';
 import AuditLogs from './AuditLogs';
+import QuestionManager from './QuestionManager';
 import SystemSettings from './SystemSettings';
 import AdminAnalytics from './AdminAnalytics';
 
@@ -47,7 +48,7 @@ interface RecentActivity {
 }
 
 const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'roles' | 'audit' | 'analytics' | 'settings' | 'questions'>('overview');
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -140,6 +141,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'roles', label: 'Roles & Permissions', icon: Shield },
     { id: 'audit', label: 'Audit Logs', icon: Activity },
+    { id: 'questions', label: 'Question Bank', icon: FileText },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'settings', label: 'System Settings', icon: Settings }
   ];
@@ -201,6 +203,7 @@ const AdminDashboard: React.FC = () => {
           {activeTab === 'users' && <UserManagement />}
           {activeTab === 'roles' && <RoleManagement />}
           {activeTab === 'audit' && <AuditLogs />}
+          {activeTab === 'questions' && <QuestionManager />}
           {activeTab === 'analytics' && <AdminAnalytics />}
           {activeTab === 'settings' && <SystemSettings />}
         </div>
