@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GraduationCap, Globe, BookOpen, Award } from 'lucide-react';
 
 interface BoardSelectorProps {
