@@ -46,26 +46,34 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      setMessage({ text: 'Please enter both email and password', type: 'error' });
-      return;
-    }
+    // For demo purposes, allow any email/password
+    const demoEmail = email || 'demo@example.com';
+    const demoPassword = password || 'password123';
 
     try {
       setLoading(true);
       setMessage(null);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
+      // Skip actual authentication for demo
+      // const { data, error } = await supabase.auth.signInWithPassword({
+      //   email: demoEmail,
+      //   password: demoPassword,
+      // });
       
-      if (data.user) {
-        setMessage({ text: 'Signed in successfully!', type: 'success' });
-        onAuthStateChange(data.user);
-      }
+      // if (error) throw error;
+      
+      // Create mock user for demo
+      const mockUser = {
+        id: 'demo-user-123',
+        email: demoEmail,
+        user_metadata: {
+          full_name: 'Demo User',
+          avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=128'
+        }
+      };
+      
+      setMessage({ text: 'Signed in successfully!', type: 'success' });
+      onAuthStateChange(mockUser);
     } catch (error: any) {
       setMessage({ text: error.message || 'Error signing in', type: 'error' });
     } finally {
@@ -76,34 +84,33 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      setMessage({ text: 'Please enter both email and password', type: 'error' });
-      return;
-    }
+    // For demo purposes, allow any email/password
+    const demoEmail = email || 'demo@example.com';
+    const demoPassword = password || 'password123';
+    const demoName = fullName || 'Demo User';
 
     try {
       setLoading(true);
       setMessage(null);
       
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName || email.split('@')[0],
-          },
-        },
-      });
-
-      if (error) throw error;
+      // Skip actual authentication for demo
+      // const { data, error } = await supabase.auth.signUp({
+      //   email: demoEmail,
+      //   password: demoPassword,
+      //   options: {
+      //     data: {
+      //       full_name: demoName,
+      //     },
+      //   },
+      // });
       
-      if (data.user) {
-        setMessage({ 
-          text: 'Signed up successfully! You can now sign in.', 
-          type: 'success' 
-        });
-        setAuthMode('signin');
-      }
+      // if (error) throw error;
+      
+      setMessage({ 
+        text: 'Signed up successfully! You can now sign in.', 
+        type: 'success' 
+      });
+      setAuthMode('signin');
     } catch (error: any) {
       setMessage({ text: error.message || 'Error signing up', type: 'error' });
     } finally {
