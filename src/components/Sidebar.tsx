@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, 
   User, 
@@ -12,6 +13,7 @@ import {
   FileText,
   Shield, 
   LogOut,
+  CreditCard,
   Menu
 } from 'lucide-react';
 import { supabase } from '../utils/supabase';
@@ -25,6 +27,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(true);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
@@ -48,6 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
     { id: 'courses', label: 'Courses', icon: BookOpen },
     { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
     { id: 'progress', label: 'Progress', icon: BarChart3 },
+    { id: 'pricing', label: 'Pricing', icon: CreditCard },
     { id: 'admin', label: 'Admin', icon: Shield },
   ];
 
@@ -119,7 +123,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
                 <li key={item.id}>
                   <button
                     onClick={() => {
-                      onViewChange(item.id);
+                      if (item.id === 'pricing') {
+                        navigate('/pricing');
+                      } else {
+                        onViewChange(item.id);
+                      }
                       if (mobileMenuOpen) setMobileMenuOpen(false);
                     }}
                     className={`text-base
