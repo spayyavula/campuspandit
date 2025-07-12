@@ -69,8 +69,14 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      setMessage({ text: 'Email and password are required', type: 'error' });
+    // Validate inputs
+    if (!email.trim()) {
+      setMessage({ text: 'Email is required', type: 'error' });
+      return;
+    }
+    
+    if (!password.trim() || password.length < 6) {
+      setMessage({ text: 'Password must be at least 6 characters', type: 'error' });
       return;
     }
     
@@ -89,7 +95,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
       });
       
       if (error) {
-        console.error('Signup error:', error);
+        console.error('Signup error details:', error);
         throw error;
       }
       
@@ -98,10 +104,10 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
         type: 'success' 
       });
       setAuthMode('signin');
-    } catch (error: any) {
-      console.error('Signup error details:', error);
+    } catch (err: any) {
+      console.error('Signup error details:', err);
       setMessage({ 
-        text: error.message || 'Error signing up. Please try again later.', 
+        text: err.message || 'Error signing up. Please check your connection and try again.', 
         type: 'error' 
       });
     } finally {
