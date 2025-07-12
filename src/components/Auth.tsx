@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
-import { User, LogOut } from 'lucide-react';
-import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus, Github, Mail as MailIcon } from 'lucide-react';
+import { User } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus, BookOpen, GraduationCap } from 'lucide-react';
 
 interface AuthProps {
   onAuthStateChange: (user: any | null) => void;
@@ -46,34 +46,19 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // For demo purposes, allow any email/password
-    const demoEmail = email || 'demo@example.com';
-    const demoPassword = password || 'password123';
-
     try {
       setLoading(true);
       setMessage(null);
       
-      // Skip actual authentication for demo
-      // const { data, error } = await supabase.auth.signInWithPassword({
-      //   email: demoEmail,
-      //   password: demoPassword,
-      // });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       
-      // if (error) throw error;
-      
-      // Create mock user for demo
-      const mockUser = {
-        id: 'demo-user-123',
-        email: demoEmail,
-        user_metadata: {
-          full_name: 'Demo User',
-          avatar_url: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=128'
-        }
-      };
+      if (error) throw error;
       
       setMessage({ text: 'Signed in successfully!', type: 'success' });
-      onAuthStateChange(mockUser);
+      onAuthStateChange(data.user);
     } catch (error: any) {
       setMessage({ text: error.message || 'Error signing in', type: 'error' });
     } finally {
@@ -84,27 +69,21 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // For demo purposes, allow any email/password
-    const demoEmail = email || 'demo@example.com';
-    const demoPassword = password || 'password123';
-    const demoName = fullName || 'Demo User';
-
     try {
       setLoading(true);
       setMessage(null);
       
-      // Skip actual authentication for demo
-      // const { data, error } = await supabase.auth.signUp({
-      //   email: demoEmail,
-      //   password: demoPassword,
-      //   options: {
-      //     data: {
-      //       full_name: demoName,
-      //     },
-      //   },
-      // });
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      });
       
-      // if (error) throw error;
+      if (error) throw error;
       
       setMessage({ 
         text: 'Signed up successfully! You can now sign in.', 
@@ -118,32 +97,54 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
     }
   };
 
-  const handleOAuthSignIn = async (provider: 'google' | 'github') => {
-    try {
-      setLoading(true);
-      setMessage(null);
-      
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
-
-      if (error) throw error;
-    } catch (error: any) {
-      setMessage({ text: error.message || `Error signing in with ${provider}`, type: 'error' });
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <LogIn className="w-8 h-8 text-white" />
+      <div className="flex flex-col md:flex-row max-w-5xl w-full">
+        {/* Left side - App info */}
+        <div className="bg-gradient-to-br from-blue-500 via-purple-500 to-green-500 p-8 md:p-12 rounded-t-xl md:rounded-l-xl md:rounded-tr-none text-white md:w-1/2 space-y-6">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+              <BookOpen className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold">CampusPandit</h1>
+          </div>
+          
+          <h2 className="text-3xl md:text-4xl font-bold mt-8">Smart Learning Platform</h2>
+          <p className="text-lg opacity-90">Interactive learning with gamified education for Physics, Math, and Chemistry</p>
+          
+          <div className="space-y-4 mt-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <GraduationCap className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-white opacity-90">Curriculum-aligned content for all major boards</p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <UserPlus className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-white opacity-90">Compete with friends in educational battles</p>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <BookOpen className="w-4 h-4 text-white" />
+              </div>
+              <p className="text-white opacity-90">Comprehensive learning materials and practice tests</p>
+            </div>
+          </div>
+          
+          <div className="hidden md:block mt-12 text-sm opacity-75">
+            <p>© 2025 CampusPandit. All rights reserved.</p>
+          </div>
+        </div>
+        
+        {/* Right side - Auth form */}
+        <div className="bg-white p-8 md:p-12 rounded-b-xl md:rounded-r-xl md:rounded-bl-none md:w-1/2 shadow-lg border-t-0 md:border-t border-gray-200">
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg">
+                <LogIn className="w-8 h-8 text-white" />
+              </div>
             </div>
           </div>
           <h2 className="text-3xl font-bold text-gray-900">
@@ -279,44 +280,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           </div>
         </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <button
-              onClick={() => handleOAuthSignIn('google')}
-              disabled={loading}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-            >
-              <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
-                  <path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/>
-                  <path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/>
-                  <path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/>
-                  <path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/>
-                </g>
-              </svg>
-              Google
-            </button>
-
-            <button
-              onClick={() => handleOAuthSignIn('github')}
-              disabled={loading}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-            >
-              <Github className="h-5 w-5 mr-2" />
-              GitHub
-            </button>
-          </div>
-        </div>
-
         <div className="text-center mt-4">
           <button
             type="button"
@@ -328,6 +291,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
               : 'Already have an account? Sign in'}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
