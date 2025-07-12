@@ -3,7 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  VITE_SUPABASE_URL = "https://xyzcompany.supabase.co"
+  VITE_SUPABASE_URL = "https://ecnrvbyzbfhrorxwxkms.supabase.co"
   VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNjE1MjU1MCwiZXhwIjoxOTMxNzI4NTUwfQ.Dr_pYQpJXlI-WD-Mex3KAJDEjwMm8ckjRFcHYhYnTYM"
   VITE_APP_TITLE = "CampusPandit - Smart Learning Platform"
   VITE_APP_VERSION = "1.0.0"
