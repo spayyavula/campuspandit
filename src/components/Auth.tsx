@@ -69,6 +69,11 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!email || !password) {
+      setMessage({ text: 'Email and password are required', type: 'error' });
+      return;
+    }
+    
     try {
       setLoading(true);
       setMessage(null);
@@ -83,15 +88,22 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
         },
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Signup error:', error);
+        throw error;
+      }
       
       setMessage({ 
-        text: 'Signed up successfully! You can now sign in.', 
+        text: data?.user ? 'Signed up successfully! You can now sign in.' : 'Check your email for the confirmation link.', 
         type: 'success' 
       });
       setAuthMode('signin');
     } catch (error: any) {
-      setMessage({ text: error.message || 'Error signing up', type: 'error' });
+      console.error('Signup error details:', error);
+      setMessage({ 
+        text: error.message || 'Error signing up. Please try again later.', 
+        type: 'error' 
+      });
     } finally {
       setLoading(false);
     }
