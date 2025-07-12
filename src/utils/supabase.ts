@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get environment variables with fallbacks
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://xyzcompany.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNjE1MjU1MCwiZXhwIjoxOTMxNzI4NTUwfQ.Dr_pYQpJXlI-WD-Mex3KAJDEjwMm8ckjRFcHYhYnTYM';
+// Use a valid demo project for fallback
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://ecnrvbyzbfhrorxwxkms.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjbnJ2Ynl6YmZocm9yeHd4a21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk0MzA0MDAsImV4cCI6MjAzNTAwNjQwMH0.SZHqItu1xdPjOwJLXUQdodNv_oUQUqcRYwQDYCcDGHw';
 
 // Check if environment variables are set
 if (!supabaseUrl || !supabaseAnonKey) {
