@@ -137,6 +137,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
             <p>© 2025 CampusPandit. All rights reserved.</p>
           </div>
         </div>
+        </div>
         
         {/* Right side - Auth form */}
         <div className="bg-white p-8 md:p-12 rounded-b-xl md:rounded-r-xl md:rounded-bl-none md:w-1/2 shadow-lg border-t-0 md:border-t border-gray-200">
@@ -155,7 +156,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
               ? 'Access your learning journey' 
               : 'Join our learning platform'}
           </p>
-        </div>
 
         {message && (
           <div className={`p-4 rounded-lg ${
@@ -291,7 +291,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
               : 'Already have an account? Sign in'}
           </button>
         </div>
-      </div>
+        </div>
       </div>
     </div>
   );
