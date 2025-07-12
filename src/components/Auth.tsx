@@ -137,7 +137,6 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
             <p>© 2025 CampusPandit. All rights reserved.</p>
           </div>
         </div>
-        </div>
         
         {/* Right side - Auth form */}
         <div className="bg-white p-8 md:p-12 rounded-b-xl md:rounded-r-xl md:rounded-bl-none md:w-1/2 shadow-lg border-t-0 md:border-t border-gray-200">
