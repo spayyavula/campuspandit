@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Get environment variables with fallbacks
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://xyzcompany.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNjE1MjU1MCwiZXhwIjoxOTMxNzI4NTUwfQ.Dr_pYQpJXlI-WD-Mex3KAJDEjwMm8ckjRFcHYhYnTYM';
 
 // Check if environment variables are set
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables. Please check your .env.local file.');
+  console.warn('Using fallback Supabase credentials. For production, set proper environment variables.');
 }
 
 // Create the Supabase client with error handling
@@ -14,10 +14,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    storageKey: 'campuspandit-auth-storage'
   },
   global: {
-    fetch: (...args) => fetch(...args)
+    fetch: (...args) => {
+      return fetch(...args).catch(err => {
+        console.error('Supabase fetch error:', err);
+        throw err;
+      });
+    }
   } 
 });
 

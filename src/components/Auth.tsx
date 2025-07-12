@@ -96,7 +96,11 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
       
       if (error) {
         console.error('Signup error details:', error);
-        throw error;
+        setMessage({ 
+          text: `Authentication error: ${error.message || 'Connection failed. Please try again later.'}`, 
+          type: 'error' 
+        });
+        return;
       }
       
       setMessage({ 
@@ -107,7 +111,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
     } catch (err: any) {
       console.error('Signup error details:', err);
       setMessage({ 
-        text: err.message || 'Error signing up. Please check your connection and try again.', 
+        text: 'Connection error. Please check your internet connection and try again later.', 
         type: 'error' 
       });
     } finally {
