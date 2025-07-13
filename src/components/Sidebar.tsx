@@ -52,7 +52,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
     { id: 'courses', label: 'Courses', icon: BookOpen },
     { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
     { id: 'progress', label: 'Progress', icon: BarChart3 },
-    { id: 'pricing', label: 'Pricing', icon: CreditCard },
     { id: 'admin', label: 'Admin', icon: Shield },
     { id: 'admin-panel', label: 'Course Admin', icon: Upload },
   ];
@@ -125,11 +124,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
                 <li key={item.id}>
                   <button
                     onClick={() => {
-                      if (item.id === 'pricing') {
-                        navigate('/pricing');
-                      } else {
-                        onViewChange(item.id);
-                      }
+                      onViewChange(item.id);
                       if (mobileMenuOpen) setMobileMenuOpen(false);
                     }}
                     className={`text-base

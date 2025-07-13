@@ -107,6 +107,9 @@ const BoardSelector: React.FC<BoardSelectorProps> = ({ courses, onBoardSelect })
       <div className="text-center mb-12">
         <div className="flex items-center justify-center mb-6">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-purple-500 to-green-500 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 rounded-br-xl rounded-tl-xl text-xs font-bold transform translate-x-2 -translate-y-2">
+              100% FREE
+            </div>
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
         </div>

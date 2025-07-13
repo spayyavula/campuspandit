@@ -115,15 +115,18 @@ const Dashboard: React.FC<DashboardProps> = ({ courses, onViewChange, onSelectSu
         {/* Board Selection Option */}
         {onSelectBoard && isFeatureEnabled('competitiveExams') && (
           <div className="mb-8">
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200">
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 border border-blue-200 relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-green-500 text-white px-4 py-1 rounded-bl-lg font-bold transform rotate-0 translate-y-0 shadow-lg">
+                100% FREE
+              </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <span className="text-2xl">🎓</span>
                 </div>
                 <h4 className="text-xl font-bold text-gray-900 mb-3">Curriculum-Aligned Learning</h4>
                 <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Get board-specific content for Cambridge, IB, CBSE, ISC plus competitive exam preparation 
-                  for JEE and NEET with expert guidance and mock tests.
+                  Get board-specific content for Cambridge, IB, CBSE, ISC plus competitive exam preparation
+                  for JEE and NEET with expert guidance and mock tests. No subscription required!
                 </p>
                 <button
                   onClick={() => onViewChange('board-selector')}

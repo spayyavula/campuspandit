@@ -85,6 +85,9 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onViewChange }) => {
       <div className="mb-8 text-center">
         <div className="flex items-center justify-center mb-4">
           <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg relative">
+            <div className="absolute -top-3 -right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold transform rotate-12 shadow-lg">
+              FREE ACCESS
+            </div>
             <Sword className="w-8 h-8 text-white" />
             <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
               <Crown className="w-3 h-3 text-yellow-800" />

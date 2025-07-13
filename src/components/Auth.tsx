@@ -165,6 +165,10 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           <div className="mt-12 pt-6 border-t border-white border-opacity-20">
             <div className="flex items-center space-x-6">
               <div className="text-center">
+                <div className="text-3xl font-bold">FREE</div>
+                <div className="text-sm opacity-75">Forever</div>
+              </div>
+              <div className="text-center">
                 <div className="text-3xl font-bold">10k+</div>
                 <div className="text-sm opacity-75">Students</div>
               </div>
@@ -195,7 +199,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           <p className="text-lg text-gray-600 mb-6">
             {authMode === 'signin' 
               ? 'Resume your learning adventure' 
-              : 'Begin your journey to academic excellence'}
+              : 'Begin your FREE journey to academic excellence'}
           </p>
 
         {message && (
@@ -341,6 +345,9 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           <div className="mt-8 pt-6 border-t border-gray-200">
             <h3 className="text-lg font-medium text-gray-900 mb-4">What our students say</h3>
             <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold">
+                100% FREE
+              </div>
               <div className="flex items-start space-x-3">
                 <div className="flex-shrink-0">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-bold">
@@ -355,7 +362,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
                       ))}
                     </div>
                   </div>
-                  <p className="text-sm text-gray-700 italic">"CampusPandit helped me secure a top rank in JEE. The interactive learning and competition features kept me motivated throughout my preparation."</p>
+                  <p className="text-sm text-gray-700 italic">"CampusPandit helped me secure a top rank in JEE. The interactive learning and competition features kept me motivated throughout my preparation. And it's completely free!"</p>
                   <p className="text-xs text-gray-500 mt-1">— Rahul S., IIT Delhi</p>
                 </div>
               </div>

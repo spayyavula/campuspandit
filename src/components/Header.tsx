@@ -129,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onViewChange }) => {
               <div className="w-5 h-5 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                 <Coins className="w-3 h-3" />
               </div>
-              <span className="text-sm font-bold">1,850</span>
+              <span className="text-sm font-bold">FREE</span>
             </div>
             
             {/* Settings */}

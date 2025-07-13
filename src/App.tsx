@@ -12,8 +12,6 @@ import QuizBattle from './components/QuizBattle';
 import ProgressTracker from './components/ProgressTracker';
 import AdminDashboard from './components/AdminDashboard';
 import AdminPanel from './components/AdminPanel';
-import Pricing from './pages/Pricing';
-import PaymentSuccess from './pages/PaymentSuccess';
 import { allCoursesWithCompetitive } from './data/boardCourses';
 import Auth from './components/Auth';
 import { supabase } from './utils/supabase';
@@ -151,8 +149,6 @@ const App: React.FC = () => {
       <div className="flex-1 min-w-0 safe-area-top safe-area-bottom">
         <main className="p-4 md:p-8">
          <Routes>
-           <Route path="/pricing" element={<Pricing />} />
-           <Route path="/payment-success" element={<PaymentSuccess />} />
            <Route path="*" element={renderCurrentView()} />
          </Routes>
         </main>
