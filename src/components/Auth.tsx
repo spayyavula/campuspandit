@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
-import { User, Mail, Lock, Eye, EyeOff, LogIn, UserPlus, BookOpen, GraduationCap, Zap, Trophy, Target, Brain, Rocket, Star, Award } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, LogIn, UserPlus, BookOpen, GraduationCap, Zap, Trophy, Target, Brain, Rocket, Star, Award, Shield, Users } from 'lucide-react';
 
 interface AuthProps {
   onAuthStateChange: (user: any | null) => void;
