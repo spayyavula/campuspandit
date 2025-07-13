@@ -138,7 +138,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
             <h1 className="text-3xl font-bold">CampusPandit</h1>
           </div>
           
-          <h2 className="text-4xl md:text-5xl font-bold mt-8 leading-tight">Unlock Your <span className="bg-white bg-opacity-20 px-2 rounded">Genius</span> Potential</h2>
+          <h2 className="text-4xl md:text-5xl font-bold mt-8 leading-tight">Unlock Your <span className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-transparent bg-clip-text px-2">Genius</span> Potential</h2>
           <p className="text-xl opacity-90 leading-relaxed">Not just another learning platform. A revolution in interactive, gamified education that makes learning addictive.</p>
           
           <div className="space-y-5 mt-10">
