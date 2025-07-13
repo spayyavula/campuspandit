@@ -501,7 +501,7 @@ const StudentManagement: React.FC = () => {
                   <option value="">All Progress</option>
                   <option value="high">High (≥75%)</option>
                   <option value="medium">Medium (50-74%)</option>
-                  <option value="low">Low (<50%)</option>
+                  <option value="low">Low (&lt;50%)</option>
                 </select>
               </div>
             </div>
