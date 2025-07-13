@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Video, FileText, Image, Music, File, X, Upload, Play, Eye, Trash2, Edit, Plus } from 'lucide-react';
+import { Video, FileText, Image, Music, File, X, Upload, Play, Eye, Trash2, Edit, Plus, Search } from 'lucide-react';
 import ReactPlayer from 'react-player';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -119,16 +119,26 @@ Cell division is a process by which a cell divides into two or more cells. There
     }
   }, []);
 
+  // Safer accept prop for useDropzone
+  const acceptTypes: Record<string, string[]> = {
+    video: ['video/*'],
+    image: ['image/*'],
+    audio: ['audio/*'],
+    document: [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ]
+  };
+
+  const accept = contentType === 'text' ? undefined : 
+    Object.fromEntries(
+      (acceptTypes[contentType] || []).map(type => [type, []])
+    );
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop,
-    accept: {
-      'video/*': contentType === 'video' ? [] : undefined,
-      'image/*': contentType === 'image' ? [] : undefined,
-      'audio/*': contentType === 'audio' ? [] : undefined,
-      'application/pdf': contentType === 'document' ? [] : undefined,
-      'application/msword': contentType === 'document' ? [] : undefined,
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': contentType === 'document' ? [] : undefined,
-    },
+    accept,
     maxFiles: 1
   });
 

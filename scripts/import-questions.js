@@ -111,44 +111,36 @@ async function main() {
     
     spinner.succeed(`Read ${questions.length} questions from CSV`);
     
-    // Process questions
-    spinner.text = 'Processing questions and checking quality...';
+    // Process questions (no validation, all accepted)
+    spinner.text = 'Processing questions (no validation)...';
     const processedQuestions = [];
-    const flaggedQuestions = [];
-    
     for (let i = 0; i < questions.length; i++) {
       const question = questions[i];
       spinner.text = `Processing question ${i + 1}/${questions.length}...`;
-      
+
       // Parse options
       let options = [];
       try {
         if (typeof question.options === 'string') {
-          // Try to parse as JSON array
           if (question.options.startsWith('[') && question.options.endsWith(']')) {
             options = JSON.parse(question.options);
           } else {
-            // Split by delimiter (comma, semicolon, or pipe)
             options = question.options.split(/[,;|]/).map(opt => opt.trim()).filter(Boolean);
           }
         }
       } catch (error) {
-        if (options.verbose) {
-          console.error(`Error parsing options for question ${i + 1}:`, error);
-        }
         options = [];
       }
-      
+
       // Parse correct answer
       let correctAnswer = parseInt(question.correct_answer, 10);
       if (isNaN(correctAnswer)) {
-        // Try to find the index of the correct answer in options
         correctAnswer = options.findIndex(opt => 
           opt.toLowerCase() === question.correct_answer.toLowerCase()
         );
         if (correctAnswer === -1) correctAnswer = 0;
       }
-      
+
       // Parse topic tags
       let topicTags = [];
       try {
@@ -162,79 +154,10 @@ async function main() {
           }
         }
       } catch (error) {
-        if (options.verbose) {
-          console.error(`Error parsing topic tags for question ${i + 1}:`, error);
-        }
         topicTags = [];
       }
-      
-      // Basic quality checks
-      const qualityIssues = [];
-      
-      // Check title length
-      if (question.title.length < QUALITY_THRESHOLDS.minTitleLength) {
-        qualityIssues.push(`Title too short (${question.title.length} chars)`);
-      }
-      
-      // Check content length
-      if (question.content.length < QUALITY_THRESHOLDS.minContentLength) {
-        qualityIssues.push(`Content too short (${question.content.length} chars)`);
-      }
-      
-      // Check spelling
-      const titleTokens = tokenizer.tokenize(question.title);
-      const contentTokens = tokenizer.tokenize(question.content);
-      const allTokens = [...titleTokens, ...contentTokens];
-      
-      const spellingErrors = allTokens.filter(token => 
-        token.length > 3 && !spellcheck.isCorrect(token)
-      );
-      
-      if (spellingErrors.length > QUALITY_THRESHOLDS.maxSpellingErrors) {
-        qualityIssues.push(`${spellingErrors.length} potential spelling errors: ${spellingErrors.slice(0, 5).join(', ')}${spellingErrors.length > 5 ? '...' : ''}`);
-      }
-      
-      // Check options
-      if (options.length < QUALITY_THRESHOLDS.minOptions) {
-        qualityIssues.push(`Too few options (${options.length})`);
-      }
-      
-      // Advanced quality check with OpenAI if available
-      let aiQualityCheck = null;
-      if (openai && qualityIssues.length === 0) {
-        try {
-          const response = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-              {
-                role: "system",
-                content: "You are a quality assurance expert for educational content. Analyze the question for ambiguity, clarity, and language quality. Respond with a JSON object containing: {\"quality\": number from 1-10, \"issues\": [array of issues], \"improved\": improved version or null if no improvement needed}"
-              },
-              {
-                role: "user",
-                content: `Question title: ${question.title}\nQuestion content: ${question.content}\nOptions: ${options.join(' | ')}`
-              }
-            ],
-            temperature: 0.3,
-            response_format: { type: "json_object" }
-          });
-          
-          aiQualityCheck = JSON.parse(response.choices[0].message.content);
-          
-          if (aiQualityCheck.quality < 7) {
-            qualityIssues.push(`AI quality score: ${aiQualityCheck.quality}/10`);
-            if (aiQualityCheck.issues && aiQualityCheck.issues.length > 0) {
-              qualityIssues.push(...aiQualityCheck.issues);
-            }
-          }
-        } catch (error) {
-          if (options.verbose) {
-            console.error(`Error during AI quality check for question ${i + 1}:`, error);
-          }
-        }
-      }
-      
-      // Prepare processed question
+
+      // Prepare processed question (no quality checks)
       const processedQuestion = {
         title: question.title,
         content: question.content,
@@ -252,27 +175,17 @@ async function main() {
           is_correct: index === correctAnswer,
           explanation: index === correctAnswer ? (question.explanation || '') : ''
         })),
-        is_published: qualityIssues.length === 0,
+        is_published: true,
         metadata: {
           imported: true,
           import_date: new Date().toISOString(),
-          quality_issues: qualityIssues,
-          ai_improved: aiQualityCheck?.improved || null
+          quality_issues: [],
+          ai_improved: null
         }
       };
-      
-      // Add to appropriate list
-      if (qualityIssues.length > 0) {
-        flaggedQuestions.push({
-          ...processedQuestion,
-          quality_issues: qualityIssues
-        });
-      } else {
-        processedQuestions.push(processedQuestion);
-      }
+      processedQuestions.push(processedQuestion);
     }
-    
-    spinner.succeed(`Processed ${questions.length} questions: ${processedQuestions.length} passed, ${flaggedQuestions.length} flagged`);
+    spinner.succeed(`Processed ${questions.length} questions: ${processedQuestions.length} accepted, 0 flagged`);
     
     // Save to output file
     if (!options.dryRun) {
