@@ -1,5 +1,47 @@
 campuspandit.com
 
+## Question Scraping Tool
+
+This tool helps you automatically scrape educational questions from open educational resources and other sources that explicitly allow content reuse.
+
+### Usage
+
+```bash
+# Basic usage
+npm run scrape-questions -- -o scraped-questions.csv
+
+# Specify sources
+npm run scrape-questions -- -s openstax,quizlet-cc,khan
+
+# Limit number of questions
+npm run scrape-questions -- -l 100
+
+# Focus on specific topics
+npm run scrape-questions -- -t physics,math
+
+# Get help
+npm run scrape-questions -- --help
+```
+
+### Sources
+
+The tool only scrapes from sources that explicitly allow content reuse:
+
+- **OpenStax**: Free, peer-reviewed, openly licensed textbooks (CC BY 4.0)
+- **Quizlet CC**: Creative Commons licensed flashcards and quizzes
+- **Khan Academy**: Free educational exercises and videos (CC BY-NC-SA 3.0)
+- **OER Commons**: Open educational resources with various open licenses
+- **CK-12**: Free online textbooks and quizzes (CC BY-NC 3.0)
+
+### Output Format
+
+The tool outputs a CSV file compatible with the import-questions tool, including:
+- Question content
+- Answer options
+- Correct answer
+- Subject and topic information
+- Source and license details
+
 ## Question Import Tool
 
 This tool helps you automatically import questions and answers into the system, with quality checks for ambiguous or poor English.
