@@ -11,6 +11,7 @@ import TeamsView from './components/TeamsView';
 import QuizBattle from './components/QuizBattle';
 import ProgressTracker from './components/ProgressTracker';
 import AdminDashboard from './components/AdminDashboard';
+import AdminPanel from './components/AdminPanel';
 import Pricing from './pages/Pricing';
 import PaymentSuccess from './pages/PaymentSuccess';
 import { allCoursesWithCompetitive } from './data/boardCourses';
@@ -111,6 +112,8 @@ const App: React.FC = () => {
         return <ProgressTracker />;
       case 'admin':
         return <AdminDashboard />;
+      case 'admin-panel':
+        return <AdminPanel />;
       default:
         return (
           <Dashboard 

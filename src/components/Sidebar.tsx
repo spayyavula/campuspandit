@@ -13,7 +13,8 @@ import {
   FileText,
   Shield, 
   LogOut,
-  CreditCard,
+  CreditCard, 
+  Upload,
   Menu
 } from 'lucide-react';
 import { supabase } from '../utils/supabase';
@@ -53,6 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
     { id: 'progress', label: 'Progress', icon: BarChart3 },
     { id: 'pricing', label: 'Pricing', icon: CreditCard },
     { id: 'admin', label: 'Admin', icon: Shield },
+    { id: 'admin-panel', label: 'Course Admin', icon: Upload },
   ];
 
   return (
