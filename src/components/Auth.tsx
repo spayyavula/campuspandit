@@ -1,396 +1,215 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabase';
-import { User, Mail, Lock, Eye, EyeOff, LogIn, UserPlus, BookOpen, GraduationCap, Zap, Trophy, Target, Brain, Rocket, Star, Award, Shield, Users } from 'lucide-react';
 
-interface AuthProps {
-  onAuthStateChange: (user: any | null) => void;
-}
+import React, { useState } from 'react';
+import { Rocket, Brain, Trophy, Zap, Star, Award, Shield, Users, LogIn } from 'lucide-react';
 
-const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+const Auth: React.FC = () => {
+  const [showLogin, setShowLogin] = useState(false);
+
+  // Add missing state and handlers
+  const [mode, setMode] = useState('login'); // 'login' | 'register' | 'forgot'
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    optin: false,
+  });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ text: string; type: 'error' | 'success' } | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
-  const [fullName, setFullName] = useState('');
+  const [message, setMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user) {
-        onAuthStateChange(data.session.user);
-      }
-    };
-    
-    checkUser();
-
-    // Set up auth state change listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          onAuthStateChange(session.user);
-        } else if (event === 'SIGNED_OUT') {
-          onAuthStateChange(null);
-        }
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [onAuthStateChange]);
-
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      setLoading(true);
-      setMessage(null);
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      
-      if (error) throw error;
-      
-      setMessage({ text: 'Signed in successfully!', type: 'success' });
-      onAuthStateChange(data.user);
-    } catch (error: any) {
-      setMessage({ text: error.message || 'Error signing in', type: 'error' });
-    } finally {
-      setLoading(false);
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate inputs
-    if (!email.trim()) {
-      setMessage({ text: 'Email is required', type: 'error' });
-      return;
-    }
-    
-    if (!password.trim() || password.length < 6) {
-      setMessage({ text: 'Password must be at least 6 characters', type: 'error' });
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      setMessage(null);
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-        },
-      });
-      
-      if (error) {
-        console.error('Signup error details:', error);
-        setMessage({ 
-          text: `Authentication error: ${error.message || 'Connection failed. Please try again later.'}`, 
-          type: 'error' 
-        });
-        return;
-      }
-      
-      setMessage({ 
-        text: data?.user ? 'Signed up successfully! You can now sign in.' : 'Check your email for the confirmation link.', 
-        type: 'success' 
-      });
-      setAuthMode('signin');
-    } catch (err: any) {
-      console.error('Signup error details:', err);
-      setMessage({ 
-        text: 'Connection error. Please check your internet connection and try again later.', 
-        type: 'error' 
-      });
-    } finally {
+    setLoading(true);
+    setTimeout(() => {
       setLoading(false);
-    }
+      setMessage('This is a demo. No real authentication.');
+    }, 200);
   };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row max-w-5xl w-full">
-        {/* Left side - Animated App info */}
-        <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-8 md:p-12 rounded-t-xl md:rounded-l-xl md:rounded-tr-none text-white md:w-1/2 space-y-6 relative overflow-hidden">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 overflow-hidden opacity-10">
-            <div className="absolute top-10 left-10 w-20 h-20 rounded-full bg-white animate-pulse"></div>
-            <div className="absolute top-40 right-20 w-16 h-16 rounded-full bg-white animate-ping" style={{animationDuration: '3s'}}></div>
-            <div className="absolute bottom-20 left-1/4 w-24 h-24 rounded-full bg-white animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-1/3 right-1/3 w-12 h-12 rounded-full bg-white animate-ping" style={{animationDuration: '4s', animationDelay: '2s'}}></div>
-          </div>
-          
-          <div className="flex items-center space-x-3 relative">
-            <div className="w-14 h-14 bg-white bg-opacity-20 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-              <Rocket className="w-7 h-7 text-white" />
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 flex flex-col items-center justify-center relative overflow-hidden">
+        {/* Progress Bar */}
+        {loading && (
+          <div className="fixed top-0 left-0 w-full z-50">
+            <div className="h-1 w-full bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 animate-pulse relative overflow-hidden">
+              <div className="absolute left-0 top-0 h-full bg-white/70 animate-progressbar" style={{ width: '40%' }} />
             </div>
-            <h1 className="text-3xl font-bold">CampusPandit</h1>
-          </div>
-          
-          <h2 className="text-4xl md:text-5xl font-bold mt-8 leading-tight">Unlock Your <span className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-transparent bg-clip-text px-2">Genius</span> Potential</h2>
-          <p className="text-xl opacity-90 leading-relaxed">Not just another learning platform. A revolution in interactive, gamified education that makes learning addictive.</p>
-          
-          <div className="space-y-5 mt-10">
-            <div className="flex items-center space-x-4 transform hover:translate-x-2 transition-transform">
-              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-md">
-                <Brain className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-white text-lg font-medium">AI-powered personalized learning paths</p>
-            </div>
-            <div className="flex items-center space-x-4 transform hover:translate-x-2 transition-transform">
-              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-md">
-                <Trophy className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-white text-lg font-medium">Compete in live tournaments & win prizes</p>
-            </div>
-            <div className="flex items-center space-x-4 transform hover:translate-x-2 transition-transform">
-              <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center shadow-md">
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <p className="text-white text-lg font-medium">Learn 3x faster with our proven methods</p>
-            </div>
-          </div>
-          
-          <div className="mt-12 pt-6 border-t border-white border-opacity-20">
-            <div className="flex items-center space-x-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold">FREE</div>
-                <div className="text-sm opacity-75">Forever</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">10k+</div>
-                <div className="text-sm opacity-75">Students</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">95%</div>
-                <div className="text-sm opacity-75">Success Rate</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold">500+</div>
-                <div className="text-sm opacity-75">Top Ranks</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Right side - Auth form */}
-        <div className="bg-white p-8 md:p-12 rounded-b-xl md:rounded-r-xl md:rounded-bl-none md:w-1/2 shadow-xl border-t-0 md:border-t border-gray-200">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg transform hover:rotate-6 transition-transform">
-                <LogIn className="w-10 h-10 text-white" />
-              </div>
-            </div>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            {authMode === 'signin' ? 'Sign in to your account' : 'Create a new account'}
-          </h2>
-          <p className="text-lg text-gray-600 mb-6">
-            {authMode === 'signin' 
-              ? 'Resume your learning adventure' 
-              : 'Begin your FREE journey to academic excellence'}
-          </p>
-
-        {message && (
-          <div className={`p-4 rounded-lg ${
-            message.type === 'error' ? 'bg-red-50 text-red-800' : 'bg-green-50 text-green-800'
-          }`}>
-            {message.text}
+            <style>{`
+              @keyframes progressbar {
+                0% { left: -40%; width: 40%; }
+                50% { left: 30%; width: 60%; }
+                100% { left: 100%; width: 40%; }
+              }
+              .animate-progressbar {
+                animation: progressbar 1s linear infinite;
+              }
+            `}</style>
           </div>
         )}
-
-        <form className="mt-8 space-y-6" onSubmit={authMode === 'signin' ? handleSignIn : handleSignUp}>
-          {authMode === 'signup' && (
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-                What should we call you?
-              </label>
-              <div className="relative">
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="appearance-none relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Your name (optional)"
-                />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-              </div>
+        {/* Animated floating shapes */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-pink-400 opacity-30 blur-2xl animate-pulse" />
+          <div className="absolute top-1/2 right-20 w-32 h-32 rounded-full bg-blue-400 opacity-20 blur-2xl animate-ping" style={{animationDuration: '3s'}} />
+          <div className="absolute bottom-20 left-1/4 w-56 h-56 rounded-full bg-purple-400 opacity-20 blur-2xl animate-pulse" style={{animationDelay: '1s'}} />
+          <div className="absolute top-1/3 right-1/3 w-24 h-24 rounded-full bg-yellow-400 opacity-20 blur-2xl animate-ping" style={{animationDuration: '4s', animationDelay: '2s'}} />
+        </div>
+        {/* Hero Section */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center text-center py-16 px-4 md:px-0">
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <span className="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+              <Rocket className="w-8 h-8 text-white" />
+            </span>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">CampusPandit</h1>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 text-transparent bg-clip-text mb-6 drop-shadow-xl animate-fade-in-up">India's Most Addictive Learning Platform</h2>
+          <p className="text-2xl md:text-3xl text-white/90 font-medium mb-10 max-w-2xl mx-auto animate-fade-in-up delay-100">Gamified, AI-powered, and 100% FREE. Join 10,000+ students who are learning smarter, not harder.</p>
+          <div className="flex flex-wrap justify-center gap-8 mb-12 animate-fade-in-up delay-200">
+            <div className="flex flex-col items-center">
+              <Brain className="w-10 h-10 text-yellow-300 mb-2 animate-bounce" />
+              <span className="text-lg text-white font-semibold">Personalized AI Learning</span>
             </div>
-          )}
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email address
-            </label>
-            <div className="relative">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="your.email@example.com"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
-              </div>
+            <div className="flex flex-col items-center">
+              <Trophy className="w-10 h-10 text-pink-300 mb-2 animate-bounce delay-100" />
+              <span className="text-lg text-white font-semibold">Live Tournaments</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Zap className="w-10 h-10 text-purple-300 mb-2 animate-bounce delay-200" />
+              <span className="text-lg text-white font-semibold">3x Faster Learning</span>
             </div>
           </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete={authMode === 'signin' ? "current-password" : "new-password"}
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none relative block w-full px-3 py-3 pl-10 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="••••••••"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
-              </div>
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-gray-400" />
-                ) : (
-                  <Eye className="h-5 w-5 text-gray-400" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {authMode === 'signin' && (
-            <div className="flex items-center justify-end">
-              <div className="text-sm transform hover:translate-x-1 transition-transform">
-                <a href="#" className="font-medium text-blue-600 hover:text-blue-500 flex items-center">
-                  Forgot your password?
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading || (authMode === 'signup' && !email && !password)}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transform hover:scale-105 transition-transform"
-            >
-              {loading ? (
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                </span>
-              ) : (
-                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  {authMode === 'signin' ? (
-                    <LogIn className="h-5 w-5 text-white group-hover:animate-pulse" />
-                  ) : (
-                    <UserPlus className="h-5 w-5 text-white group-hover:animate-pulse" />
-                  )}
-                </span>
-              )}
-              {authMode === 'signin' ? 'Launch Your Learning Journey' : 'Join the Learning Revolution'}
-            </button>
-          </div>
-        </form>
-
-        <div className="text-center mt-6">
           <button
-            type="button"
-            onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
-            className="font-medium text-blue-600 hover:text-blue-500 transform hover:scale-105 transition-transform"
+            className="px-12 py-5 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-2xl font-extrabold rounded-full shadow-2xl hover:scale-105 hover:from-yellow-500 hover:to-purple-700 transition-transform flex items-center gap-3 ring-4 ring-yellow-300/30 animate-glow"
+            onClick={() => setShowLogin(true)}
           >
-            {authMode === 'signin'
-              ? "New to CampusPandit? Create an account →"
-              : '← Already have an account? Sign in'}
+            <LogIn className="w-7 h-7" />
+            Get Started
           </button>
-        </div>
-        
-        {/* Testimonials */}
-        {authMode === 'signup' && (
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">What our students say</h3>
-            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <div className="absolute top-0 right-0 bg-green-500 text-white px-3 py-1 text-xs font-bold">
-                100% FREE
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-bold">
-                    R
-                  </div>
+          {showLogin && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 animate-fade-in">
+              <div className="bg-white rounded-2xl shadow-2xl p-10 max-w-md w-full relative animate-fade-in-up">
+                <button
+                  className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold"
+                  onClick={() => setShowLogin(false)}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+                <div className="text-center mb-6">
+                  <LogIn className="w-10 h-10 mx-auto text-blue-600 mb-2" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {mode === 'register' ? 'Register for CampusPandit' : mode === 'forgot' ? 'Reset Password' : 'Sign in to CampusPandit'}
+                  </h2>
+                  <p className="text-gray-600">
+                    {mode === 'register' ? 'Create your free account' : mode === 'forgot' ? 'Enter your email to reset password' : 'Resume your learning adventure'}
+                  </p>
                 </div>
-                <div>
-                  <div className="flex items-center mb-1">
-                    <div className="flex">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 text-yellow-400" fill="#facc15" />
-                      ))}
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                  {mode === 'register' && (
+                    <div>
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        value={form.name}
+                        onChange={handleChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg px-4 py-2"
+                        placeholder="Your Name"
+                      />
                     </div>
+                  )}
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      value={form.email}
+                      onChange={handleChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg px-4 py-2"
+                      placeholder="you@example.com"
+                    />
                   </div>
-                  <p className="text-sm text-gray-700 italic">"CampusPandit helped me secure a top rank in JEE. The interactive learning and competition features kept me motivated throughout my preparation. And it's completely free!"</p>
-                  <p className="text-xs text-gray-500 mt-1">— Rahul S., IIT Delhi</p>
+                  {mode !== 'forgot' && (
+                    <div>
+                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+                      <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        value={form.password}
+                        onChange={handleChange}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-lg px-4 py-2"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                  )}
+                  {mode === 'register' && (
+                    <div className="flex items-center">
+                      <input
+                        id="optin"
+                        name="optin"
+                        type="checkbox"
+                        checked={form.optin}
+                        onChange={handleChange}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor="optin" className="ml-2 block text-sm text-gray-700">
+                        I want to receive updates and offers from CampusPandit
+                      </label>
+                    </div>
+                  )}
+                  {message && (
+                    <div className="text-center text-sm font-medium text-red-600">{message}</div>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 px-6 bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-500 text-white text-xl font-bold rounded-full shadow-lg hover:scale-105 transition-transform mt-2 disabled:opacity-60"
+                  >
+                    {loading ? 'Please wait...' : mode === 'register' ? 'Register' : mode === 'login' ? 'Login' : 'Send Reset Email'}
+                  </button>
+                </form>
+                <div className="mt-4 flex flex-col items-center gap-2">
+                  {mode === 'login' && (
+                    <>
+                      <button type="button" className="text-blue-600 hover:underline text-sm" onClick={() => { setMode('register'); setMessage(null); }}>
+                        New here? Register
+                      </button>
+                      <button type="button" className="text-blue-600 hover:underline text-sm" onClick={() => { setMode('forgot'); setMessage(null); }}>
+                        Forgot password?
+                      </button>
+                    </>
+                  )}
+                  {mode === 'register' && (
+                    <button type="button" className="text-blue-600 hover:underline text-sm" onClick={() => { setMode('login'); setMessage(null); }}>
+                      Already have an account? Login
+                    </button>
+                  )}
+                  {mode === 'forgot' && (
+                    <button type="button" className="text-blue-600 hover:underline text-sm" onClick={() => { setMode('login'); setMessage(null); }}>
+                      Back to Login
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        
-        {/* Trust indicators */}
-        <div className="mt-8">
-          <div className="flex flex-wrap justify-center items-center gap-4 text-gray-400 text-xs">
-            <div className="flex items-center">
-              <Award className="w-4 h-4 mr-1" />
-              <span>ISO Certified</span>
-            </div>
-            <div className="flex items-center">
-              <Shield className="w-4 h-4 mr-1" />
-              <span>256-bit Encryption</span>
-            </div>
-            <div className="flex items-center">
-              <Users className="w-4 h-4 mr-1" />
-              <span>10,000+ Students</span>
-            </div>
-          </div>
-        </div>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
-};
+}
 
 export default Auth;

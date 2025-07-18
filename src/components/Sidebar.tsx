@@ -50,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'board-selector', label: 'Boards & Exams', icon: GraduationCap },
     { id: 'courses', label: 'Courses', icon: BookOpen },
+    { id: 'physics-general', label: 'Physics General', icon: BookOpen },
     { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
     { id: 'progress', label: 'Progress', icon: BarChart3 },
     { id: 'admin', label: 'Admin', icon: Shield },
@@ -61,10 +62,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
       {/* Mobile menu button */}
       <div className="fixed top-4 left-4 z-50 lg:hidden">
         <button
+          type="button"
           onClick={toggleMobileMenu}
           className="p-2 bg-white rounded-lg shadow-md text-gray-700 hover:bg-gray-100"
+          title="Open sidebar menu"
+          aria-label="Open sidebar menu"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-6 h-6" aria-hidden="true" />
         </button>
       </div>
 
@@ -108,10 +112,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
           
           {/* Toggle button */}
           <button 
+            type="button"
             onClick={toggleSidebar}
             className="p-1 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors lg:block hidden"
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            {collapsed ? <ChevronRight className="w-5 h-5" aria-hidden="true" /> : <ChevronLeft className="w-5 h-5" aria-hidden="true" />}
           </button>
         </div>
 
@@ -123,6 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
               return (
                 <li key={item.id}>
                   <button
+                    type="button"
                     onClick={() => {
                       onViewChange(item.id);
                       if (mobileMenuOpen) setMobileMenuOpen(false);
@@ -135,8 +143,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                       }
                     `}
+                    title={item.label}
+                    aria-label={item.label}
                   >
-                    <Icon className={`w-6 h-6 ${collapsed ? '' : 'mr-3'}`} />
+                    <Icon className={`w-6 h-6 ${collapsed ? '' : 'mr-3'}`} aria-hidden="true" />
                     {!collapsed && <span className="font-medium">{item.label}</span>}
                   </button>
                 </li>
@@ -164,22 +174,26 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
             
             {!collapsed && (
               <button
+                type="button"
                 onClick={handleSignOut}
                 className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                 title="Sign out"
+                aria-label="Sign out"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-5 h-5" aria-hidden="true" />
               </button>
             )}
           </div>
           
           {collapsed && (
             <button
+              type="button"
               onClick={handleSignOut}
               className="mt-4 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors w-full flex justify-center"
               title="Sign out"
+              aria-label="Sign out"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-5 h-5" aria-hidden="true" />
             </button>
           )}
         </div>

@@ -12,6 +12,7 @@ import QuizBattle from './components/QuizBattle';
 import ProgressTracker from './components/ProgressTracker';
 import AdminDashboard from './components/AdminDashboard';
 import AdminPanel from './components/AdminPanel';
+import PhysicsGeneral from './components/PhysicsGeneral';
 import { allCoursesWithCompetitive } from './data/boardCourses';
 import Auth from './components/Auth';
 import { supabase } from './utils/supabase';
@@ -57,6 +58,8 @@ const App: React.FC = () => {
   };
   const renderCurrentView = () => {
     switch (currentView) {
+      case 'physics-general':
+        return <PhysicsGeneral />;
       case 'dashboard':
         return (
           <Dashboard 

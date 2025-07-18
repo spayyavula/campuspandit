@@ -8,20 +8,32 @@ import ora from 'ora';
 import { stringify as csvStringify } from 'csv-stringify/sync';
 
 
-// Define topics for first two chapters (Mechanics, Kinematics)
+// Topics from Chapter 3 and Chapter 4 of Resnick and Halliday
+// Chapter 3: Motion in a Straight Line
+// Chapter 4: Motion in a Plane
 const topics = [
-  'Units and Measurements',
+  // Chapter 3: Motion in a Straight Line
+  'Position, Path Length and Displacement',
+  'Average Velocity and Average Speed',
+  'Instantaneous Velocity and Speed',
+  'Acceleration',
+  'Kinematic Equations for Uniformly Accelerated Motion',
+  'Relative Velocity in One Dimension',
+  'Graphs of Motion in a Straight Line',
+  'Free-Fall Motion',
+  // Chapter 4: Motion in a Plane
   'Scalars and Vectors',
-  'Motion in a Straight Line',
+  'Position and Displacement Vectors',
+  'Equality of Vectors',
+  'Multiplication of Vectors by Real Numbers',
+  'Addition and Subtraction of Vectors',
+  'Resolution of Vectors',
   'Motion in a Plane',
+  'Position Vector and Displacement',
+  'Velocity and Acceleration in Two Dimensions',
   'Projectile Motion',
-  'Relative Velocity',
-  'Laws of Motion',
-  'Friction',
-  'Circular Motion',
-  'Work, Energy and Power',
-  'Conservation of Energy',
-  'Conservation of Momentum'
+  'Relative Velocity in Two Dimensions',
+  'Uniform Circular Motion'
 ];
 
 const program = new Command();
@@ -99,7 +111,7 @@ async function main() {
     marks: q.marks,
     time_limit: q.time_limit
   }));
-  const csv = csvStringify.stringify(records, { header: true });
+  const csv = csvStringify(records, { header: true });
   await fs.writeFile(options.output, csv);
   spinner.succeed(`Saved to ${options.output}`);
 }
