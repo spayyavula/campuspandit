@@ -36,8 +36,13 @@ export default function Auth({ onAuthStateChange }: AuthProps) {
   };
 
   // Setup Supabase client (replace with your actual keys or use env)
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Missing Supabase environment variables. Please check your .env file.');
+  }
+  
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
