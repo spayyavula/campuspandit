@@ -92,6 +92,7 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           icons: ['lucide-react']
         }
+      }
       enabled: false
     }
   }
