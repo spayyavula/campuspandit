@@ -1,0 +1,62 @@
+{
+  "subject": "Physics",
+  "topics": [
+    {
+      "name": "Mechanics",
+      "description": "Study of motion, forces, and energy.",
+      "concepts": [
+        {
+          "title": "Newton's Laws of Motion",
+          "summary": "Three fundamental laws describing the relationship between the motion of an object and the forces acting on it."
+        },
+        {
+          "title": "Kinematics",
+          "summary": "Description of motion without considering its causes."
+        }
+      ],
+      "questions": [
+        {
+          "question": "State Newton's Second Law of Motion.",
+          "options": [
+            "Force equals mass times acceleration.",
+            "Every action has an equal and opposite reaction.",
+            "An object at rest stays at rest.",
+            "Energy cannot be created or destroyed."
+          ],
+          "answer": "Force equals mass times acceleration."
+        },
+        {
+          "question": "What is the SI unit of force?",
+          "options": ["Newton", "Joule", "Watt", "Pascal"],
+          "answer": "Newton"
+        }
+      ]
+    },
+    {
+      "name": "Optics",
+      "description": "Study of light and its interactions.",
+      "concepts": [
+        {
+          "title": "Reflection",
+          "summary": "Bouncing back of light from a surface."
+        },
+        {
+          "title": "Refraction",
+          "summary": "Bending of light as it passes from one medium to another."
+        }
+      ],
+      "questions": [
+        {
+          "question": "What is the angle of incidence?",
+          "options": [
+            "The angle between the incident ray and the normal.",
+            "The angle between the reflected ray and the normal.",
+            "The angle between the incident ray and the surface.",
+            "The angle between the reflected ray and the surface."
+          ],
+          "answer": "The angle between the incident ray and the normal."
+        }
+      ]
+    }
+  ]
+}

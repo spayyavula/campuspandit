@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  VITE_SUPABASE_URL = "https://ecnrvbyzbfhrorxwxkms.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjbnJ2Ynl6YmZocm9yeHd4a21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDUwMzQsImV4cCI6MjA2NjE4MTAzNH0.hknG5yowBpViyiTN_ftY_WQ8RL8SJfrGClGdBEvx98U"
+  VITE_APP_TITLE = "CampusPandit - Smart Learning Platform"
+  VITE_APP_VERSION = "1.0.0"
+  VITE_APP_ENVIRONMENT = "production"
+  VITE_ENABLE_GAMING = "true"
+  VITE_ENABLE_OFFLINE_MODE = "true"
+  VITE_ENABLE_PWA_PROMPTS = "true"
+  VITE_ENABLE_COMPETITIVE_EXAMS = "true"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,508 @@
+{
+  "processed": [],
+  "flagged": [
+    {
+      "title": "Newton's Second Law",
+      "content": "What is the acceleration of a 5 kg object when a force of 10 N is applied to it?",
+      "question_type": "mcq",
+      "difficulty": "easy",
+      "subject": "physics",
+      "board": "general",
+      "grade": "Class 11",
+      "topic_tags": [
+        "mechanics",
+        "forces",
+        "newton's laws"
+      ],
+      "marks": 1,
+      "time_limit": 1,
+      "options": [
+        {
+          "option_text": "2 m/s²",
+          "option_order": 0,
+          "is_correct": true,
+          "explanation": "Using Newton's Second Law: a = F/m = 10/5 = 2 m/s²"
+        },
+        {
+          "option_text": "5 m/s²",
+          "option_order": 1,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "10 m/s²",
+          "option_order": 2,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "50 m/s²",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.635Z",
+        "quality_issues": [
+          "8 potential spelling errors: Newton, Second, What, acceleration, object..."
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "8 potential spelling errors: Newton, Second, What, acceleration, object..."
+      ]
+    },
+    {
+      "title": "Quadratic Equation",
+      "content": "Solve the quadratic equation: x² - 5x + 6 = 0",
+      "question_type": "mcq",
+      "difficulty": "medium",
+      "subject": "math",
+      "board": "general",
+      "grade": "Class 10",
+      "topic_tags": [
+        "algebra",
+        "quadratic equations"
+      ],
+      "marks": 2,
+      "time_limit": 2,
+      "options": [
+        {
+          "option_text": "x = 2 and x = 3",
+          "option_order": 0,
+          "is_correct": true,
+          "explanation": "Using the quadratic formula or factoring: x² - 5x + 6 = 0 => (x - 2)(x - 3) = 0 => x = 2 or x = 3"
+        },
+        {
+          "option_text": "x = -2 and x = -3",
+          "option_order": 1,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "x = 2 and x = -3",
+          "option_order": 2,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "x = -2 and x = 3",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.637Z",
+        "quality_issues": [
+          "5 potential spelling errors: Quadratic, Equation, Solve, quadratic, equation"
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "5 potential spelling errors: Quadratic, Equation, Solve, quadratic, equation"
+      ]
+    },
+    {
+      "title": "Periodic Table",
+      "content": "Which element has the highest electronegativity in the periodic table?",
+      "question_type": "mcq",
+      "difficulty": "medium",
+      "subject": "chemistry",
+      "board": "general",
+      "grade": "Class 11",
+      "topic_tags": [
+        "periodic table",
+        "chemical properties"
+      ],
+      "marks": 1,
+      "time_limit": 1,
+      "options": [
+        {
+          "option_text": "Oxygen",
+          "option_order": 0,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Fluorine",
+          "option_order": 1,
+          "is_correct": true,
+          "explanation": "Fluorine has the highest electronegativity value (3.98 on the Pauling scale) of all elements in the periodic table."
+        },
+        {
+          "option_text": "Chlorine",
+          "option_order": 2,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Nitrogen",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.637Z",
+        "quality_issues": [
+          "8 potential spelling errors: Periodic, Table, Which, element, highest..."
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "8 potential spelling errors: Periodic, Table, Which, element, highest..."
+      ]
+    },
+    {
+      "title": "Projectile Motion",
+      "content": "A ball is thrown horizontally from a height of 20m with an initial velocity of 15 m/s. How far from the base of the building will the ball hit the ground? (g = 10 m/s²)",
+      "question_type": "mcq",
+      "difficulty": "medium",
+      "subject": "physics",
+      "board": "jee",
+      "grade": "Class 11",
+      "topic_tags": [
+        "mechanics",
+        "projectile motion"
+      ],
+      "marks": 3,
+      "time_limit": 3,
+      "options": [
+        {
+          "option_text": "15 m",
+          "option_order": 0,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "30 m",
+          "option_order": 1,
+          "is_correct": true,
+          "explanation": "Time to hit ground: t = √(2h/g) = √(2×20/10) = 2s. Horizontal distance = initial velocity × time = 15 × 2 = 30m"
+        },
+        {
+          "option_text": "45 m",
+          "option_order": 2,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "60 m",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.637Z",
+        "quality_issues": [
+          "16 potential spelling errors: Projectile, Motion, ball, thrown, horizontally..."
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "16 potential spelling errors: Projectile, Motion, ball, thrown, horizontally..."
+      ]
+    },
+    {
+      "title": "Cell Division",
+      "content": "Which of the following is NOT a phase of mitosis?",
+      "question_type": "mcq",
+      "difficulty": "easy",
+      "subject": "biology",
+      "board": "neet",
+      "grade": "Class 11",
+      "topic_tags": [
+        "cell biology",
+        "cell division"
+      ],
+      "marks": 1,
+      "time_limit": 1,
+      "options": [
+        {
+          "option_text": "Prophase",
+          "option_order": 0,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Metaphase",
+          "option_order": 1,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Interphase",
+          "option_order": 2,
+          "is_correct": true,
+          "explanation": "Interphase is not a phase of mitosis. It's the period between cell divisions when the cell is preparing for division."
+        },
+        {
+          "option_text": "Telophase",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.637Z",
+        "quality_issues": [
+          "6 potential spelling errors: Cell, Division, Which, following, phase..."
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "6 potential spelling errors: Cell, Division, Which, following, phase..."
+      ]
+    },
+    {
+      "title": "Organic Chemistry",
+      "content": "What is the IUPAC name of CH₃-CH₂-CHO?",
+      "question_type": "mcq",
+      "difficulty": "medium",
+      "subject": "chemistry",
+      "board": "general",
+      "grade": "Class 12",
+      "topic_tags": [
+        "organic chemistry",
+        "nomenclature"
+      ],
+      "marks": 2,
+      "time_limit": 2,
+      "options": [
+        {
+          "option_text": "Propanol",
+          "option_order": 0,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Propanal",
+          "option_order": 1,
+          "is_correct": true,
+          "explanation": "The compound CH₃-CH₂-CHO has an aldehyde group (-CHO) at the end of a three-carbon chain, making it propanal."
+        },
+        {
+          "option_text": "Propanone",
+          "option_order": 2,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Propanoic acid",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.638Z",
+        "quality_issues": [
+          "5 potential spelling errors: Organic, Chemistry, What, IUPAC, name"
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "5 potential spelling errors: Organic, Chemistry, What, IUPAC, name"
+      ]
+    },
+    {
+      "title": "Calculus Integration",
+      "content": "Evaluate the integral: ∫(2x + 3) dx",
+      "question_type": "mcq",
+      "difficulty": "medium",
+      "subject": "math",
+      "board": "jee",
+      "grade": "Class 12",
+      "topic_tags": [
+        "calculus",
+        "integration"
+      ],
+      "marks": 2,
+      "time_limit": 2,
+      "options": [
+        {
+          "option_text": "x² + 3x + C",
+          "option_order": 0,
+          "is_correct": true,
+          "explanation": "∫(2x + 3) dx = 2∫x dx + 3∫dx = 2(x²/2) + 3x + C = x² + 3x + C"
+        },
+        {
+          "option_text": "2x² + 3x + C",
+          "option_order": 1,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "x² + 3x",
+          "option_order": 2,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "2x² + 3",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.638Z",
+        "quality_issues": [
+          "4 potential spelling errors: Calculus, Integration, Evaluate, integral"
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "4 potential spelling errors: Calculus, Integration, Evaluate, integral"
+      ]
+    },
+    {
+      "title": "Electromagnetic Induction",
+      "content": "According to Faraday's law of electromagnetic induction",
+      "question_type": "electromagnetism, induction",
+      "difficulty": "general",
+      "subject": "Faraday's law states that the induced EMF is proportional to the rate of change of magnetic flux through the circuit.",
+      "board": "physics",
+      "grade": "medium",
+      "topic_tags": [
+        "Class 12"
+      ],
+      "marks": 1,
+      "time_limit": 2,
+      "options": [
+        {
+          "option_text": "the induced EMF is proportional to:",
+          "option_order": 0,
+          "is_correct": true,
+          "explanation": "1"
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.639Z",
+        "quality_issues": [
+          "6 potential spelling errors: Electromagnetic, Induction, According, Faraday, electromagnetic...",
+          "Too few options (1)"
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "6 potential spelling errors: Electromagnetic, Induction, According, Faraday, electromagnetic...",
+        "Too few options (1)"
+      ]
+    },
+    {
+      "title": "Chemical Bonding",
+      "content": "Which type of bond is formed between two non-metal atoms with similar electronegativity values?",
+      "question_type": "mcq",
+      "difficulty": "easy",
+      "subject": "chemistry",
+      "board": "general",
+      "grade": "Class 10",
+      "topic_tags": [
+        "chemical bonding",
+        "molecular structure"
+      ],
+      "marks": 1,
+      "time_limit": 1,
+      "options": [
+        {
+          "option_text": "Ionic bond",
+          "option_order": 0,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Covalent bond",
+          "option_order": 1,
+          "is_correct": true,
+          "explanation": "When two non-metals with similar electronegativity share electrons, they form a covalent bond."
+        },
+        {
+          "option_text": "Metallic bond",
+          "option_order": 2,
+          "is_correct": false,
+          "explanation": ""
+        },
+        {
+          "option_text": "Hydrogen bond",
+          "option_order": 3,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.639Z",
+        "quality_issues": [
+          "13 potential spelling errors: Chemical, Bonding, Which, type, bond..."
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "13 potential spelling errors: Chemical, Bonding, Which, type, bond..."
+      ]
+    },
+    {
+      "title": "Quantum Mechanics",
+      "content": "What is the de Broglie wavelength of an electron (mass = 9.1 × 10⁻³¹ kg) moving at 10% of the speed of light? (h = 6.63 × 10⁻³⁴ J·s",
+      "question_type": "quantum mechanics, wave-particle duality",
+      "difficulty": "jee",
+      "subject": "Using λ = h/mv where v = 0.1c: λ = (6.63 × 10⁻³⁴)/(9.1 × 10⁻³¹ × 0.1 × 3 × 10⁸) = 2.43 × 10⁻¹¹ m",
+      "board": "physics",
+      "grade": "hard",
+      "topic_tags": [
+        "Class 12"
+      ],
+      "marks": 1,
+      "time_limit": 4,
+      "options": [
+        {
+          "option_text": "c = 3 × 10⁸ m/s)",
+          "option_order": 0,
+          "is_correct": false,
+          "explanation": ""
+        }
+      ],
+      "is_published": false,
+      "metadata": {
+        "imported": true,
+        "import_date": "2025-07-13T12:22:48.640Z",
+        "quality_issues": [
+          "10 potential spelling errors: Quantum, Mechanics, What, Broglie, wavelength...",
+          "Too few options (1)"
+        ],
+        "ai_improved": null
+      },
+      "quality_issues": [
+        "10 potential spelling errors: Quantum, Mechanics, What, Broglie, wavelength...",
+        "Too few options (1)"
+      ]
+    }
+  ],
+  "stats": {
+    "total": 10,
+    "passed": 0,
+    "flagged": 10,
+    "timestamp": "2025-07-13T12:22:48.640Z"
+  }
+}
