@@ -571,7 +571,11 @@ Cell division is a process by which a cell divides into two or more cells. There
               </div>
 
               <div className="flex flex-wrap gap-3">
+                <label htmlFor="filterType" className="sr-only">
+                  Filter by Content Type
+                </label>
                 <select
+                  id="filterType"
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -584,7 +588,11 @@ Cell division is a process by which a cell divides into two or more cells. There
                   <option value="text">Text Content</option>
                 </select>
 
+                <label htmlFor="filterCourse" className="sr-only">
+                  Filter by Course
+                </label>
                 <select
+                  id="filterCourse"
                   value={filterCourse}
                   onChange={(e) => setFilterCourse(e.target.value)}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

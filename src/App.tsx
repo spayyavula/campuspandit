@@ -14,7 +14,7 @@ import AdminDashboard from './components/AdminDashboard';
 import AdminPanel from './components/AdminPanel';
 import PhysicsGeneral from './components/PhysicsGeneral';
 import { allCoursesWithCompetitive } from './data/boardCourses';
-import Auth from './components/Auth';
+import { Auth } from './components/Auth';
 import { supabase } from './utils/supabase';
 
 const App: React.FC = () => {
@@ -25,22 +25,22 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkUser = async () => {
-      try {
-        const { data } = await supabase.auth.getSession();
-        setUser(data.session?.user || null);
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-      } finally {
-        setLoading(false);
-      }
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    // Check initial session
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user || null);
+      setLoading(false);
+    });
+
+    return () => {
+      listener?.subscription.unsubscribe();
     };
-    
-    checkUser();
   }, []);
 
-  const handleAuthStateChange = (user: User | null) => {
+  const handleAuthStateChange = (user: any | null) => {
     setUser(user);
   };
 
@@ -142,7 +142,6 @@ const App: React.FC = () => {
   }
 
   return (
-   <Router>
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar 
         currentView={currentView} 
@@ -157,7 +156,6 @@ const App: React.FC = () => {
         </main>
       </div>
     </div>
-   </Router>
   );
 };
 

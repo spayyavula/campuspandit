@@ -27,8 +27,10 @@
     "react-dropzone": "^14.2.3",
     "react-katex": "^3.0.1",
     "react-markdown": "^9.0.1",
+    "react-mosaic-component": "^6.1.1",
     "react-player": "^2.13.0",
     "react-quill": "^2.0.0",
+    "react-resizable": "^3.0.5",
     "react-router-dom": "^6.22.3",
     "uuid": "^11.1.0"
   },

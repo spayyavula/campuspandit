@@ -1,3 +1,5 @@
+import 'react-mosaic-component/react-mosaic-component.css';
+
 export interface Course {
   id: string;
   title: string;

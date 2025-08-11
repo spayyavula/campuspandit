@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onViewChange, user }) =>
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'board-selector', label: 'Boards & Exams', icon: GraduationCap },
     { id: 'courses', label: 'Courses', icon: BookOpen },
-    { id: 'physics-general', label: 'Physics General', icon: BookOpen },
+    { id: 'physics-general', label: 'All boards General', icon: BookOpen },
     { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
     { id: 'progress', label: 'Progress', icon: BarChart3 },
     { id: 'admin', label: 'Admin', icon: Shield },
