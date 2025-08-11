@@ -39,11 +39,34 @@ export default function Auth({ onAuthStateChange }: AuthProps) {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
   
-  if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Missing Supabase environment variables. Please check your .env file.');
+  // Only create Supabase client if environment variables are available
+  const supabase = supabaseUrl && supabaseAnonKey 
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
+
+  // Show configuration message if Supabase is not configured
+  if (!supabase) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="relative z-10 w-full max-w-2xl mx-auto flex flex-col items-center text-center py-16 px-4">
+          <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl">
+            <Shield className="w-16 h-16 text-yellow-300 mx-auto mb-4" />
+            <h2 className="text-3xl font-bold text-white mb-4">Supabase Configuration Required</h2>
+            <p className="text-white/90 text-lg mb-6">
+              To use authentication features, please click the "Connect to Supabase" button in the top right corner to set up your database connection.
+            </p>
+            <div className="bg-gray-900 bg-opacity-50 rounded-lg p-4 text-left">
+              <p className="text-gray-300 text-sm mb-2">Missing environment variables:</p>
+              <ul className="text-yellow-300 text-sm space-y-1">
+                <li>• VITE_SUPABASE_URL</li>
+                <li>• VITE_SUPABASE_ANON_KEY</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
-  
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
