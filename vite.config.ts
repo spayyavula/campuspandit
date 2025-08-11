@@ -93,7 +93,6 @@ export default defineConfig({
           icons: ['lucide-react']
         }
       }
-      enabled: false
     }
   }
 });
