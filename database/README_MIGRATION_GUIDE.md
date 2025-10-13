@@ -1,21 +1,28 @@
 # CampusPandit Database Migration Guide
 
-## Quick Start - Choose Your Scenario
+## ✨ NEW: One-Step Migration (v2.5)
 
-### Scenario 1: Fresh Database (No Tables Exist Yet) ✅ RECOMMENDED
-**If you're setting up for the first time:**
+The migration file now **automatically handles existing triggers**!
+
+### For Most Users (Recommended) ✅
 
 ```sql
 -- Just run this one file in Supabase SQL Editor:
 CONSOLIDATED_MIGRATIONS_FINAL.sql
 ```
 
-That's it! ✅
+**That's it!** The file now:
+- ✅ Automatically drops existing triggers
+- ✅ Works on fresh databases
+- ✅ Works on existing databases
+- ✅ Handles all edge cases
 
 ---
 
-### Scenario 2: Existing Database with Old Schema
-**If you already have tables and want to start fresh:**
+## Alternative Scenarios
+
+### Scenario 1: Complete Fresh Start
+**If you want to drop ALL tables and start completely fresh:**
 
 ```sql
 -- Step 1: Drop everything
@@ -27,8 +34,8 @@ CONSOLIDATED_MIGRATIONS_FINAL.sql
 
 ---
 
-### Scenario 3: Update Existing Database (Keep Data)
-**If you have data and get "trigger already exists" errors:**
+### Scenario 2: Manual Trigger Cleanup (Legacy)
+**Only if you need to drop triggers separately:**
 
 ```sql
 -- Step 1: Drop only the triggers
@@ -37,6 +44,8 @@ DROP_ALL_TRIGGERS.sql
 -- Step 2: Run the full migration
 CONSOLIDATED_MIGRATIONS_FINAL.sql
 ```
+
+⚠️ **Note:** This is no longer necessary as CONSOLIDATED_MIGRATIONS_FINAL.sql now handles this automatically!
 
 ---
 
