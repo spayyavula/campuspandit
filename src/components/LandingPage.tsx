@@ -334,7 +334,7 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
+            {/* Testimonial 1 - Rahul (Boy) */}
             <div className="bg-white p-8 rounded-2xl shadow-sm">
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
@@ -345,9 +345,11 @@ const LandingPage: React.FC = () => {
                 "CampusPandit's AI coach helped me identify my weak areas in Physics. I improved my accuracy from 60% to 90% in just 6 weeks!"
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                  <span className="text-primary-600 font-semibold">RK</span>
-                </div>
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces"
+                  alt="Rahul Kumar"
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-primary-100"
+                />
                 <div>
                   <div className="font-semibold text-neutral-900">Rahul Kumar</div>
                   <div className="text-sm text-neutral-500">JEE Main 2024</div>
@@ -355,7 +357,7 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Testimonial 2 */}
+            {/* Testimonial 2 - Priya (Girl) */}
             <div className="bg-white p-8 rounded-2xl shadow-sm">
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
@@ -366,9 +368,11 @@ const LandingPage: React.FC = () => {
                 "The tutors are amazing! I can book sessions anytime I'm stuck. The flashcard system with spaced repetition really works."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-success-100 rounded-full flex items-center justify-center">
-                  <span className="text-success-600 font-semibold">PS</span>
-                </div>
+                <img
+                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces"
+                  alt="Priya Sharma"
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-success-100"
+                />
                 <div>
                   <div className="font-semibold text-neutral-900">Priya Sharma</div>
                   <div className="text-sm text-neutral-500">NEET 2024</div>
@@ -376,7 +380,7 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Testimonial 3 */}
+            {/* Testimonial 3 - Ankit (Boy) */}
             <div className="bg-white p-8 rounded-2xl shadow-sm">
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
@@ -387,9 +391,11 @@ const LandingPage: React.FC = () => {
                 "Best investment in my education. The progress tracking keeps me motivated and the recommendations are spot-on."
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-secondary-100 rounded-full flex items-center justify-center">
-                  <span className="text-secondary-600 font-semibold">AV</span>
-                </div>
+                <img
+                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop&crop=faces"
+                  alt="Ankit Verma"
+                  className="w-12 h-12 rounded-full object-cover ring-2 ring-secondary-100"
+                />
                 <div>
                   <div className="font-semibold text-neutral-900">Ankit Verma</div>
                   <div className="text-sm text-neutral-500">IB Student</div>
