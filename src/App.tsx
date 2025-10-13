@@ -12,6 +12,10 @@ import MessagingApp from './components/messaging/MessagingApp';
 import CoachingAdmin from './components/admin/CoachingAdmin';
 import EmailSubscribers from './components/admin/EmailSubscribers';
 import TutorManagementAdmin from './components/tutoring/TutorManagementAdmin';
+import CRMDashboard from './components/crm/CRMDashboard';
+import ContactsManager from './components/crm/ContactsManager';
+import DealsPipeline from './components/crm/DealsPipeline';
+import TicketsManager from './components/crm/TicketsManager';
 import { supabase } from './utils/supabase';
 
 const App: React.FC = () => {
@@ -63,6 +67,12 @@ const App: React.FC = () => {
         <Route path="/admin/coaching" element={user ? <CoachingAdmin /> : <Navigate to="/auth" />} />
         <Route path="/admin/emails" element={user ? <EmailSubscribers /> : <Navigate to="/auth" />} />
         <Route path="/admin/tutors" element={user ? <TutorManagementAdmin /> : <Navigate to="/auth" />} />
+
+        {/* Protected Routes - CRM */}
+        <Route path="/crm" element={user ? <CRMDashboard userId={user.id} /> : <Navigate to="/auth" />} />
+        <Route path="/crm/contacts" element={user ? <ContactsManager /> : <Navigate to="/auth" />} />
+        <Route path="/crm/deals" element={user ? <DealsPipeline /> : <Navigate to="/auth" />} />
+        <Route path="/crm/tickets" element={user ? <TicketsManager /> : <Navigate to="/auth" />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
