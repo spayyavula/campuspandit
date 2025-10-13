@@ -29,12 +29,12 @@ const LandingPage: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <button className="px-4 py-2 text-sm text-primary-500 hover:text-primary-600 transition-colors">
+              <a href="/auth" className="px-4 py-2 text-sm text-primary-500 hover:text-primary-600 transition-colors">
                 Log in
-              </button>
-              <button className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-                Sign up
-              </button>
+              </a>
+              <a href="/auth" className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                Sign up free
+              </a>
             </div>
 
             {/* Mobile menu button */}
@@ -56,12 +56,12 @@ const LandingPage: React.FC = () => {
               <a href="#tutors" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For Tutors</a>
               <a href="#pricing" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Pricing</a>
               <div className="pt-4 space-y-2">
-                <button className="w-full px-4 py-2 text-sm text-primary-500 border border-primary-500 rounded-lg hover:bg-primary-50 transition-colors">
+                <a href="/auth" className="block w-full px-4 py-2 text-sm text-primary-500 border border-primary-500 rounded-lg hover:bg-primary-50 transition-colors text-center">
                   Log in
-                </button>
-                <button className="w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-                  Sign up
-                </button>
+                </a>
+                <a href="/auth" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
+                  Sign up free
+                </a>
               </div>
             </div>
           </div>
@@ -74,21 +74,24 @@ const LandingPage: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <div className="animate-slide-up">
+              <div className="inline-block mb-6 px-4 py-2 bg-success-50 text-success-700 rounded-full text-sm font-semibold">
+                🎉 First 6 months FREE for students
+              </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-tight mb-6">
                 Master concepts.<br />
                 Excel in exams.
               </h1>
               <p className="text-lg sm:text-xl text-neutral-600 mb-8 leading-relaxed">
-                Connect with expert tutors worldwide, track your progress with AI coaching, and achieve your academic goals with personalized learning.
+                Complete learning platform with AI coaching, expert tutors, real-time messaging, and progress tracking. Everything you need in one place.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
-                  Get started free
+                <a href="/auth" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
+                  Start free for 6 months
                   <ArrowRight className="w-5 h-5" />
-                </button>
-                <button className="px-8 py-4 border-2 border-neutral-200 text-neutral-900 rounded-lg hover:border-neutral-300 transition-colors font-medium">
+                </a>
+                <a href="/tutors" className="px-8 py-4 border-2 border-neutral-200 text-neutral-900 rounded-lg hover:border-neutral-300 transition-colors font-medium text-center">
                   Find a tutor
-                </button>
+                </a>
               </div>
 
               {/* Stats */}
@@ -187,74 +190,74 @@ const LandingPage: React.FC = () => {
               Everything you need to succeed
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              A comprehensive platform designed for modern learners
+              Complete learning platform. Simple and effective.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature Card 1 */}
-            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
-                <Users className="w-6 h-6 text-primary-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Expert Tutors</h3>
-              <p className="text-neutral-600 leading-relaxed">
-                Connect with qualified tutors from around the world specializing in Math, Physics, Chemistry, and more.
-              </p>
-            </div>
-
-            {/* Feature Card 2 */}
+            {/* Feature Card 1 - AI Coaching */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
                 <Brain className="w-6 h-6 text-success-500" />
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">AI Coaching</h3>
               <p className="text-neutral-600 leading-relaxed">
-                Get personalized insights, identify weak areas, and receive smart recommendations to improve faster.
+                Identify weak areas automatically. Get personalized practice recommendations. Smart spaced repetition for better retention.
               </p>
             </div>
 
-            {/* Feature Card 3 */}
+            {/* Feature Card 2 - Expert Tutors */}
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
+                <Users className="w-6 h-6 text-primary-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Global Tutors</h3>
+              <p className="text-neutral-600 leading-relaxed">
+                500+ expert tutors worldwide. Math, Physics, Chemistry, and more. Book sessions anytime. Pay per session.
+              </p>
+            </div>
+
+            {/* Feature Card 3 - Real-time Messaging */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
-                <TrendingUp className="w-6 h-6 text-secondary-500" />
+                <MessageCircle className="w-6 h-6 text-secondary-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Progress Tracking</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Real-time Chat</h3>
               <p className="text-neutral-600 leading-relaxed">
-                Monitor your improvement with detailed analytics, performance reports, and milestone celebrations.
+                Slack-like messaging with tutors. Instant doubt solving. File sharing. Discussion channels. Always connected.
               </p>
             </div>
 
-            {/* Feature Card 4 */}
+            {/* Feature Card 4 - Smart Flashcards */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
                 <BookOpen className="w-6 h-6 text-primary-500" />
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">Smart Flashcards</h3>
               <p className="text-neutral-600 leading-relaxed">
-                Create and study flashcards with spaced repetition algorithm for better retention and recall.
+                Spaced repetition algorithm. NotebookLM integration. AI-generated flashcards. Review at optimal intervals.
               </p>
             </div>
 
-            {/* Feature Card 5 */}
+            {/* Feature Card 5 - Progress Tracking */}
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
+                <TrendingUp className="w-6 h-6 text-secondary-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Progress Tracking</h3>
+              <p className="text-neutral-600 leading-relaxed">
+                Detailed analytics. Performance reports. Weak area identification. Study streaks. Goal tracking. Milestone celebrations.
+              </p>
+            </div>
+
+            {/* Feature Card 6 - Learning Resources */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
                 <Target className="w-6 h-6 text-success-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Goal Setting</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Curated Resources</h3>
               <p className="text-neutral-600 leading-relaxed">
-                Set clear learning goals, track progress toward exams, and stay motivated with structured plans.
-              </p>
-            </div>
-
-            {/* Feature Card 6 */}
-            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-secondary-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Instant Doubt Solving</h3>
-              <p className="text-neutral-600 leading-relaxed">
-                Book sessions instantly when you're stuck. Get help exactly when you need it most.
+                Recommended textbooks. Google Learn Your Way integration. Video lessons. Practice problems. Everything in one place.
               </p>
             </div>
           </div>
@@ -279,9 +282,9 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-primary-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 1
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Sign Up Free</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Sign Up</h3>
               <p className="text-neutral-600">
-                Create your account and set your learning goals
+                Create account. No credit card needed. Free for 6 months.
               </p>
             </div>
 
@@ -290,9 +293,9 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-primary-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 2
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Find Your Tutor</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Get AI Coaching</h3>
               <p className="text-neutral-600">
-                Browse experts and book your first session
+                AI identifies weak areas. Personalized practice plans generated.
               </p>
             </div>
 
@@ -301,9 +304,9 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-primary-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 3
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Learn & Practice</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Connect with Tutors</h3>
               <p className="text-neutral-600">
-                Study with AI-powered tools and flashcards
+                Book sessions. Chat anytime. Get instant help when stuck.
               </p>
             </div>
 
@@ -312,9 +315,9 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-success-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 ✓
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Excel in Exams</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Excel & Track</h3>
               <p className="text-neutral-600">
-                Track progress and achieve your goals
+                Monitor progress. Improve scores. Achieve your goals.
               </p>
             </div>
           </div>
@@ -400,17 +403,20 @@ const LandingPage: React.FC = () => {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-block mb-6 px-6 py-3 bg-success-50 text-success-700 rounded-full text-lg font-bold">
+            🎉 First 6 months absolutely FREE
+          </div>
           <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 mb-6">
-            Start your learning journey today
+            Start learning today
           </h2>
           <p className="text-lg text-neutral-600 mb-8">
-            Join thousands of students who are achieving their academic goals with CampusPandit
+            Join 10,000+ students achieving their academic goals with CampusPandit
           </p>
-          <button className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium mx-auto text-lg">
-            Get started for free
+          <a href="/auth" className="inline-flex px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors items-center justify-center gap-2 font-medium text-lg">
+            Start free for 6 months
             <ArrowRight className="w-5 h-5" />
-          </button>
-          <p className="text-sm text-neutral-500 mt-4">No credit card required • Free forever</p>
+          </a>
+          <p className="text-sm text-neutral-500 mt-4">No credit card required • Full access for 6 months</p>
         </div>
       </section>
 
