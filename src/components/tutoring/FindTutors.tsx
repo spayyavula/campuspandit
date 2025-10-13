@@ -1,0 +1,412 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Search, Filter, Star, Globe, DollarSign, BookOpen,
+  Clock, Award, Heart, MapPin, Video, ChevronRight, Loader
+} from 'lucide-react';
+import { tutorAPI, subjectAPI, favoritesAPI, TutorProfile } from '../../utils/tutoringAPI';
+import { useNavigate } from 'react-router-dom';
+
+/**
+ * FindTutors Component
+ * Browse and search for tutors based on subjects, ratings, price, etc.
+ */
+export default function FindTutors() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [tutors, setTutors] = useState<TutorProfile[]>([]);
+  const [filteredTutors, setFilteredTutors] = useState<TutorProfile[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
+  const [minRating, setMinRating] = useState(0);
+  const [maxRate, setMaxRate] = useState(500);
+  const [selectedSpecialization, setSelectedSpecialization] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const specializations = [
+    'JEE Main', 'JEE Advanced', 'NEET', 'IIT',
+    'CBSE', 'ICSE', 'ISC', 'IB', 'Cambridge IGCSE'
+  ];
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [tutors, searchTerm, selectedSubject, selectedCountry, minRating, maxRate, selectedSpecialization]);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [tutorsData, subjectsData, favoriteTutors] = await Promise.all([
+        tutorAPI.getTutors(),
+        subjectAPI.getSubjects(),
+        favoritesAPI.getFavorites()
+      ]);
+
+      setTutors(tutorsData);
+      setSubjects(subjectsData);
+      setFavorites(new Set(favoriteTutors.map(t => t.id!)));
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...tutors];
+
+    // Search term
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        t =>
+          t.full_name.toLowerCase().includes(term) ||
+          t.bio?.toLowerCase().includes(term) ||
+          t.subjects.some(s => s.toLowerCase().includes(term))
+      );
+    }
+
+    // Subject filter
+    if (selectedSubject) {
+      filtered = filtered.filter(t => t.subjects.includes(selectedSubject));
+    }
+
+    // Country filter
+    if (selectedCountry) {
+      filtered = filtered.filter(t => t.country === selectedCountry);
+    }
+
+    // Rating filter
+    if (minRating > 0) {
+      filtered = filtered.filter(t => (t.average_rating || 0) >= minRating);
+    }
+
+    // Price filter
+    filtered = filtered.filter(t => t.hourly_rate_usd <= maxRate);
+
+    // Specialization filter
+    if (selectedSpecialization.length > 0) {
+      filtered = filtered.filter(t =>
+        selectedSpecialization.some(spec => t.specialization.includes(spec))
+      );
+    }
+
+    setFilteredTutors(filtered);
+  };
+
+  const toggleFavorite = async (tutorId: string) => {
+    if (favorites.has(tutorId)) {
+      await favoritesAPI.removeFavorite(tutorId);
+      setFavorites(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(tutorId);
+        return newSet;
+      });
+    } else {
+      await favoritesAPI.addFavorite(tutorId);
+      setFavorites(prev => new Set(prev).add(tutorId));
+    }
+  };
+
+  const toggleSpecialization = (spec: string) => {
+    if (selectedSpecialization.includes(spec)) {
+      setSelectedSpecialization(prev => prev.filter(s => s !== spec));
+    } else {
+      setSelectedSpecialization(prev => [...prev, spec]);
+    }
+  };
+
+  const uniqueCountries = Array.from(new Set(tutors.map(t => t.country))).sort();
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-4xl font-bold mb-4">Find Your Perfect Tutor</h1>
+          <p className="text-xl text-blue-100">
+            Expert tutors from around the world for Physics, Chemistry, Math & more
+          </p>
+
+          {/* Search Bar */}
+          <div className="mt-8 max-w-3xl">
+            <div className="flex gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search by name, subject, or expertise..."
+                  className="w-full pl-12 pr-4 py-4 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="px-6 py-4 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2 font-semibold"
+              >
+                <Filter className="w-5 h-5" />
+                Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          {/* Filters Sidebar */}
+          <div className={`${showFilters ? 'block' : 'hidden'} lg:block w-full lg:w-80 flex-shrink-0`}>
+            <div className="bg-white rounded-lg shadow-sm p-6 space-y-6 sticky top-4">
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Subject</h3>
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Subjects</option>
+                  {subjects.map(subject => (
+                    <option key={subject.id} value={subject.name}>
+                      {subject.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Country</h3>
+                <select
+                  value={selectedCountry}
+                  onChange={(e) => setSelectedCountry(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Countries</option>
+                  {uniqueCountries.map(country => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Minimum Rating</h3>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max="5"
+                    step="0.5"
+                    value={minRating}
+                    onChange={(e) => setMinRating(parseFloat(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-sm font-semibold text-gray-700 w-12">
+                    {minRating > 0 ? `${minRating}+` : 'Any'}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Max Price: ${maxRate}/hr
+                </h3>
+                <input
+                  type="range"
+                  min="5"
+                  max="500"
+                  step="5"
+                  value={maxRate}
+                  onChange={(e) => setMaxRate(parseInt(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Specialization</h3>
+                <div className="space-y-2">
+                  {specializations.map(spec => (
+                    <label key={spec} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedSpecialization.includes(spec)}
+                        onChange={() => toggleSpecialization(spec)}
+                        className="rounded text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700">{spec}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedSubject('');
+                  setSelectedCountry('');
+                  setMinRating(0);
+                  setMaxRate(500);
+                  setSelectedSpecialization([]);
+                }}
+                className="w-full py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+
+          {/* Tutors List */}
+          <div className="flex-1">
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-gray-600">
+                {filteredTutors.length} tutor{filteredTutors.length !== 1 ? 's' : ''} found
+              </p>
+            </div>
+
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader className="w-8 h-8 animate-spin text-blue-600" />
+              </div>
+            ) : filteredTutors.length === 0 ? (
+              <div className="text-center py-20">
+                <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">No tutors found</h3>
+                <p className="text-gray-500">Try adjusting your filters</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {filteredTutors.map(tutor => (
+                  <div
+                    key={tutor.id}
+                    className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex gap-4">
+                      {/* Avatar */}
+                      <div className="flex-shrink-0">
+                        {tutor.profile_image_url ? (
+                          <img
+                            src={tutor.profile_image_url}
+                            alt={tutor.full_name}
+                            className="w-24 h-24 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                            {tutor.full_name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900">{tutor.full_name}</h3>
+                            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                              <span className="flex items-center gap-1">
+                                <Globe className="w-4 h-4" />
+                                {tutor.country}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-4 h-4" />
+                                {tutor.teaching_experience_years} years exp.
+                              </span>
+                              {tutor.average_rating && tutor.average_rating > 0 && (
+                                <span className="flex items-center gap-1">
+                                  <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                                  {tutor.average_rating.toFixed(1)} ({tutor.total_reviews} reviews)
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right flex items-start gap-2">
+                            <div>
+                              <p className="text-2xl font-bold text-blue-600">
+                                ${tutor.hourly_rate_usd}
+                              </p>
+                              <p className="text-sm text-gray-500">per hour</p>
+                            </div>
+                            <button
+                              onClick={() => toggleFavorite(tutor.id!)}
+                              className={`p-2 rounded-full transition-colors ${
+                                favorites.has(tutor.id!)
+                                  ? 'bg-red-100 text-red-600'
+                                  : 'bg-gray-100 text-gray-400 hover:text-red-600'
+                              }`}
+                            >
+                              <Heart
+                                className={`w-5 h-5 ${favorites.has(tutor.id!) ? 'fill-current' : ''}`}
+                              />
+                            </button>
+                          </div>
+                        </div>
+
+                        <p className="text-gray-700 mb-3 line-clamp-2">{tutor.bio}</p>
+
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {tutor.subjects.slice(0, 4).map(subject => (
+                            <span
+                              key={subject}
+                              className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
+                            >
+                              {subject}
+                            </span>
+                          ))}
+                          {tutor.subjects.length > 4 && (
+                            <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
+                              +{tutor.subjects.length - 4} more
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {tutor.specialization.slice(0, 3).map(spec => (
+                            <span
+                              key={spec}
+                              className="px-2 py-1 bg-purple-50 text-purple-700 rounded text-xs font-medium flex items-center gap-1"
+                            >
+                              <Award className="w-3 h-3" />
+                              {spec}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => navigate(`/tutoring/tutor/${tutor.id}`)}
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                          >
+                            View Profile
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                          {tutor.video_intro_url && (
+                            <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
+                              <Video className="w-4 h-4" />
+                              Intro Video
+                            </button>
+                          )}
+                          {tutor.accepts_instant_booking && (
+                            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                              Instant Booking
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

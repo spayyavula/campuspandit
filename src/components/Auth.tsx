@@ -47,12 +47,31 @@ export default function Auth({ onAuthStateChange }: AuthProps) {
     let success = false;
     try {
       if (mode === 'register') {
-        const { error } = await supabase.auth.signUp({
+        const { data: authData, error } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
-          options: { data: { name: form.name, optin: form.optin } }
+          options: {
+            data: {
+              name: form.name,
+              marketing_consent: form.optin,
+              consent_date: new Date().toISOString()
+            }
+          }
         });
         if (error) throw error;
+
+        // Store email subscription info in separate table
+        if (authData.user && form.optin) {
+          await supabase.from('email_subscribers').insert({
+            user_id: authData.user.id,
+            email: form.email,
+            name: form.name,
+            subscribed: true,
+            consent_date: new Date().toISOString(),
+            source: 'registration'
+          });
+        }
+
         setMessage('Registration successful! Check your email to verify your account.');
         success = true;
       } else if (mode === 'login') {
@@ -210,18 +229,23 @@ export default function Auth({ onAuthStateChange }: AuthProps) {
                   </div>
                 )}
                 {mode === 'register' && (
-                  <div className="flex items-center">
-                    <input
-                      id="optin"
-                      name="optin"
-                      type="checkbox"
-                      checked={form.optin}
-                      onChange={handleChange}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="optin" className="ml-2 block text-sm text-gray-700">
-                      I want to receive updates and offers from CampusPandit
-                    </label>
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-200">
+                    <div className="flex items-start">
+                      <input
+                        id="optin"
+                        name="optin"
+                        type="checkbox"
+                        checked={form.optin}
+                        onChange={handleChange}
+                        className="mt-1 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                      />
+                      <label htmlFor="optin" className="ml-3 block text-sm text-gray-800 cursor-pointer">
+                        <span className="font-semibold">Stay in the loop!</span>
+                        <br />
+                        Get exclusive learning tips, new course launches, special offers, and tournament notifications.
+                        <span className="text-xs text-gray-600 block mt-1">You can unsubscribe anytime from your profile settings.</span>
+                      </label>
+                    </div>
                   </div>
                 )}
                 {message && (
