@@ -293,21 +293,34 @@ CREATE POLICY "Service role can manage role permissions"
     USING (auth.jwt() ->> 'role' = 'service_role');
 
 -- =====================================================
--- TRIGGER: Auto-assign student role on user signup
+-- TRIGGER: Auto-assign role on user signup
 -- =====================================================
 
-CREATE OR REPLACE FUNCTION auto_assign_student_role()
+CREATE OR REPLACE FUNCTION auto_assign_user_role()
 RETURNS TRIGGER AS $$
 DECLARE
-    student_role_id UUID;
+    selected_role TEXT;
+    role_id_to_assign UUID;
 BEGIN
-    -- Get the student role ID
-    SELECT id INTO student_role_id FROM roles WHERE name = 'student' LIMIT 1;
+    -- Get role from user metadata, default to 'student' if not specified
+    selected_role := COALESCE(
+        NEW.raw_user_meta_data->>'role',
+        'student'
+    );
 
-    IF student_role_id IS NOT NULL THEN
-        -- Assign student role to new user
+    -- Validate that role is either 'student' or 'tutor'
+    -- Admin roles should be assigned manually, not during signup
+    IF selected_role NOT IN ('student', 'tutor') THEN
+        selected_role := 'student';
+    END IF;
+
+    -- Get the role ID
+    SELECT id INTO role_id_to_assign FROM roles WHERE name = selected_role LIMIT 1;
+
+    IF role_id_to_assign IS NOT NULL THEN
+        -- Assign the selected role to new user
         INSERT INTO user_roles (user_id, role_id, is_active)
-        VALUES (NEW.id, student_role_id, true)
+        VALUES (NEW.id, role_id_to_assign, true)
         ON CONFLICT (user_id, role_id) DO NOTHING;
     END IF;
 
@@ -319,7 +332,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
-    EXECUTE FUNCTION auto_assign_student_role();
+    EXECUTE FUNCTION auto_assign_user_role();
 
 -- =====================================================
 -- VIEWS

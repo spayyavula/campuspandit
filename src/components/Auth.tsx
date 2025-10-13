@@ -12,6 +12,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [role, setRole] = useState<'student' | 'tutor'>('student');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           options: {
             data: {
               name: name,
+              role: role, // Pass selected role to user metadata
             },
           },
         });
@@ -139,23 +141,63 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {mode === 'signup' && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
-                  <input
-                    id="name"
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                  />
+              <>
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-2">
+                    Full Name
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+                    <input
+                      id="name"
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
                 </div>
-              </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-3">
+                    I am a...
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setRole('student')}
+                      className={`p-4 border-2 rounded-lg transition-all ${
+                        role === 'student'
+                          ? 'border-primary-500 bg-primary-50 text-primary-700'
+                          : 'border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400'
+                      }`}
+                    >
+                      <div className="text-center">
+                        <div className="text-2xl mb-1">🎓</div>
+                        <div className="font-semibold">Student</div>
+                        <div className="text-xs mt-1 opacity-75">Learn and grow</div>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole('tutor')}
+                      className={`p-4 border-2 rounded-lg transition-all ${
+                        role === 'tutor'
+                          ? 'border-primary-500 bg-primary-50 text-primary-700'
+                          : 'border-neutral-300 bg-white text-neutral-700 hover:border-neutral-400'
+                      }`}
+                    >
+                      <div className="text-center">
+                        <div className="text-2xl mb-1">👨‍🏫</div>
+                        <div className="font-semibold">Tutor</div>
+                        <div className="text-xs mt-1 opacity-75">Teach students</div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
 
             <div>
