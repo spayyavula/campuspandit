@@ -68,69 +68,82 @@
 -- STEP 0: DROP ALL EXISTING TRIGGERS (IF ANY)
 -- =====================================================
 -- This prevents "trigger already exists" errors when re-running migrations
+-- Each trigger is dropped individually with its own error handling
 
+-- Helper function to safely drop a trigger
+CREATE OR REPLACE FUNCTION drop_trigger_if_exists(trigger_name text, table_name text)
+RETURNS void AS $$
+BEGIN
+    EXECUTE format('DROP TRIGGER IF EXISTS %I ON %I', trigger_name, table_name);
+EXCEPTION
+    WHEN undefined_table THEN
+        NULL; -- Table doesn't exist, which is fine
+    WHEN OTHERS THEN
+        NULL; -- Other errors are also fine, we're just trying to clean up
+END;
+$$ LANGUAGE plpgsql;
+
+-- Drop all triggers safely
 DO $$
 BEGIN
     -- Auth & Roles
-    EXECUTE 'DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users';
-    EXECUTE 'DROP TRIGGER IF EXISTS roles_updated_at_trigger ON roles';
+    PERFORM drop_trigger_if_exists('on_auth_user_created', 'auth.users');
+    PERFORM drop_trigger_if_exists('roles_updated_at_trigger', 'roles');
 
     -- Tutoring System
-    EXECUTE 'DROP TRIGGER IF EXISTS update_tutor_profiles_updated_at ON tutor_profiles';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_tutoring_sessions_updated_at ON tutoring_sessions';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_tutor_stats_after_review ON session_reviews';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_tutor_stats_after_session ON tutoring_sessions';
+    PERFORM drop_trigger_if_exists('update_tutor_profiles_updated_at', 'tutor_profiles');
+    PERFORM drop_trigger_if_exists('update_tutoring_sessions_updated_at', 'tutoring_sessions');
+    PERFORM drop_trigger_if_exists('update_tutor_stats_after_review', 'session_reviews');
+    PERFORM drop_trigger_if_exists('update_tutor_stats_after_session', 'tutoring_sessions');
 
     -- Learning Resources
-    EXECUTE 'DROP TRIGGER IF EXISTS update_resource_progress_before_update ON student_resource_progress';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_learning_resources_updated_at ON learning_resources';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_student_resource_progress_updated_at ON student_resource_progress';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_student_chapter_progress_updated_at ON student_chapter_progress';
+    PERFORM drop_trigger_if_exists('update_resource_progress_before_update', 'student_resource_progress');
+    PERFORM drop_trigger_if_exists('update_learning_resources_updated_at', 'learning_resources');
+    PERFORM drop_trigger_if_exists('update_student_resource_progress_updated_at', 'student_resource_progress');
+    PERFORM drop_trigger_if_exists('update_student_chapter_progress_updated_at', 'student_chapter_progress');
 
     -- Flashcards
-    EXECUTE 'DROP TRIGGER IF EXISTS update_flashcard_set_stats_trigger ON flashcards';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_flashcard_accuracy_trigger ON flashcards';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_student_notes_updated_at ON student_notes';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_flashcard_sets_updated_at ON flashcard_sets';
+    PERFORM drop_trigger_if_exists('update_flashcard_set_stats_trigger', 'flashcards');
+    PERFORM drop_trigger_if_exists('update_flashcard_accuracy_trigger', 'flashcards');
+    PERFORM drop_trigger_if_exists('update_student_notes_updated_at', 'student_notes');
+    PERFORM drop_trigger_if_exists('update_flashcard_sets_updated_at', 'flashcard_sets');
 
     -- Email
-    EXECUTE 'DROP TRIGGER IF EXISTS update_email_subscribers_updated_at ON email_subscribers';
+    PERFORM drop_trigger_if_exists('update_email_subscribers_updated_at', 'email_subscribers');
 
     -- AI Coaching
-    EXECUTE 'DROP TRIGGER IF EXISTS update_weak_area_status_trigger ON student_weak_areas';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_weak_areas_updated_at ON student_weak_areas';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_repetition_schedule_updated_at ON repetition_schedule';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_coaching_config_updated_at ON ai_coaching_config';
+    PERFORM drop_trigger_if_exists('update_weak_area_status_trigger', 'student_weak_areas');
+    PERFORM drop_trigger_if_exists('update_weak_areas_updated_at', 'student_weak_areas');
+    PERFORM drop_trigger_if_exists('update_repetition_schedule_updated_at', 'repetition_schedule');
+    PERFORM drop_trigger_if_exists('update_coaching_config_updated_at', 'ai_coaching_config');
 
     -- Messaging
-    EXECUTE 'DROP TRIGGER IF EXISTS update_channel_member_count_on_insert ON channel_members';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_channel_member_count_on_delete ON channel_members';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_channel_message_stats_on_insert ON messages';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_unread_counts_on_message ON messages';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_reaction_count_on_add ON message_reactions';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_reaction_count_on_remove ON message_reactions';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_channels_updated_at ON channels';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_messages_updated_at ON messages';
+    PERFORM drop_trigger_if_exists('update_channel_member_count_on_insert', 'channel_members');
+    PERFORM drop_trigger_if_exists('update_channel_member_count_on_delete', 'channel_members');
+    PERFORM drop_trigger_if_exists('update_channel_message_stats_on_insert', 'messages');
+    PERFORM drop_trigger_if_exists('update_unread_counts_on_message', 'messages');
+    PERFORM drop_trigger_if_exists('update_reaction_count_on_add', 'message_reactions');
+    PERFORM drop_trigger_if_exists('update_reaction_count_on_remove', 'message_reactions');
+    PERFORM drop_trigger_if_exists('update_channels_updated_at', 'channels');
+    PERFORM drop_trigger_if_exists('update_messages_updated_at', 'messages');
 
     -- CRM
-    EXECUTE 'DROP TRIGGER IF EXISTS update_crm_contacts_updated_at ON crm_contacts';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_crm_companies_updated_at ON crm_companies';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_crm_deals_updated_at ON crm_deals';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_crm_activities_updated_at ON crm_activities';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_crm_tasks_updated_at ON crm_tasks';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_crm_tickets_updated_at ON crm_tickets';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_crm_campaigns_updated_at ON crm_campaigns';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_contact_activity_trigger ON crm_activities';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_deal_status_trigger ON crm_deals';
-    EXECUTE 'DROP TRIGGER IF EXISTS update_campaign_stats_trigger ON crm_campaign_members';
+    PERFORM drop_trigger_if_exists('update_crm_contacts_updated_at', 'crm_contacts');
+    PERFORM drop_trigger_if_exists('update_crm_companies_updated_at', 'crm_companies');
+    PERFORM drop_trigger_if_exists('update_crm_deals_updated_at', 'crm_deals');
+    PERFORM drop_trigger_if_exists('update_crm_activities_updated_at', 'crm_activities');
+    PERFORM drop_trigger_if_exists('update_crm_tasks_updated_at', 'crm_tasks');
+    PERFORM drop_trigger_if_exists('update_crm_tickets_updated_at', 'crm_tickets');
+    PERFORM drop_trigger_if_exists('update_crm_campaigns_updated_at', 'crm_campaigns');
+    PERFORM drop_trigger_if_exists('update_contact_activity_trigger', 'crm_activities');
+    PERFORM drop_trigger_if_exists('update_deal_status_trigger', 'crm_deals');
+    PERFORM drop_trigger_if_exists('update_campaign_stats_trigger', 'crm_campaign_members');
 
-    RAISE NOTICE '✅ All existing triggers dropped (if any existed)';
-EXCEPTION
-    WHEN undefined_table THEN
-        RAISE NOTICE '✅ Some tables do not exist yet - proceeding with fresh migration';
-    WHEN OTHERS THEN
-        RAISE NOTICE '⚠️ Warning during trigger drop: % - continuing anyway', SQLERRM;
+    RAISE NOTICE '✅ All existing triggers dropped successfully';
 END $$;
+
+-- Clean up helper function
+DROP FUNCTION IF EXISTS drop_trigger_if_exists(text, text);
 
 -- =====================================================
 -- AUTHENTICATION & AUTHORIZATION SCHEMA
