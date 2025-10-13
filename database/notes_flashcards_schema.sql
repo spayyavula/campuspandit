@@ -462,24 +462,29 @@ CREATE POLICY "Students can manage own NotebookLM integration"
 -- SEED DATA - NOTE TEMPLATES
 -- =====================================================
 
-INSERT INTO note_templates (name, description, subject, template_type, sections, notebooklm_prompts) VALUES
+INSERT INTO note_templates (name, description, subject, template_type, structure, sections, notebooklm_prompts) VALUES
 ('Standard Chapter Notes', 'Comprehensive notes for any chapter', 'general', 'chapter_notes',
+ '{"type": "chapter_notes", "layout": "linear", "sections": ["introduction", "key_concepts", "formulas", "examples", "points", "mistakes", "summary"]}'::jsonb,
  ARRAY['Introduction', 'Key Concepts', 'Formulas & Definitions', 'Solved Examples', 'Important Points', 'Common Mistakes', 'Summary'],
  ARRAY['Create comprehensive notes with all key concepts', 'List all important formulas with explanations', 'Provide 5 solved examples', 'What are common mistakes in this chapter?']),
 
 ('Formula Sheet', 'Quick reference for all formulas', 'mathematics', 'formula_sheet',
+ '{"type": "formula_sheet", "layout": "table", "columns": ["topic", "formula", "usage", "example"]}'::jsonb,
  ARRAY['Topic', 'Formula', 'When to Use', 'Example'],
  ARRAY['List all formulas in this chapter', 'Provide usage examples for each formula', 'Create a quick reference guide']),
 
 ('Concept Map', 'Visual representation of relationships', 'general', 'concept_map',
+ '{"type": "concept_map", "layout": "hierarchical", "elements": ["main_topic", "subtopics", "related_concepts", "applications"]}'::jsonb,
  ARRAY['Main Topic', 'Sub-topics', 'Related Concepts', 'Applications'],
  ARRAY['Create a concept map showing all relationships', 'How do these topics connect?', 'What are the applications?']),
 
 ('Problem-Solving Guide', 'Step-by-step problem-solving strategies', 'general', 'problem_solving',
+ '{"type": "problem_solving", "layout": "step_by_step", "sections": ["problem_types", "approach", "mistakes", "examples", "practice"]}'::jsonb,
  ARRAY['Problem Type', 'Approach', 'Common Mistakes', 'Solved Examples', 'Practice Problems'],
  ARRAY['What are the common problem types?', 'Provide solving strategies', 'List common mistakes']),
 
 ('Revision Sheet', 'Quick revision before exams', 'general', 'revision',
+ '{"type": "revision", "layout": "compact", "sections": ["concepts", "formulas", "diagrams", "tips"]}'::jsonb,
  ARRAY['One-line Concepts', 'Key Formulas', 'Important Diagrams', 'Tips & Tricks'],
  ARRAY['Create a one-page revision sheet', 'List the most important points', 'What should I remember for exam?'])
 

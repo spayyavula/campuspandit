@@ -1,14 +1,14 @@
 -- =====================================================
--- CAMPUSPANDIT - COMPLETE DATABASE MIGRATIONS v2.1
+-- CAMPUSPANDIT - COMPLETE DATABASE MIGRATIONS v2.2
 -- =====================================================
 --
 -- This file contains ALL database schemas in the correct dependency order.
 -- Run this ONCE in your Supabase SQL Editor.
 --
--- ⚠️ IMPORTANT: This is the UPDATED version with AUTH/ROLES schema included!
+-- ⚠️ IMPORTANT: Run 00_DROP_ALL_TABLES.sql FIRST to ensure clean slate!
 --
 -- Order of execution:
--- 0. Authentication & Roles (roles, user_roles, permissions) - FIXED circular dependency!
+-- 0. Authentication & Roles (roles, user_roles, permissions)
 -- 1. Tutoring System (tutor_profiles, tutoring_sessions, etc.)
 -- 2. Learning Resources (learning_resources, resource_chapters, etc.)
 -- 3. Notes & Flashcards (flashcard_sets, flashcard_cards, etc.)
@@ -17,21 +17,24 @@
 -- 6. Messaging System (channels, messages, reactions, etc.)
 -- 7. CRM System (crm_contacts, crm_deals, crm_tickets, etc.)
 --
--- Total Lines: ~4000+
+-- Total Lines: ~4000
 -- Estimated execution time: 30-90 seconds
 --
--- NEW IN v2.1:
--- ✅ Fixed circular dependency in RLS policies (was causing "column user_id does not exist" error)
--- ✅ Changed admin policies to use service_role instead of has_role() function
--- ✅ Policies now avoid recursive checks
+-- CHANGELOG v2.2:
+-- ✅ Fixed note_templates INSERT - added missing structure JSONB column
+-- ✅ Fixed circular dependency in RLS policies
+-- ✅ All NOT NULL constraints properly satisfied
 --
 -- FEATURES:
--- ✅ Roles table with 6 default roles (student, tutor, admin, content_creator, moderator, support)
--- ✅ User roles table with many-to-many mapping
+-- ✅ 70+ tables across 8 schemas
+-- ✅ Roles table with 6 default roles (student, tutor, admin, etc.)
 -- ✅ Auto-assigns "student" role to new users on signup
--- ✅ Helper functions: has_role(), assign_role(), remove_role(), get_user_roles()
--- ✅ Permissions system for fine-grained access control
--- ✅ All RLS policies properly configured
+-- ✅ Helper functions for role management
+-- ✅ Complete RLS policies for security
+-- ✅ Spaced repetition flashcards system
+-- ✅ NotebookLM integration
+-- ✅ Full CRM system
+-- ✅ Real-time messaging
 --
 -- =====================================================
 
@@ -1863,24 +1866,29 @@ CREATE POLICY "Students can manage own NotebookLM integration"
 -- SEED DATA - NOTE TEMPLATES
 -- =====================================================
 
-INSERT INTO note_templates (name, description, subject, template_type, sections, notebooklm_prompts) VALUES
+INSERT INTO note_templates (name, description, subject, template_type, structure, sections, notebooklm_prompts) VALUES
 ('Standard Chapter Notes', 'Comprehensive notes for any chapter', 'general', 'chapter_notes',
+ '{"type": "chapter_notes", "layout": "linear", "sections": ["introduction", "key_concepts", "formulas", "examples", "points", "mistakes", "summary"]}'::jsonb,
  ARRAY['Introduction', 'Key Concepts', 'Formulas & Definitions', 'Solved Examples', 'Important Points', 'Common Mistakes', 'Summary'],
  ARRAY['Create comprehensive notes with all key concepts', 'List all important formulas with explanations', 'Provide 5 solved examples', 'What are common mistakes in this chapter?']),
 
 ('Formula Sheet', 'Quick reference for all formulas', 'mathematics', 'formula_sheet',
+ '{"type": "formula_sheet", "layout": "table", "columns": ["topic", "formula", "usage", "example"]}'::jsonb,
  ARRAY['Topic', 'Formula', 'When to Use', 'Example'],
  ARRAY['List all formulas in this chapter', 'Provide usage examples for each formula', 'Create a quick reference guide']),
 
 ('Concept Map', 'Visual representation of relationships', 'general', 'concept_map',
+ '{"type": "concept_map", "layout": "hierarchical", "elements": ["main_topic", "subtopics", "related_concepts", "applications"]}'::jsonb,
  ARRAY['Main Topic', 'Sub-topics', 'Related Concepts', 'Applications'],
  ARRAY['Create a concept map showing all relationships', 'How do these topics connect?', 'What are the applications?']),
 
 ('Problem-Solving Guide', 'Step-by-step problem-solving strategies', 'general', 'problem_solving',
+ '{"type": "problem_solving", "layout": "step_by_step", "sections": ["problem_types", "approach", "mistakes", "examples", "practice"]}'::jsonb,
  ARRAY['Problem Type', 'Approach', 'Common Mistakes', 'Solved Examples', 'Practice Problems'],
  ARRAY['What are the common problem types?', 'Provide solving strategies', 'List common mistakes']),
 
 ('Revision Sheet', 'Quick revision before exams', 'general', 'revision',
+ '{"type": "revision", "layout": "compact", "sections": ["concepts", "formulas", "diagrams", "tips"]}'::jsonb,
  ARRAY['One-line Concepts', 'Key Formulas', 'Important Diagrams', 'Tips & Tricks'],
  ARRAY['Create a one-page revision sheet', 'List the most important points', 'What should I remember for exam?'])
 
