@@ -375,6 +375,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Drop existing trigger if it exists, then create it
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+
 -- Create trigger on auth.users table
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
