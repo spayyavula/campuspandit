@@ -6,6 +6,74 @@
 -- 1. CONTACTS (Leads & Customers)
 -- =====================================================
 
+-- =====================================================
+-- 2. COMPANIES/ORGANIZATIONS
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS crm_companies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- Basic Info
+    name TEXT NOT NULL,
+    legal_name TEXT,
+    website TEXT,
+    email TEXT,
+    phone TEXT,
+
+    -- Business Info
+    industry TEXT,
+    company_size TEXT CHECK (company_size IN ('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+')),
+    annual_revenue DECIMAL(15, 2),
+    employee_count INTEGER,
+
+    -- Status
+    status TEXT DEFAULT 'prospect' CHECK (status IN ('prospect', 'customer', 'partner', 'inactive')),
+    customer_since DATE,
+
+    -- Address
+    billing_street TEXT,
+    billing_city TEXT,
+    billing_state TEXT,
+    billing_postal_code TEXT,
+    billing_country TEXT DEFAULT 'India',
+
+    shipping_street TEXT,
+    shipping_city TEXT,
+    shipping_state TEXT,
+    shipping_postal_code TEXT,
+    shipping_country TEXT DEFAULT 'India',
+
+    -- Social
+    linkedin_url TEXT,
+    twitter_handle TEXT,
+    facebook_url TEXT,
+
+    -- Assignment
+    owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+
+    -- Parent Company
+    parent_company_id UUID REFERENCES crm_companies(id) ON DELETE SET NULL,
+
+    -- Tax Info
+    tax_id TEXT,
+    gst_number TEXT,
+    pan_number TEXT,
+
+    -- Metadata
+    tags TEXT[],
+    custom_fields JSONB DEFAULT '{}',
+    notes TEXT,
+
+    -- Timestamps
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+-- =====================================================
+-- 1. CONTACTS (Leads & Customers)
+-- =====================================================
+
 CREATE TABLE IF NOT EXISTS crm_contacts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -73,70 +141,6 @@ CREATE TABLE IF NOT EXISTS crm_contacts (
 
     -- Search
     search_vector tsvector
-);
-
--- =====================================================
--- 2. COMPANIES/ORGANIZATIONS
--- =====================================================
-
-CREATE TABLE IF NOT EXISTS crm_companies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    -- Basic Info
-    name TEXT NOT NULL,
-    legal_name TEXT,
-    website TEXT,
-    email TEXT,
-    phone TEXT,
-
-    -- Business Info
-    industry TEXT,
-    company_size TEXT CHECK (company_size IN ('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+')),
-    annual_revenue DECIMAL(15, 2),
-    employee_count INTEGER,
-
-    -- Status
-    status TEXT DEFAULT 'prospect' CHECK (status IN ('prospect', 'customer', 'partner', 'inactive')),
-    customer_since DATE,
-
-    -- Address
-    billing_street TEXT,
-    billing_city TEXT,
-    billing_state TEXT,
-    billing_postal_code TEXT,
-    billing_country TEXT DEFAULT 'India',
-
-    shipping_street TEXT,
-    shipping_city TEXT,
-    shipping_state TEXT,
-    shipping_postal_code TEXT,
-    shipping_country TEXT DEFAULT 'India',
-
-    -- Social
-    linkedin_url TEXT,
-    twitter_handle TEXT,
-    facebook_url TEXT,
-
-    -- Assignment
-    owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-
-    -- Parent Company
-    parent_company_id UUID REFERENCES crm_companies(id) ON DELETE SET NULL,
-
-    -- Tax Info
-    tax_id TEXT,
-    gst_number TEXT,
-    pan_number TEXT,
-
-    -- Metadata
-    tags TEXT[],
-    custom_fields JSONB DEFAULT '{}',
-    notes TEXT,
-
-    -- Timestamps
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 -- =====================================================

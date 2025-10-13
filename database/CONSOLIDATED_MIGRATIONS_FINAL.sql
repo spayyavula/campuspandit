@@ -1,5 +1,5 @@
 -- =====================================================
--- CAMPUSPANDIT - COMPLETE DATABASE MIGRATIONS v2.2
+-- CAMPUSPANDIT - COMPLETE DATABASE MIGRATIONS v2.3
 -- =====================================================
 --
 -- This file contains ALL database schemas in the correct dependency order.
@@ -15,15 +15,16 @@
 -- 4. Email Marketing (email_subscribers, email_campaigns, etc.)
 -- 5. AI Coaching (student_weak_areas, ai_coaching_sessions, etc.)
 -- 6. Messaging System (channels, messages, reactions, etc.)
--- 7. CRM System (crm_contacts, crm_deals, crm_tickets, etc.)
+-- 7. CRM System (crm_companies, crm_contacts, crm_deals, etc.)
 --
 -- Total Lines: ~4000
 -- Estimated execution time: 30-90 seconds
 --
--- CHANGELOG v2.2:
+-- CHANGELOG v2.3:
+-- ✅ Fixed CRM table order - crm_companies now created BEFORE crm_contacts
 -- ✅ Fixed note_templates INSERT - added missing structure JSONB column
 -- ✅ Fixed circular dependency in RLS policies
--- ✅ All NOT NULL constraints properly satisfied
+-- ✅ All foreign key dependencies properly ordered
 --
 -- FEATURES:
 -- ✅ 70+ tables across 8 schemas
@@ -33,8 +34,9 @@
 -- ✅ Complete RLS policies for security
 -- ✅ Spaced repetition flashcards system
 -- ✅ NotebookLM integration
--- ✅ Full CRM system
--- ✅ Real-time messaging
+-- ✅ Full CRM system with companies, contacts, deals
+-- ✅ Real-time messaging with channels
+-- ✅ Service ticketing system
 --
 -- =====================================================
 
@@ -3140,6 +3142,74 @@ COMMENT ON TABLE message_reactions IS 'Emoji reactions to messages';
 -- 1. CONTACTS (Leads & Customers)
 -- =====================================================
 
+-- =====================================================
+-- 2. COMPANIES/ORGANIZATIONS
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS crm_companies (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    -- Basic Info
+    name TEXT NOT NULL,
+    legal_name TEXT,
+    website TEXT,
+    email TEXT,
+    phone TEXT,
+
+    -- Business Info
+    industry TEXT,
+    company_size TEXT CHECK (company_size IN ('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+')),
+    annual_revenue DECIMAL(15, 2),
+    employee_count INTEGER,
+
+    -- Status
+    status TEXT DEFAULT 'prospect' CHECK (status IN ('prospect', 'customer', 'partner', 'inactive')),
+    customer_since DATE,
+
+    -- Address
+    billing_street TEXT,
+    billing_city TEXT,
+    billing_state TEXT,
+    billing_postal_code TEXT,
+    billing_country TEXT DEFAULT 'India',
+
+    shipping_street TEXT,
+    shipping_city TEXT,
+    shipping_state TEXT,
+    shipping_postal_code TEXT,
+    shipping_country TEXT DEFAULT 'India',
+
+    -- Social
+    linkedin_url TEXT,
+    twitter_handle TEXT,
+    facebook_url TEXT,
+
+    -- Assignment
+    owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+
+    -- Parent Company
+    parent_company_id UUID REFERENCES crm_companies(id) ON DELETE SET NULL,
+
+    -- Tax Info
+    tax_id TEXT,
+    gst_number TEXT,
+    pan_number TEXT,
+
+    -- Metadata
+    tags TEXT[],
+    custom_fields JSONB DEFAULT '{}',
+    notes TEXT,
+
+    -- Timestamps
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
+);
+
+-- =====================================================
+-- 1. CONTACTS (Leads & Customers)
+-- =====================================================
+
 CREATE TABLE IF NOT EXISTS crm_contacts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
@@ -3207,70 +3277,6 @@ CREATE TABLE IF NOT EXISTS crm_contacts (
 
     -- Search
     search_vector tsvector
-);
-
--- =====================================================
--- 2. COMPANIES/ORGANIZATIONS
--- =====================================================
-
-CREATE TABLE IF NOT EXISTS crm_companies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-
-    -- Basic Info
-    name TEXT NOT NULL,
-    legal_name TEXT,
-    website TEXT,
-    email TEXT,
-    phone TEXT,
-
-    -- Business Info
-    industry TEXT,
-    company_size TEXT CHECK (company_size IN ('1-10', '11-50', '51-200', '201-500', '501-1000', '1000+')),
-    annual_revenue DECIMAL(15, 2),
-    employee_count INTEGER,
-
-    -- Status
-    status TEXT DEFAULT 'prospect' CHECK (status IN ('prospect', 'customer', 'partner', 'inactive')),
-    customer_since DATE,
-
-    -- Address
-    billing_street TEXT,
-    billing_city TEXT,
-    billing_state TEXT,
-    billing_postal_code TEXT,
-    billing_country TEXT DEFAULT 'India',
-
-    shipping_street TEXT,
-    shipping_city TEXT,
-    shipping_state TEXT,
-    shipping_postal_code TEXT,
-    shipping_country TEXT DEFAULT 'India',
-
-    -- Social
-    linkedin_url TEXT,
-    twitter_handle TEXT,
-    facebook_url TEXT,
-
-    -- Assignment
-    owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
-
-    -- Parent Company
-    parent_company_id UUID REFERENCES crm_companies(id) ON DELETE SET NULL,
-
-    -- Tax Info
-    tax_id TEXT,
-    gst_number TEXT,
-    pan_number TEXT,
-
-    -- Metadata
-    tags TEXT[],
-    custom_fields JSONB DEFAULT '{}',
-    notes TEXT,
-
-    -- Timestamps
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 -- =====================================================
