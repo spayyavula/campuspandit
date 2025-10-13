@@ -167,6 +167,19 @@ DO $$
 BEGIN
     RAISE NOTICE 'Dropping existing RLS policies...';
 
+    -- Roles & Permissions policies
+    PERFORM drop_policy_if_exists('Anyone can view active roles', 'roles');
+    PERFORM drop_policy_if_exists('Service role can manage roles', 'roles');
+    PERFORM drop_policy_if_exists('Users can view their own roles', 'user_roles');
+    PERFORM drop_policy_if_exists('Service role can view all roles', 'user_roles');
+    PERFORM drop_policy_if_exists('Service role can assign roles', 'user_roles');
+    PERFORM drop_policy_if_exists('Service role can modify roles', 'user_roles');
+    PERFORM drop_policy_if_exists('Service role can remove roles', 'user_roles');
+    PERFORM drop_policy_if_exists('Anyone can view active permissions', 'permissions');
+    PERFORM drop_policy_if_exists('Service role can manage permissions', 'permissions');
+    PERFORM drop_policy_if_exists('Anyone can view role permissions', 'role_permissions');
+    PERFORM drop_policy_if_exists('Service role can manage role permissions', 'role_permissions');
+
     -- Tutoring System policies
     PERFORM drop_policy_if_exists('Anyone can view verified tutor profiles', 'tutor_profiles');
     PERFORM drop_policy_if_exists('Tutors can view own profile', 'tutor_profiles');
@@ -185,22 +198,35 @@ BEGIN
     PERFORM drop_policy_if_exists('Anyone can view subjects', 'subjects');
 
     -- Learning Resources policies
-    PERFORM drop_policy_if_exists('Anyone can view active resources', 'learning_resources');
+    PERFORM drop_policy_if_exists('Anyone can view learning resources', 'learning_resources');
+    PERFORM drop_policy_if_exists('Anyone can view resource chapters', 'resource_chapters');
     PERFORM drop_policy_if_exists('Students can view own progress', 'student_resource_progress');
     PERFORM drop_policy_if_exists('Students can manage own progress', 'student_resource_progress');
     PERFORM drop_policy_if_exists('Students can manage own chapter progress', 'student_chapter_progress');
     PERFORM drop_policy_if_exists('Students can manage own study sessions', 'study_sessions');
+    PERFORM drop_policy_if_exists('Students can manage own learning goals', 'student_learning_goals');
+    PERFORM drop_policy_if_exists('Anyone can view recommendations', 'resource_recommendations');
+    PERFORM drop_policy_if_exists('Students can manage own Google integration', 'google_learn_integration');
+    PERFORM drop_policy_if_exists('Admins can manage all learning resources', 'learning_resources');
 
-    -- Flashcards policies
+    -- Flashcards & Notes policies
+    PERFORM drop_policy_if_exists('Students can manage own notes', 'student_notes');
+    PERFORM drop_policy_if_exists('Students can view shared notes', 'student_notes');
     PERFORM drop_policy_if_exists('Students can manage own flashcard sets', 'flashcard_sets');
-    PERFORM drop_policy_if_exists('Students can view own flashcards', 'flashcards');
+    PERFORM drop_policy_if_exists('Students can view public flashcard sets', 'flashcard_sets');
     PERFORM drop_policy_if_exists('Students can manage own flashcards', 'flashcards');
     PERFORM drop_policy_if_exists('Students can manage own reviews', 'flashcard_reviews');
-    PERFORM drop_policy_if_exists('Students can manage own notes', 'student_notes');
+    PERFORM drop_policy_if_exists('Students can manage own study sessions', 'flashcard_study_sessions');
+    PERFORM drop_policy_if_exists('Anyone can view note templates', 'note_templates');
+    PERFORM drop_policy_if_exists('Students can create templates', 'note_templates');
+    PERFORM drop_policy_if_exists('Students can manage own NotebookLM integration', 'notebooklm_integrations');
 
     -- Email Marketing policies
-    PERFORM drop_policy_if_exists('Anyone can subscribe', 'email_subscribers');
-    PERFORM drop_policy_if_exists('Users can manage own subscription', 'email_subscribers');
+    PERFORM drop_policy_if_exists('Users can view own subscriber record', 'email_subscribers');
+    PERFORM drop_policy_if_exists('Users can update own subscriber record', 'email_subscribers');
+    PERFORM drop_policy_if_exists('Users can insert own subscriber record', 'email_subscribers');
+    PERFORM drop_policy_if_exists('Admins can view all subscriber records', 'email_subscribers');
+    PERFORM drop_policy_if_exists('Admins can update all subscriber records', 'email_subscribers');
 
     -- AI Coaching policies
     PERFORM drop_policy_if_exists('Students can manage own weak areas', 'student_weak_areas');
