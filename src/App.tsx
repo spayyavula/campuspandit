@@ -8,6 +8,7 @@ import FindTutors from './components/tutoring/FindTutors';
 import TutorRegistration from './components/tutoring/TutorRegistration';
 import TutorDashboard from './components/tutoring/TutorDashboard';
 import EmailPreferences from './components/EmailPreferences';
+import MessagingApp from './components/messaging/MessagingApp';
 import CoachingAdmin from './components/admin/CoachingAdmin';
 import EmailSubscribers from './components/admin/EmailSubscribers';
 import TutorManagementAdmin from './components/tutoring/TutorManagementAdmin';
@@ -55,6 +56,7 @@ const App: React.FC = () => {
         <Route path="/tutors" element={user ? <FindTutors /> : <Navigate to="/auth" />} />
         <Route path="/tutor/register" element={user ? <TutorRegistration /> : <Navigate to="/auth" />} />
         <Route path="/tutor/dashboard" element={user ? <TutorDashboard /> : <Navigate to="/auth" />} />
+        <Route path="/messages" element={user ? <MessagingApp userId={user.id} /> : <Navigate to="/auth" />} />
         <Route path="/preferences" element={user ? <EmailPreferences /> : <Navigate to="/auth" />} />
 
         {/* Protected Routes - Admin */}
