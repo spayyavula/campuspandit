@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
-import CourseList from './components/CourseList';
-import BoardSelector from './components/BoardSelector';
-import BoardSpecificCourseList from './components/BoardSpecificCourseList';
-import GameDashboard from './components/GameDashboard';
-import TournamentView from './components/TournamentView';
-import TeamsView from './components/TeamsView';
-import QuizBattle from './components/QuizBattle';
-import ProgressTracker from './components/ProgressTracker';
-import AdminDashboard from './components/AdminDashboard';
-import AdminPanel from './components/AdminPanel';
-import PhysicsGeneral from './components/PhysicsGeneral';
-import { allCoursesWithCompetitive } from './data/boardCourses';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LandingPage from './components/LandingPage';
 import { Auth } from './components/Auth';
+import AICoach from './components/coaching/AICoach';
+import WeakAreaManager from './components/coaching/WeakAreaManager';
+import FindTutors from './components/tutoring/FindTutors';
+import TutorRegistration from './components/tutoring/TutorRegistration';
+import TutorDashboard from './components/tutoring/TutorDashboard';
+import EmailPreferences from './components/EmailPreferences';
+import CoachingAdmin from './components/admin/CoachingAdmin';
+import EmailSubscribers from './components/admin/EmailSubscribers';
+import TutorManagementAdmin from './components/tutoring/TutorManagementAdmin';
 import { supabase } from './utils/supabase';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -40,122 +33,39 @@ const App: React.FC = () => {
     };
   }, []);
 
-  const handleAuthStateChange = (user: any | null) => {
-    setUser(user);
-  };
-
-  const handleViewChange = (view: string) => {
-    setCurrentView(view);
-  };
-
-  const handleBoardSelect = (board: string) => {
-    setSelectedBoard(board);
-    setCurrentView('board-courses');
-  };
-
-  const handleSelectSubject = (subject: string) => {
-    setSelectedSubject(subject);
-  };
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'physics-general':
-        return <PhysicsGeneral />;
-      case 'dashboard':
-        return (
-          <Dashboard 
-            courses={allCoursesWithCompetitive}
-            onViewChange={handleViewChange}
-            onSelectSubject={handleSelectSubject}
-            onSelectBoard={handleBoardSelect}
-          />
-        );
-      case 'courses':
-        return (
-          <CourseList 
-            courses={allCoursesWithCompetitive}
-            selectedSubject={selectedSubject}
-            onSelectCourse={() => {}}
-            onSelectLesson={() => {}}
-          />
-        );
-      case 'board-selector':
-        return (
-          <BoardSelector 
-            courses={allCoursesWithCompetitive}
-            onBoardSelect={handleBoardSelect} 
-          />
-        );
-      case 'board-courses':
-        return selectedBoard ? (
-          <BoardSpecificCourseList 
-            courses={allCoursesWithCompetitive}
-            board={selectedBoard} 
-            selectedSubject={selectedSubject}
-            onBack={() => setCurrentView('board-selector')} 
-            onSelectCourse={() => {}}
-            onSelectLesson={() => {}}
-          />
-        ) : (
-          <BoardSelector 
-            courses={allCoursesWithCompetitive}
-            onBoardSelect={handleBoardSelect} 
-          />
-        );
-      case 'gaming':
-        return <GameDashboard onViewChange={handleViewChange} />;
-      case 'tournament':
-        return <TournamentView onBack={() => setCurrentView('gaming')} />;
-      case 'teams':
-        return <TeamsView onBack={() => setCurrentView('gaming')} />;
-      case 'battle':
-        return <QuizBattle onBack={() => setCurrentView('gaming')} />;
-      case 'progress':
-        return <ProgressTracker />;
-      case 'admin':
-        return <AdminDashboard />;
-      case 'admin-panel':
-        return <AdminPanel />;
-      default:
-        return (
-          <Dashboard 
-            courses={allCoursesWithCompetitive}
-            onViewChange={handleViewChange}
-            onSelectSubject={handleSelectSubject}
-            onSelectBoard={handleBoardSelect}
-          />
-        );
-    }
-  };
-
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
       </div>
     );
   }
 
-  // Show auth screen if not logged in
-  if (!user) {
-    return <Auth onAuthStateChange={handleAuthStateChange} />;
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar 
-        currentView={currentView} 
-        onViewChange={handleViewChange} 
-        user={user}
-      />
-      <div className="flex-1 min-w-0 safe-area-top safe-area-bottom">
-        <main className="p-4 md:p-8">
-         <Routes>
-           <Route path="*" element={renderCurrentView()} />
-         </Routes>
-        </main>
-      </div>
-    </div>
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/auth" element={!user ? <Auth onAuthStateChange={setUser} /> : <Navigate to="/coach" />} />
+
+        {/* Protected Routes - Student */}
+        <Route path="/coach" element={user ? <AICoach studentId={user.id} /> : <Navigate to="/auth" />} />
+        <Route path="/weak-areas" element={user ? <WeakAreaManager studentId={user.id} /> : <Navigate to="/auth" />} />
+        <Route path="/tutors" element={user ? <FindTutors /> : <Navigate to="/auth" />} />
+        <Route path="/tutor/register" element={user ? <TutorRegistration /> : <Navigate to="/auth" />} />
+        <Route path="/tutor/dashboard" element={user ? <TutorDashboard /> : <Navigate to="/auth" />} />
+        <Route path="/preferences" element={user ? <EmailPreferences /> : <Navigate to="/auth" />} />
+
+        {/* Protected Routes - Admin */}
+        <Route path="/admin/coaching" element={user ? <CoachingAdmin /> : <Navigate to="/auth" />} />
+        <Route path="/admin/emails" element={user ? <EmailSubscribers /> : <Navigate to="/auth" />} />
+        <Route path="/admin/tutors" element={user ? <TutorManagementAdmin /> : <Navigate to="/auth" />} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Router>
   );
 };
 
