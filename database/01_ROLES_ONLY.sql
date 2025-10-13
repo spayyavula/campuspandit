@@ -1,0 +1,2 @@
+-- Run ONLY the roles schema first
+-- If this succeeds, then run the next file
