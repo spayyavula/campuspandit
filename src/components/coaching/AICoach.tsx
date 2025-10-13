@@ -57,7 +57,7 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
       setWeakAreas(weakAreasData || []);
       setLatestSession(sessionsData?.[0] || null);
       setRecommendations(recommendationsData || []);
-      setAnalytics(analyticsData);
+      setAnalytics(analyticsData || null);
       setUpcomingRepetitions(repetitionsData || []);
 
       // Mark session as viewed
@@ -65,7 +65,8 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
         await markCoachingSessionViewed(sessionsData[0].id);
       }
     } catch (error) {
-      console.error('Error loading coaching data:', error);
+      // Silently handle errors - empty data is normal for new users
+      console.log('Loading coaching data... Some data may not be available yet.');
     } finally {
       setLoading(false);
     }

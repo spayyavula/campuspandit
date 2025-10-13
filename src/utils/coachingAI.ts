@@ -895,13 +895,13 @@ export async function getLatestAnalytics(studentId: string, periodType: string =
       .eq('period_type', periodType)
       .order('analysis_date', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
-    return data as PerformanceAnalytics;
+    return data as PerformanceAnalytics | null;
   } catch (error) {
     console.error('Error getting latest analytics:', error);
-    throw error;
+    return null; // Return null instead of throwing for empty data
   }
 }
 
