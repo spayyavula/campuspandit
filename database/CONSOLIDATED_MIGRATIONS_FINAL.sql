@@ -5,7 +5,17 @@
 -- This file contains ALL database schemas in the correct dependency order.
 -- Run this ONCE in your Supabase SQL Editor.
 --
--- ⚠️ IMPORTANT: Run 00_DROP_ALL_TABLES.sql FIRST to ensure clean slate!
+-- ⚠️ IMPORTANT: Choose one of the following options before running:
+--
+-- OPTION 1 (Fresh Install - Recommended for first-time setup):
+--   1. Run 00_DROP_ALL_TABLES.sql to drop all tables
+--   2. Run this file (CONSOLIDATED_MIGRATIONS_FINAL.sql)
+--
+-- OPTION 2 (Update Existing Database - If you have data to keep):
+--   1. Run DROP_ALL_TRIGGERS.sql to drop existing triggers
+--   2. Run this file (CONSOLIDATED_MIGRATIONS_FINAL.sql)
+--
+-- ⚠️ If you get "trigger already exists" errors, run DROP_ALL_TRIGGERS.sql first!
 --
 -- Order of execution:
 -- 0. Authentication & Roles (roles, user_roles, permissions)
