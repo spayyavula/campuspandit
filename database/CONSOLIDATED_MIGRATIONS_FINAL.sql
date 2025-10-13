@@ -5,7 +5,7 @@
 -- This file contains ALL database schemas in the correct dependency order.
 -- Run this ONCE in your Supabase SQL Editor.
 --
--- ✨ NEW in v2.5: Automatically drops existing triggers!
+-- ✨ NEW in v2.5: Automatically drops existing triggers and RLS policies!
 --    No need to run DROP_ALL_TRIGGERS.sql separately anymore.
 --
 -- 🚀 QUICK START:
@@ -34,10 +34,11 @@
 -- Estimated execution time: 30-90 seconds
 --
 -- CHANGELOG v2.5:
--- ✅ Added automatic trigger cleanup at the beginning of migration
--- ✅ Migration file now self-contained - no need for separate trigger drops
--- ✅ Improved error handling with DO blocks and exception catching
+-- ✅ Added automatic trigger and RLS policy cleanup at the beginning
+-- ✅ Migration file now self-contained - no need for separate cleanup scripts
+-- ✅ Improved error handling with individual exception catching per object
 -- ✅ Works seamlessly on fresh databases and existing databases
+-- ✅ Safe to re-run multiple times (idempotent)
 --
 -- CHANGELOG v2.4:
 -- ✅ Added role-based signup - users can choose Student or Tutor during registration
@@ -65,10 +66,12 @@
 -- =====================================================
 
 -- =====================================================
--- STEP 0: DROP ALL EXISTING TRIGGERS (IF ANY)
+-- STEP 0: DROP ALL EXISTING TRIGGERS AND POLICIES (IF ANY)
 -- =====================================================
--- This prevents "trigger already exists" errors when re-running migrations
--- Each trigger is dropped individually with its own error handling
+-- This prevents "already exists" errors when re-running migrations
+-- Each trigger/policy is dropped individually with its own error handling
+
+-- ========== TRIGGERS ==========
 
 -- Helper function to safely drop a trigger
 CREATE OR REPLACE FUNCTION drop_trigger_if_exists(trigger_name text, table_name text)
@@ -144,6 +147,115 @@ END $$;
 
 -- Clean up helper function
 DROP FUNCTION IF EXISTS drop_trigger_if_exists(text, text);
+
+-- ========== RLS POLICIES ==========
+
+-- Helper function to safely drop a policy
+CREATE OR REPLACE FUNCTION drop_policy_if_exists(policy_name text, table_name text)
+RETURNS void AS $$
+BEGIN
+    EXECUTE format('DROP POLICY IF EXISTS %I ON %I', policy_name, table_name);
+EXCEPTION
+    WHEN undefined_table THEN NULL;
+    WHEN undefined_object THEN NULL;
+    WHEN OTHERS THEN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Drop all RLS policies safely
+DO $$
+BEGIN
+    RAISE NOTICE 'Dropping existing RLS policies...';
+
+    -- Tutoring System policies
+    PERFORM drop_policy_if_exists('Anyone can view verified tutor profiles', 'tutor_profiles');
+    PERFORM drop_policy_if_exists('Tutors can view own profile', 'tutor_profiles');
+    PERFORM drop_policy_if_exists('Tutors can update own profile', 'tutor_profiles');
+    PERFORM drop_policy_if_exists('Users can create tutor profile', 'tutor_profiles');
+    PERFORM drop_policy_if_exists('Admins can manage all tutor profiles', 'tutor_profiles');
+
+    PERFORM drop_policy_if_exists('Users can view their own sessions', 'tutoring_sessions');
+    PERFORM drop_policy_if_exists('Students can create session bookings', 'tutoring_sessions');
+    PERFORM drop_policy_if_exists('Tutors and students can update their sessions', 'tutoring_sessions');
+
+    PERFORM drop_policy_if_exists('Anyone can view public reviews', 'session_reviews');
+    PERFORM drop_policy_if_exists('Students can create reviews for their sessions', 'session_reviews');
+
+    PERFORM drop_policy_if_exists('Students can manage their favorites', 'student_favorite_tutors');
+    PERFORM drop_policy_if_exists('Anyone can view subjects', 'subjects');
+
+    -- Learning Resources policies
+    PERFORM drop_policy_if_exists('Anyone can view active resources', 'learning_resources');
+    PERFORM drop_policy_if_exists('Students can view own progress', 'student_resource_progress');
+    PERFORM drop_policy_if_exists('Students can manage own progress', 'student_resource_progress');
+    PERFORM drop_policy_if_exists('Students can manage own chapter progress', 'student_chapter_progress');
+    PERFORM drop_policy_if_exists('Students can manage own study sessions', 'study_sessions');
+
+    -- Flashcards policies
+    PERFORM drop_policy_if_exists('Students can manage own flashcard sets', 'flashcard_sets');
+    PERFORM drop_policy_if_exists('Students can view own flashcards', 'flashcards');
+    PERFORM drop_policy_if_exists('Students can manage own flashcards', 'flashcards');
+    PERFORM drop_policy_if_exists('Students can manage own reviews', 'flashcard_reviews');
+    PERFORM drop_policy_if_exists('Students can manage own notes', 'student_notes');
+
+    -- Email Marketing policies
+    PERFORM drop_policy_if_exists('Anyone can subscribe', 'email_subscribers');
+    PERFORM drop_policy_if_exists('Users can manage own subscription', 'email_subscribers');
+
+    -- AI Coaching policies
+    PERFORM drop_policy_if_exists('Students can manage own weak areas', 'student_weak_areas');
+    PERFORM drop_policy_if_exists('Students can view own coaching sessions', 'ai_coaching_sessions');
+    PERFORM drop_policy_if_exists('Students can manage own repetition schedule', 'repetition_schedule');
+    PERFORM drop_policy_if_exists('Students can view own analytics', 'student_performance_analytics');
+    PERFORM drop_policy_if_exists('Students can manage own coaching recommendations', 'coaching_recommendations');
+    PERFORM drop_policy_if_exists('Students can view own improvement milestones', 'improvement_milestones');
+    PERFORM drop_policy_if_exists('Students can manage own reminders', 'study_reminders');
+    PERFORM drop_policy_if_exists('Students can manage own coaching config', 'ai_coaching_config');
+    PERFORM drop_policy_if_exists('Tutors can view student weak areas', 'student_weak_areas');
+    PERFORM drop_policy_if_exists('Admins can manage all coaching data', 'student_weak_areas');
+
+    -- Messaging System policies
+    PERFORM drop_policy_if_exists('Users can view their channels', 'channels');
+    PERFORM drop_policy_if_exists('Channel owners can update', 'channels');
+    PERFORM drop_policy_if_exists('Users can create channels', 'channels');
+    PERFORM drop_policy_if_exists('Admins can manage all', 'channels');
+
+    PERFORM drop_policy_if_exists('Users can view channel members', 'channel_members');
+    PERFORM drop_policy_if_exists('Users can join channels', 'channel_members');
+    PERFORM drop_policy_if_exists('Users can leave channels', 'channel_members');
+
+    PERFORM drop_policy_if_exists('Users can view messages in their channels', 'messages');
+    PERFORM drop_policy_if_exists('Users can send messages to their channels', 'messages');
+    PERFORM drop_policy_if_exists('Users can update their own messages', 'messages');
+    PERFORM drop_policy_if_exists('Users can delete their own messages', 'messages');
+
+    PERFORM drop_policy_if_exists('Users can view reactions', 'message_reactions');
+    PERFORM drop_policy_if_exists('Users can add reactions', 'message_reactions');
+    PERFORM drop_policy_if_exists('Users can remove their own reactions', 'message_reactions');
+
+    PERFORM drop_policy_if_exists('Users can view their DMs', 'direct_messages');
+    PERFORM drop_policy_if_exists('Users can manage typing indicators', 'typing_indicators');
+    PERFORM drop_policy_if_exists('Users can manage their read receipts', 'message_read_receipts');
+    PERFORM drop_policy_if_exists('Users can view invitations', 'channel_invitations');
+    PERFORM drop_policy_if_exists('Users can manage their saved messages', 'saved_messages');
+
+    -- CRM System policies
+    PERFORM drop_policy_if_exists('Users can view their contacts', 'crm_contacts');
+    PERFORM drop_policy_if_exists('Users can create contacts', 'crm_contacts');
+    PERFORM drop_policy_if_exists('Users can update their contacts', 'crm_contacts');
+    PERFORM drop_policy_if_exists('Admins can manage all CRM data', 'crm_contacts');
+
+    PERFORM drop_policy_if_exists('Users can view their companies', 'crm_companies');
+    PERFORM drop_policy_if_exists('Users can view their deals', 'crm_deals');
+    PERFORM drop_policy_if_exists('Users can view their activities', 'crm_activities');
+    PERFORM drop_policy_if_exists('Users can view their tasks', 'crm_tasks');
+    PERFORM drop_policy_if_exists('Users can view their tickets', 'crm_tickets');
+
+    RAISE NOTICE '✅ All existing RLS policies dropped successfully';
+END $$;
+
+-- Clean up helper function
+DROP FUNCTION IF EXISTS drop_policy_if_exists(text, text);
 
 -- =====================================================
 -- AUTHENTICATION & AUTHORIZATION SCHEMA
