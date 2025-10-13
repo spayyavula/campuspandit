@@ -248,44 +248,49 @@ CREATE POLICY "Anyone can view active roles"
     ON roles FOR SELECT
     USING (is_active = true);
 
-CREATE POLICY "Only admins can manage roles"
+CREATE POLICY "Service role can manage roles"
     ON roles FOR ALL
-    USING (has_role(auth.uid(), 'admin'));
+    USING (auth.jwt() ->> 'role' = 'service_role');
 
 -- User roles policies
+-- Note: Cannot use has_role() here as it would create circular dependency
 CREATE POLICY "Users can view their own roles"
     ON user_roles FOR SELECT
-    USING (user_id = auth.uid() OR has_role(auth.uid(), 'admin'));
+    USING (user_id = auth.uid());
 
-CREATE POLICY "Only admins can assign roles"
+CREATE POLICY "Service role can view all roles"
+    ON user_roles FOR SELECT
+    USING (auth.jwt() ->> 'role' = 'service_role');
+
+CREATE POLICY "Service role can assign roles"
     ON user_roles FOR INSERT
-    WITH CHECK (has_role(auth.uid(), 'admin'));
+    WITH CHECK (auth.jwt() ->> 'role' = 'service_role');
 
-CREATE POLICY "Only admins can modify roles"
+CREATE POLICY "Service role can modify roles"
     ON user_roles FOR UPDATE
-    USING (has_role(auth.uid(), 'admin'));
+    USING (auth.jwt() ->> 'role' = 'service_role');
 
-CREATE POLICY "Only admins can remove roles"
+CREATE POLICY "Service role can remove roles"
     ON user_roles FOR DELETE
-    USING (has_role(auth.uid(), 'admin'));
+    USING (auth.jwt() ->> 'role' = 'service_role');
 
 -- Permissions policies
 CREATE POLICY "Anyone can view active permissions"
     ON permissions FOR SELECT
     USING (is_active = true);
 
-CREATE POLICY "Only admins can manage permissions"
+CREATE POLICY "Service role can manage permissions"
     ON permissions FOR ALL
-    USING (has_role(auth.uid(), 'admin'));
+    USING (auth.jwt() ->> 'role' = 'service_role');
 
 -- Role permissions policies
 CREATE POLICY "Anyone can view role permissions"
     ON role_permissions FOR SELECT
     USING (true);
 
-CREATE POLICY "Only admins can manage role permissions"
+CREATE POLICY "Service role can manage role permissions"
     ON role_permissions FOR ALL
-    USING (has_role(auth.uid(), 'admin'));
+    USING (auth.jwt() ->> 'role' = 'service_role');
 
 -- =====================================================
 -- TRIGGER: Auto-assign student role on user signup
