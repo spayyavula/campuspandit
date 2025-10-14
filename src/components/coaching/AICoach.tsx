@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, TrendingUp, Target, Clock, CheckCircle, AlertCircle, Flame, Trophy, BookOpen, Calendar } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Brain, TrendingUp, Target, Clock, CheckCircle, AlertCircle, Flame, Trophy, BookOpen, Calendar, LogOut, MessageCircle, Users, BarChart3, Settings, Notebook, GraduationCap, Book } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import {
   getWeakAreas,
@@ -23,6 +24,7 @@ interface AICoachProps {
 }
 
 const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
@@ -106,6 +108,15 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical': return 'text-red-600 bg-red-50 border-red-200';
@@ -142,40 +153,132 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
   const resolvedAreas = weakAreas.filter(w => w.status === 'resolved');
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <Brain className="w-8 h-8 text-purple-600" />
-              AI Coach
-            </h1>
-            <p className="text-gray-600 mt-1">Your personalized learning companion</p>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleAnalyzeWeakAreas}
-              disabled={analyzing}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
-            >
-              <Target className="w-4 h-4" />
-              {analyzing ? 'Analyzing...' : 'Analyze Weak Areas'}
-            </button>
-            <button
-              onClick={handleGenerateCoaching}
-              disabled={analyzing}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
-            >
-              <Brain className="w-4 h-4" />
-              {analyzing ? 'Generating...' : 'Generate Coaching'}
-            </button>
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-gray-900">CampusPandit</span>
+            </Link>
+
+            {/* Navigation Links */}
+            <div className="flex items-center gap-1">
+              <Link
+                to="/coach"
+                className="px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 flex items-center gap-2"
+              >
+                <Brain className="w-4 h-4" />
+                AI Coach
+              </Link>
+              <Link
+                to="/weak-areas"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <Target className="w-4 h-4" />
+                Weak Areas
+              </Link>
+              <Link
+                to="/tutors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                Tutors
+              </Link>
+              <Link
+                to="/messages"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Messages
+              </Link>
+              <Link
+                to="/crm"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <BarChart3 className="w-4 h-4" />
+                CRM
+              </Link>
+              <Link
+                to="/notebooklm"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <Notebook className="w-4 h-4" />
+                NotebookLM
+              </Link>
+              <Link
+                to="/google-learn"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <GraduationCap className="w-4 h-4" />
+                Google Learn
+              </Link>
+              <Link
+                to="/openstax"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <Book className="w-4 h-4" />
+                OpenStax
+              </Link>
+              <Link
+                to="/preferences"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
+              >
+                <Settings className="w-4 h-4" />
+                Settings
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="ml-2 px-4 py-2 text-sm font-medium bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Motivational Message */}
-      {latestSession?.motivational_message && (
+      {/* Main Content */}
+      <div className="p-6">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <Brain className="w-8 h-8 text-purple-600" />
+                AI Coach
+              </h1>
+              <p className="text-gray-600 mt-1">Your personalized learning companion</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleAnalyzeWeakAreas}
+                disabled={analyzing}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                <Target className="w-4 h-4" />
+                {analyzing ? 'Analyzing...' : 'Analyze Weak Areas'}
+              </button>
+              <button
+                onClick={handleGenerateCoaching}
+                disabled={analyzing}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                <Brain className="w-4 h-4" />
+                {analyzing ? 'Generating...' : 'Generate Coaching'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Motivational Message */}
+        {latestSession?.motivational_message && (
         <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
           <div className="flex items-start gap-3">
             <Trophy className="w-6 h-6 text-purple-600 mt-1" />
@@ -185,101 +288,101 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
             </div>
           </div>
         </div>
-      )}
+        )}
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Active Weak Areas</p>
-              <p className="text-3xl font-bold text-red-600">{activeWeakAreas.length}</p>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Active Weak Areas</p>
+                <p className="text-3xl font-bold text-red-600">{activeWeakAreas.length}</p>
+              </div>
+              <AlertCircle className="w-10 h-10 text-red-600 opacity-20" />
             </div>
-            <AlertCircle className="w-10 h-10 text-red-600 opacity-20" />
           </div>
-        </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Improving</p>
-              <p className="text-3xl font-bold text-yellow-600">{improvingAreas.length}</p>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Improving</p>
+                <p className="text-3xl font-bold text-yellow-600">{improvingAreas.length}</p>
+              </div>
+              <TrendingUp className="w-10 h-10 text-yellow-600 opacity-20" />
             </div>
-            <TrendingUp className="w-10 h-10 text-yellow-600 opacity-20" />
           </div>
-        </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Resolved</p>
-              <p className="text-3xl font-bold text-green-600">{resolvedAreas.length}</p>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Resolved</p>
+                <p className="text-3xl font-bold text-green-600">{resolvedAreas.length}</p>
+              </div>
+              <CheckCircle className="w-10 h-10 text-green-600 opacity-20" />
             </div>
-            <CheckCircle className="w-10 h-10 text-green-600 opacity-20" />
           </div>
-        </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">Study Streak</p>
-              <p className="text-3xl font-bold text-purple-600">{analytics?.study_streak_days || 0}</p>
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Study Streak</p>
+                <p className="text-3xl font-bold text-purple-600">{analytics?.study_streak_days || 0}</p>
+              </div>
+              <Flame className="w-10 h-10 text-purple-600 opacity-20" />
             </div>
-            <Flame className="w-10 h-10 text-purple-600 opacity-20" />
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-        <div className="border-b border-gray-200">
-          <div className="flex gap-4 px-6">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`py-4 px-2 border-b-2 font-medium transition-colors ${
-                activeTab === 'overview'
-                  ? 'border-purple-600 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('weak-areas')}
-              className={`py-4 px-2 border-b-2 font-medium transition-colors ${
-                activeTab === 'weak-areas'
-                  ? 'border-purple-600 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Weak Areas ({activeWeakAreas.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('recommendations')}
-              className={`py-4 px-2 border-b-2 font-medium transition-colors ${
-                activeTab === 'recommendations'
-                  ? 'border-purple-600 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Recommendations ({recommendations.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`py-4 px-2 border-b-2 font-medium transition-colors ${
-                activeTab === 'analytics'
-                  ? 'border-purple-600 text-purple-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Analytics
-            </button>
           </div>
         </div>
 
-        <div className="p-6">
-          {/* Overview Tab */}
-          {activeTab === 'overview' && (
+        {/* Tabs */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div className="border-b border-gray-200">
+            <div className="flex gap-4 px-6">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                  activeTab === 'overview'
+                    ? 'border-purple-600 text-purple-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('weak-areas')}
+                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                  activeTab === 'weak-areas'
+                    ? 'border-purple-600 text-purple-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Weak Areas ({activeWeakAreas.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('recommendations')}
+                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                  activeTab === 'recommendations'
+                    ? 'border-purple-600 text-purple-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Recommendations ({recommendations.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                  activeTab === 'analytics'
+                    ? 'border-purple-600 text-purple-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Analytics
+              </button>
+            </div>
+          </div>
+
+          <div className="p-6">
+            {/* Overview Tab */}
+            {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Priority Actions */}
               {latestSession?.priority_actions && latestSession.priority_actions.length > 0 && (
@@ -630,6 +733,7 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

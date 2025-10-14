@@ -42,14 +42,16 @@
 
     <title>CampusPandit - Smart Learning Platform</title>
     
-    <!-- Service Worker Registration -->
+    <!-- Service Worker Registration - DISABLED FOR DEVELOPMENT -->
+    <!-- Uncomment for production builds -->
+    <!--
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then((registration) => {
               console.log('SW registered: ', registration);
-              
+
               // Check for updates
               registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
@@ -69,6 +71,7 @@
         });
       }
     </script>
+    -->
   </head>
   <body>
     <div id="root"></div>

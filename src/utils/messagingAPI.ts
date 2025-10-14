@@ -280,10 +280,7 @@ export async function getChannelMembers(channelId: string) {
   try {
     const { data, error } = await supabase
       .from('channel_members')
-      .select(`
-        *,
-        user:auth.users(id, email, raw_user_meta_data)
-      `)
+      .select('*')
       .eq('channel_id', channelId);
 
     if (error) throw error;
@@ -351,10 +348,7 @@ export async function getChannelMessages(channelId: string, limit: number = 50, 
   try {
     let query = supabase
       .from('messages')
-      .select(`
-        *,
-        user:auth.users(id, email, raw_user_meta_data)
-      `)
+      .select('*')
       .eq('channel_id', channelId)
       .eq('is_deleted', false)
       .is('parent_message_id', null)
@@ -368,7 +362,32 @@ export async function getChannelMessages(channelId: string, limit: number = 50, 
     const { data, error } = await query;
 
     if (error) throw error;
-    return data?.reverse() || [];
+
+    // Fetch user data for each unique user_id
+    if (data && data.length > 0) {
+      const userIds = [...new Set(data.map(m => m.user_id))];
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+      // Enrich messages with user data
+      const enrichedMessages = await Promise.all(
+        data.map(async (message) => {
+          // For now, we'll use a placeholder since we can't query auth.users directly
+          // In production, you should create a user_profiles table
+          return {
+            ...message,
+            user: {
+              id: message.user_id,
+              email: message.user_id === currentUser?.id ? currentUser.email : 'user@example.com',
+              raw_user_meta_data: message.user_id === currentUser?.id ? currentUser.user_metadata : {}
+            }
+          };
+        })
+      );
+
+      return enrichedMessages.reverse();
+    }
+
+    return [];
   } catch (error) {
     console.error('Error fetching messages:', error);
     throw error;
@@ -404,14 +423,20 @@ export async function sendMessage(message: {
         mentioned_user_ids: mentions.length > 0 ? mentions : null,
         message_type: message.message_type || 'text'
       })
-      .select(`
-        *,
-        user:auth.users(id, email, raw_user_meta_data)
-      `)
+      .select('*')
       .single();
 
     if (error) throw error;
-    return data;
+
+    // Add user data to the message
+    return {
+      ...data,
+      user: {
+        id: user.id,
+        email: user.email || '',
+        raw_user_meta_data: user.user_metadata || {}
+      }
+    };
   } catch (error) {
     console.error('Error sending message:', error);
     throw error;
@@ -469,10 +494,7 @@ export async function getThreadReplies(parentMessageId: string) {
   try {
     const { data, error } = await supabase
       .from('messages')
-      .select(`
-        *,
-        user:auth.users(id, email, raw_user_meta_data)
-      `)
+      .select('*')
       .eq('parent_message_id', parentMessageId)
       .eq('is_deleted', false)
       .order('created_at', { ascending: true });
@@ -577,16 +599,18 @@ export function subscribeToChannelMessages(
         filter: `channel_id=eq.${channelId}`
       },
       async (payload) => {
-        // Fetch user data for the message
-        const { data: userData } = await supabase
-          .from('auth.users')
-          .select('id, email, raw_user_meta_data')
-          .eq('id', payload.new.user_id)
-          .single();
+        // Get current user for comparison
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
 
+        // Add user data to the message
+        const message = payload.new as Message;
         callback({
-          ...payload.new as Message,
-          user: userData
+          ...message,
+          user: {
+            id: message.user_id,
+            email: message.user_id === currentUser?.id ? currentUser.email || '' : 'user@example.com',
+            raw_user_meta_data: message.user_id === currentUser?.id ? currentUser.user_metadata || {} : {}
+          }
         });
       }
     )
@@ -654,7 +678,10 @@ export async function sendTypingIndicator(channelId: string) {
       .upsert({
         channel_id: channelId,
         user_id: user.id,
+        started_typing_at: new Date().toISOString(),
         expires_at: new Date(Date.now() + 10000).toISOString()
+      }, {
+        onConflict: 'channel_id,user_id'
       });
   } catch (error) {
     console.error('Error sending typing indicator:', error);

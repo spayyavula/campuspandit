@@ -16,7 +16,9 @@ import {
   MessageSquare,
   Star,
   Bell,
-  BellOff
+  BellOff,
+  Edit2,
+  Trash2
 } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import {
@@ -29,6 +31,8 @@ import {
   toggleChannelStar,
   sendTypingIndicator,
   addReaction,
+  updateMessage,
+  deleteMessage,
   Channel,
   Message
 } from '../../utils/messagingAPI';
@@ -46,9 +50,17 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [search, setSearch] = useState('');
+  const [showCreateChannel, setShowCreateChannel] = useState(false);
+  const [newChannelName, setNewChannelName] = useState('');
+  const [newChannelDescription, setNewChannelDescription] = useState('');
+  const [newChannelType, setNewChannelType] = useState<'public' | 'private'>('public');
+  const [creating, setCreating] = useState(false);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editingContent, setEditingContent] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load channels on mount
   useEffect(() => {
@@ -68,19 +80,61 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Subscribe to real-time messages
+  // Subscribe to real-time messages (INSERT, UPDATE, DELETE)
   useEffect(() => {
     if (!selectedChannel) return;
 
-    const subscription = subscribeToChannelMessages(selectedChannel.id, (message) => {
-      setMessages(prev => [...prev, message]);
+    // Subscribe to new messages (INSERT)
+    const insertSubscription = subscribeToChannelMessages(selectedChannel.id, (message) => {
+      // Only add message if it doesn't already exist (avoid duplicates)
+      setMessages(prev => {
+        const messageExists = prev.some(m => m.id === message.id);
+        if (messageExists) {
+          return prev;
+        }
+        return [...prev, message];
+      });
+
       if (message.user_id !== userId) {
         markChannelAsRead(selectedChannel.id);
       }
     });
 
+    // Subscribe to message updates (EDIT)
+    const updateSubscription = subscribeToMessageUpdates(selectedChannel.id, (updatedMessage) => {
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === updatedMessage.id
+            ? { ...msg, content: updatedMessage.content, is_edited: true, edited_at: updatedMessage.edited_at }
+            : msg
+        )
+      );
+    });
+
+    // Subscribe to message deletions
+    const deleteSubscription = supabase
+      .channel(`message-deletes:${selectedChannel.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'messages',
+          filter: `channel_id=eq.${selectedChannel.id}`
+        },
+        (payload) => {
+          // Check if message was deleted (is_deleted = true)
+          if (payload.new.is_deleted) {
+            setMessages(prev => prev.filter(msg => msg.id !== payload.new.id));
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
-      subscription.unsubscribe();
+      insertSubscription.unsubscribe();
+      updateSubscription.unsubscribe();
+      deleteSubscription.unsubscribe();
     };
   }, [selectedChannel, userId]);
 
@@ -113,10 +167,16 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
 
     try {
       setSending(true);
-      await sendMessage({
+      const sentMessage = await sendMessage({
         channel_id: selectedChannel.id,
         content: newMessage.trim()
       });
+
+      // Immediately add the message to the UI (optimistic update)
+      if (sentMessage) {
+        setMessages(prev => [...prev, sentMessage]);
+      }
+
       setNewMessage('');
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
@@ -154,6 +214,106 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
       await loadChannels();
     } catch (error) {
       console.error('Error toggling star:', error);
+    }
+  };
+
+  const handleStartEdit = (messageId: string, content: string) => {
+    setEditingMessageId(messageId);
+    setEditingContent(content);
+    setTimeout(() => {
+      editTextareaRef.current?.focus();
+    }, 0);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setEditingContent('');
+  };
+
+  const handleSaveEdit = async (messageId: string) => {
+    if (!editingContent.trim()) return;
+
+    try {
+      await updateMessage(messageId, editingContent.trim());
+
+      // Update the message in local state
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === messageId
+            ? { ...msg, content: editingContent.trim(), is_edited: true }
+            : msg
+        )
+      );
+
+      setEditingMessageId(null);
+      setEditingContent('');
+    } catch (error) {
+      console.error('Error updating message:', error);
+      alert('Failed to update message');
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+
+    try {
+      await deleteMessage(messageId);
+
+      // Remove message from local state
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      alert('Failed to delete message');
+    }
+  };
+
+  const handleCreateChannel = async () => {
+    if (!newChannelName.trim() || creating) return;
+
+    try {
+      setCreating(true);
+      const { data, error } = await supabase
+        .from('channels')
+        .insert({
+          name: newChannelName.trim(),
+          description: newChannelDescription.trim() || null,
+          is_private: newChannelType === 'private',
+          channel_type: 'group',
+          created_by: userId
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Add creator as member
+      if (data) {
+        await supabase.from('channel_members').insert({
+          channel_id: data.id,
+          user_id: userId,
+          role: 'admin'
+        });
+      }
+
+      // Reset form and close modal
+      setNewChannelName('');
+      setNewChannelDescription('');
+      setNewChannelType('public');
+      setShowCreateChannel(false);
+
+      // Reload channels
+      await loadChannels();
+    } catch (error: any) {
+      console.error('Error creating channel:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code
+      });
+      alert(`Failed to create channel: ${error?.message || 'Unknown error'}. Check console for details.`);
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -199,8 +359,12 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
         <div className="p-4 border-b border-neutral-200">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-neutral-900">Messages</h2>
-            <button className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
-              <Plus className="w-5 h-5 text-neutral-600" />
+            <button
+              onClick={() => setShowCreateChannel(true)}
+              className="p-2 hover:bg-primary-100 rounded-lg transition-colors group"
+              title="Create new channel"
+            >
+              <Plus className="w-5 h-5 text-neutral-600 group-hover:text-primary-600" />
             </button>
           </div>
 
@@ -265,6 +429,124 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
         </div>
       </div>
 
+      {/* Create Channel Modal */}
+      {showCreateChannel && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-neutral-200">
+              <h3 className="text-xl font-semibold text-neutral-900">Create New Channel</h3>
+              <button
+                onClick={() => setShowCreateChannel(false)}
+                className="p-1 hover:bg-neutral-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-neutral-600" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4">
+              {/* Channel Name */}
+              <div>
+                <label htmlFor="channelName" className="block text-sm font-medium text-neutral-700 mb-1">
+                  Channel Name *
+                </label>
+                <input
+                  id="channelName"
+                  type="text"
+                  value={newChannelName}
+                  onChange={(e) => setNewChannelName(e.target.value)}
+                  placeholder="e.g., general, announcements"
+                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  autoFocus
+                />
+              </div>
+
+              {/* Channel Description */}
+              <div>
+                <label htmlFor="channelDescription" className="block text-sm font-medium text-neutral-700 mb-1">
+                  Description (optional)
+                </label>
+                <textarea
+                  id="channelDescription"
+                  value={newChannelDescription}
+                  onChange={(e) => setNewChannelDescription(e.target.value)}
+                  placeholder="What's this channel about?"
+                  rows={3}
+                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              {/* Channel Type */}
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Channel Type
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="channelType"
+                      value="public"
+                      checked={newChannelType === 'public'}
+                      onChange={(e) => setNewChannelType(e.target.value as 'public' | 'private')}
+                      className="mt-1"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Hash className="w-4 h-4" />
+                        <span className="font-medium text-neutral-900">Public</span>
+                      </div>
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        Anyone can join and see the channel
+                      </p>
+                    </div>
+                  </label>
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="channelType"
+                      value="private"
+                      checked={newChannelType === 'private'}
+                      onChange={(e) => setNewChannelType(e.target.value as 'public' | 'private')}
+                      className="mt-1"
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-4 h-4" />
+                        <span className="font-medium text-neutral-900">Private</span>
+                      </div>
+                      <p className="text-xs text-neutral-500 mt-0.5">
+                        Only invited members can access
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-neutral-200">
+              <button
+                onClick={() => setShowCreateChannel(false)}
+                className="px-4 py-2 text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors text-sm font-medium"
+                disabled={creating}
+              >
+                Cancel
+              </button>
+              <Button
+                variant="primary"
+                onClick={handleCreateChannel}
+                disabled={!newChannelName.trim() || creating}
+                loading={creating}
+              >
+                {creating ? 'Creating...' : 'Create Channel'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         {selectedChannel ? (
@@ -324,7 +606,7 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
                         </div>
                       )}
 
-                      <div className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : ''}`}>
+                      <div className={`flex gap-3 ${isOwn ? 'flex-row-reverse' : ''} group`}>
                         {/* Avatar */}
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold flex-shrink-0">
                           {message.user?.email?.[0].toUpperCase() || 'U'}
@@ -344,13 +626,74 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
                             )}
                           </div>
 
-                          <div className={`p-3 rounded-lg ${
-                            isOwn
-                              ? 'bg-primary-500 text-white'
-                              : 'bg-neutral-100 text-neutral-900'
-                          }`}>
-                            <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
-                          </div>
+                          {editingMessageId === message.id ? (
+                            // Edit Mode
+                            <div className="w-full">
+                              <textarea
+                                ref={editTextareaRef}
+                                value={editingContent}
+                                onChange={(e) => setEditingContent(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSaveEdit(message.id);
+                                  } else if (e.key === 'Escape') {
+                                    handleCancelEdit();
+                                  }
+                                }}
+                                className="w-full px-3 py-2 border border-primary-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                                rows={3}
+                              />
+                              <div className="flex gap-2 mt-2">
+                                <button
+                                  onClick={() => handleSaveEdit(message.id)}
+                                  className="px-3 py-1 bg-primary-500 text-white text-xs rounded hover:bg-primary-600 transition-colors"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={handleCancelEdit}
+                                  className="px-3 py-1 bg-neutral-200 text-neutral-700 text-xs rounded hover:bg-neutral-300 transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                                <span className="text-xs text-neutral-500 self-center ml-2">
+                                  Press Enter to save, Esc to cancel
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            // View Mode
+                            <div className="relative">
+                              <div className={`p-3 rounded-lg ${
+                                isOwn
+                                  ? 'bg-primary-500 text-white'
+                                  : 'bg-neutral-100 text-neutral-900'
+                              }`}>
+                                <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                              </div>
+
+                              {/* Edit/Delete buttons (only for own messages) */}
+                              {isOwn && (
+                                <div className={`absolute ${isOwn ? 'left-0' : 'right-0'} top-0 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 bg-white border border-neutral-200 rounded-lg shadow-lg p-1`}>
+                                  <button
+                                    onClick={() => handleStartEdit(message.id, message.content)}
+                                    className="p-1.5 hover:bg-neutral-100 rounded transition-colors"
+                                    title="Edit message"
+                                  >
+                                    <Edit2 className="w-3.5 h-3.5 text-neutral-600" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteMessage(message.id)}
+                                    className="p-1.5 hover:bg-red-50 rounded transition-colors"
+                                    title="Delete message"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 text-red-600" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
 
                           {/* Reactions */}
                           {message.reaction_count > 0 && (

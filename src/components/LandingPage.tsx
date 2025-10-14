@@ -24,7 +24,7 @@ const LandingPage: React.FC = () => {
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Features</a>
               <a href="#how-it-works" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">How it works</a>
-              <a href="#tutors" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">For Tutors</a>
+              <a href="/tutor/register" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">For Tutors</a>
               <a href="#pricing" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Pricing</a>
             </div>
 
@@ -53,7 +53,7 @@ const LandingPage: React.FC = () => {
             <div className="px-4 py-4 space-y-3">
               <a href="#features" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Features</a>
               <a href="#how-it-works" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">How it works</a>
-              <a href="#tutors" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For Tutors</a>
+              <a href="/tutor/register" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For Tutors</a>
               <a href="#pricing" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Pricing</a>
               <div className="pt-4 space-y-2">
                 <a href="/auth" className="block w-full px-4 py-2 text-sm text-primary-500 border border-primary-500 rounded-lg hover:bg-primary-50 transition-colors text-center">
@@ -320,6 +320,228 @@ const LandingPage: React.FC = () => {
                 Monitor progress. Improve scores. Achieve your goals.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* For Tutors Section */}
+      <section id="tutors" className="py-20 bg-white px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Content */}
+            <div>
+              <div className="inline-block mb-6 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-semibold">
+                For Tutors
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-6">
+                Teach students worldwide.<br />
+                Earn on your schedule.
+              </h2>
+              <p className="text-lg text-neutral-600 mb-8 leading-relaxed">
+                Join 500+ expert tutors teaching Physics, Chemistry, Math, and more. Set your own rates, create your schedule, and build a global student base.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Check className="w-4 h-4 text-success-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-neutral-900 mb-1">Flexible Schedule</h4>
+                    <p className="text-neutral-600">Teach when you want. Set your own availability and rates (₹200-₹5000/hr)</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Check className="w-4 h-4 text-success-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-neutral-900 mb-1">Global Reach</h4>
+                    <p className="text-neutral-600">Connect with students from India and around the world. Build your reputation.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Check className="w-4 h-4 text-success-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-neutral-900 mb-1">Secure Payments</h4>
+                    <p className="text-neutral-600">Get paid on time. Safe and reliable payment processing for every session.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Check className="w-4 h-4 text-success-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-neutral-900 mb-1">Built-in Tools</h4>
+                    <p className="text-neutral-600">Messaging, scheduling, video calls - everything you need in one platform.</p>
+                  </div>
+                </div>
+              </div>
+
+              <a href="/tutor/register" className="inline-flex px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors items-center gap-2 font-medium">
+                Become a Tutor
+                <ArrowRight className="w-5 h-5" />
+              </a>
+            </div>
+
+            {/* Right Stats */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-8 rounded-2xl">
+                <div className="text-4xl font-bold text-primary-600 mb-2">₹800-₹1500</div>
+                <div className="text-sm text-neutral-600">Average hourly rate</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-success-50 to-success-100 p-8 rounded-2xl">
+                <div className="text-4xl font-bold text-success-600 mb-2">500+</div>
+                <div className="text-sm text-neutral-600">Active tutors</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-secondary-50 to-secondary-100 p-8 rounded-2xl">
+                <div className="text-4xl font-bold text-secondary-600 mb-2">10k+</div>
+                <div className="text-sm text-neutral-600">Students served</div>
+              </div>
+
+              <div className="bg-gradient-to-br from-primary-50 to-success-50 p-8 rounded-2xl">
+                <div className="text-4xl font-bold text-primary-600 mb-2">4.8★</div>
+                <div className="text-sm text-neutral-600">Average rating</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 bg-neutral-50 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+              Simple, transparent pricing
+            </h2>
+            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+              Start free for 6 months. No credit card required. Cancel anytime.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Free Plan */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200 hover:border-primary-300 transition-all">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-neutral-900 mb-2">Free</h3>
+                <div className="text-4xl font-bold text-neutral-900 mb-2">₹0</div>
+                <div className="text-sm text-neutral-500">First 6 months</div>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">AI Coach & weak area identification</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Smart flashcards with spaced repetition</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Progress tracking & analytics</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Access to learning resources</span>
+                </li>
+              </ul>
+
+              <a href="/auth" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+                Get Started
+              </a>
+            </div>
+
+            {/* Student Plan - Highlighted */}
+            <div className="bg-gradient-to-br from-primary-500 to-primary-600 p-8 rounded-2xl border-2 border-primary-500 shadow-xl relative transform scale-105">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <div className="bg-secondary-500 text-white px-4 py-1 rounded-full text-sm font-bold">
+                  Most Popular
+                </div>
+              </div>
+
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-white mb-2">Student Pro</h3>
+                <div className="text-4xl font-bold text-white mb-2">₹299</div>
+                <div className="text-sm text-primary-100">per month after free period</div>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">Everything in Free</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">Real-time messaging with tutors</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">Book unlimited tutor sessions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">Priority support</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">Advanced analytics & reports</span>
+                </li>
+              </ul>
+
+              <a href="/auth" className="block w-full px-6 py-3 text-center bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium">
+                Start Free Trial
+              </a>
+            </div>
+
+            {/* Pay Per Session */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200 hover:border-primary-300 transition-all">
+              <div className="text-center mb-6">
+                <h3 className="text-xl font-bold text-neutral-900 mb-2">Pay Per Session</h3>
+                <div className="text-4xl font-bold text-neutral-900 mb-2">₹200+</div>
+                <div className="text-sm text-neutral-500">per hour with tutor</div>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">No subscription needed</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Choose from 500+ expert tutors</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Rates from ₹200-₹5000/hr</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Book sessions anytime</span>
+                </li>
+              </ul>
+
+              <a href="/tutors" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+                Browse Tutors
+              </a>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-neutral-600 mb-2">
+              All plans include access to OpenStax textbooks, NotebookLM, and Google Learn Your Way
+            </p>
+            <p className="text-sm text-neutral-500">
+              🎉 <strong>Special Offer:</strong> First 6 months completely free for students • No credit card required
+            </p>
           </div>
         </div>
       </section>

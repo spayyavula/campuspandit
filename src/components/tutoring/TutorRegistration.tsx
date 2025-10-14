@@ -22,7 +22,7 @@ export default function TutorRegistration() {
     specialization: [],
     subjects: [],
     expertise_level: 'intermediate',
-    hourly_rate_usd: 10,
+    hourly_rate_usd: 500,
     min_session_duration: 60,
     max_session_duration: 180,
     accepts_instant_booking: false,
@@ -293,21 +293,21 @@ export default function TutorRegistration() {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Hourly Rate (USD) <span className="text-red-500">*</span>
+          Hourly Rate (₹) <span className="text-red-500">*</span>
         </label>
         <div className="relative">
-          <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 font-semibold">₹</span>
           <input
             type="number"
-            min="5"
-            max="500"
-            step="5"
+            min="200"
+            max="5000"
+            step="50"
             value={profile.hourly_rate_usd}
             onChange={(e) => handleChange('hourly_rate_usd', parseFloat(e.target.value) || 0)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <p className="text-sm text-gray-500 mt-1">Set a competitive rate based on your experience</p>
+        <p className="text-sm text-gray-500 mt-1">Set a competitive rate based on your experience (₹200-₹5000/hour)</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -389,7 +389,7 @@ export default function TutorRegistration() {
             </p>
           </div>
           <div className="text-right">
-            <p className="text-2xl font-bold text-blue-600">${profile.hourly_rate_usd}/hr</p>
+            <p className="text-2xl font-bold text-blue-600">₹{profile.hourly_rate_usd}/hr</p>
             <p className="text-sm text-gray-500">{profile.teaching_experience_years} years exp.</p>
           </div>
         </div>

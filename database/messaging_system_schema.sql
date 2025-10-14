@@ -505,6 +505,7 @@ SELECT
     c.member_count,
     c.message_count,
     c.last_message_at,
+    cm.user_id,
     cm.role,
     cm.unread_count,
     cm.is_starred,

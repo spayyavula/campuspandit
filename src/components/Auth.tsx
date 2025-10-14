@@ -37,6 +37,32 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
 
         if (error) throw error;
 
+        // Assign role manually since trigger isn't working
+        if (data.user) {
+          try {
+            // Get the role ID
+            const { data: roleData } = await supabase
+              .from('roles')
+              .select('id')
+              .eq('name', role)
+              .single();
+
+            if (roleData) {
+              // Assign the role to the user
+              await supabase
+                .from('user_roles')
+                .insert({
+                  user_id: data.user.id,
+                  role_id: roleData.id,
+                  is_active: true
+                });
+            }
+          } catch (roleError) {
+            console.warn('Could not assign role automatically:', roleError);
+            // Don't fail signup if role assignment fails
+          }
+        }
+
         setMessage({
           type: 'success',
           text: 'Account created! Please check your email to verify your account.',
@@ -78,9 +104,10 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
         });
       }
     } catch (error: any) {
+      console.error('Auth error:', error);
       setMessage({
         type: 'error',
-        text: error.message || 'Something went wrong. Please try again.',
+        text: error.message || error.error_description || 'Something went wrong. Please try again.',
       });
     } finally {
       setLoading(false);
