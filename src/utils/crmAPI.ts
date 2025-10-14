@@ -775,21 +775,31 @@ export async function getDashboardStats(userId?: string) {
     if (error) {
       // Fallback to individual queries if RPC doesn't exist
       const [contactsRes, dealsRes, tasksRes, ticketsRes] = await Promise.all([
-        supabase.from('crm_contacts').select('count', { count: 'exact', head: true }),
-        supabase.from('crm_deals').select('count, amount', { count: 'exact' }).eq('is_closed', false),
-        supabase.from('crm_tasks').select('count', { count: 'exact', head: true }).eq('status', 'todo'),
-        supabase.from('crm_tickets').select('count', { count: 'exact', head: true }).eq('status', 'open')
+        supabase.from('crm_contacts').select('*', { count: 'exact', head: true }),
+        supabase.from('crm_deals').select('*', { count: 'exact', head: true }).eq('is_closed', false),
+        supabase.from('crm_tasks').select('*', { count: 'exact', head: true }).eq('status', 'todo'),
+        supabase.from('crm_tickets').select('*', { count: 'exact', head: true }).in('status', ['open', 'in_progress'])
       ]);
 
       return {
         total_contacts: contactsRes.count || 0,
         total_deals: dealsRes.count || 0,
         pending_tasks: tasksRes.count || 0,
-        open_tickets: ticketsRes.count || 0
+        open_tickets: ticketsRes.count || 0,
+        total_revenue: 0,
+        deals_this_month: 0
       };
     }
 
-    return data;
+    // RPC functions that return TABLE return an array, get first row
+    return data?.[0] || {
+      total_contacts: 0,
+      total_deals: 0,
+      pending_tasks: 0,
+      open_tickets: 0,
+      total_revenue: 0,
+      deals_this_month: 0
+    };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
     throw error;

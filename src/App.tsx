@@ -16,6 +16,12 @@ import CRMDashboard from './components/crm/CRMDashboard';
 import ContactsManager from './components/crm/ContactsManager';
 import DealsPipeline from './components/crm/DealsPipeline';
 import TicketsManager from './components/crm/TicketsManager';
+import ActivitiesManager from './components/crm/ActivitiesManager';
+import MarketingCampaigns from './components/crm/MarketingCampaigns';
+import ReportsAnalytics from './components/crm/ReportsAnalytics';
+import NotebookLMGuide from './components/learning/NotebookLMGuide';
+import GoogleLearnYourWay from './components/learning/GoogleLearnYourWay';
+import OpenStaxHub from './components/learning/OpenStaxHub';
 import { supabase } from './utils/supabase';
 
 const App: React.FC = () => {
@@ -62,6 +68,9 @@ const App: React.FC = () => {
         <Route path="/tutor/dashboard" element={user ? <TutorDashboard /> : <Navigate to="/auth" />} />
         <Route path="/messages" element={user ? <MessagingApp userId={user.id} /> : <Navigate to="/auth" />} />
         <Route path="/preferences" element={user ? <EmailPreferences /> : <Navigate to="/auth" />} />
+        <Route path="/notebooklm" element={user ? <NotebookLMGuide studentId={user.id} /> : <Navigate to="/auth" />} />
+        <Route path="/google-learn" element={user ? <GoogleLearnYourWay studentId={user.id} /> : <Navigate to="/auth" />} />
+        <Route path="/openstax" element={user ? <OpenStaxHub studentId={user.id} /> : <Navigate to="/auth" />} />
 
         {/* Protected Routes - Admin */}
         <Route path="/admin/coaching" element={user ? <CoachingAdmin /> : <Navigate to="/auth" />} />
@@ -71,8 +80,15 @@ const App: React.FC = () => {
         {/* Protected Routes - CRM */}
         <Route path="/crm" element={user ? <CRMDashboard userId={user.id} /> : <Navigate to="/auth" />} />
         <Route path="/crm/contacts" element={user ? <ContactsManager /> : <Navigate to="/auth" />} />
+        <Route path="/crm/contacts/new" element={user ? <ContactsManager /> : <Navigate to="/auth" />} />
         <Route path="/crm/deals" element={user ? <DealsPipeline /> : <Navigate to="/auth" />} />
+        <Route path="/crm/deals/new" element={user ? <DealsPipeline /> : <Navigate to="/auth" />} />
+        <Route path="/crm/activities" element={user ? <ActivitiesManager /> : <Navigate to="/auth" />} />
+        <Route path="/crm/activities/new" element={user ? <ActivitiesManager /> : <Navigate to="/auth" />} />
         <Route path="/crm/tickets" element={user ? <TicketsManager /> : <Navigate to="/auth" />} />
+        <Route path="/crm/tickets/new" element={user ? <TicketsManager /> : <Navigate to="/auth" />} />
+        <Route path="/crm/campaigns" element={user ? <MarketingCampaigns /> : <Navigate to="/auth" />} />
+        <Route path="/crm/reports" element={user ? <ReportsAnalytics /> : <Navigate to="/auth" />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />

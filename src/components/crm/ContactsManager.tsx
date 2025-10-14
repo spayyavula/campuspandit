@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Users,
   Search,
@@ -23,8 +24,11 @@ import {
   Contact
 } from '../../utils/crmAPI';
 import { Button, Card, Input } from '../ui';
+import CRMNav from './CRMNav';
 
 const ContactsManager: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +55,17 @@ const ContactsManager: React.FC = () => {
   useEffect(() => {
     filterContacts();
   }, [contacts, searchTerm, filterType, filterStatus]);
+
+  // Auto-open modal if route is /new
+  useEffect(() => {
+    if (location.pathname.endsWith('/new')) {
+      setEditingContact(null);
+      resetForm();
+      setShowModal(true);
+      // Navigate back to /crm/contacts so the URL is clean
+      navigate('/crm/contacts', { replace: true });
+    }
+  }, [location]);
 
   const loadContacts = async () => {
     try {
@@ -176,6 +191,8 @@ const ContactsManager: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <CRMNav />
+
       {/* Header */}
       <div className="bg-white border-b border-neutral-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
