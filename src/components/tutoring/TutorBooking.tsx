@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { tutorAPI, TutorProfile } from '../../utils/tutoringAPI';
 import { supabase } from '../../utils/supabase';
-import PaymentButton from '../payment/PaymentButton';
+import MultiGatewayPaymentButton from '../payment/MultiGatewayPaymentButton';
 import { Button, Card, Input } from '../ui';
 
 const TutorBooking: React.FC = () => {
@@ -345,8 +345,8 @@ const TutorBooking: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Payment Button */}
-                <PaymentButton
+                {/* Payment Button - Multi Gateway */}
+                <MultiGatewayPaymentButton
                   amount={totalAmount}
                   productInfo={`${subject} tutoring session with ${tutor.full_name} - ${duration} hour(s) on ${sessionDate}`}
                   userId={user.id}
@@ -366,10 +366,12 @@ const TutorBooking: React.FC = () => {
                   onSuccess={handleBookingSuccess}
                   onError={handleBookingError}
                   disabled={!isBookingValid()}
+                  defaultGateway="razorpay"
+                  allowGatewaySelection={true}
                   className="mt-6"
                 >
                   Proceed to Payment
-                </PaymentButton>
+                </MultiGatewayPaymentButton>
 
                 {!isBookingValid() && (
                   <p className="text-sm text-error-600 text-center">
