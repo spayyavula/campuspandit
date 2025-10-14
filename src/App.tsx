@@ -7,6 +7,7 @@ import WeakAreaManager from './components/coaching/WeakAreaManager';
 import FindTutors from './components/tutoring/FindTutors';
 import TutorRegistration from './components/tutoring/TutorRegistration';
 import TutorDashboard from './components/tutoring/TutorDashboard';
+import TutorBooking from './components/tutoring/TutorBooking';
 import EmailPreferences from './components/EmailPreferences';
 import MessagingApp from './components/messaging/MessagingApp';
 import CoachingAdmin from './components/admin/CoachingAdmin';
@@ -22,6 +23,9 @@ import ReportsAnalytics from './components/crm/ReportsAnalytics';
 import NotebookLMGuide from './components/learning/NotebookLMGuide';
 import GoogleLearnYourWay from './components/learning/GoogleLearnYourWay';
 import OpenStaxHub from './components/learning/OpenStaxHub';
+import PaymentSuccess from './components/payment/PaymentSuccess';
+import PaymentFailure from './components/payment/PaymentFailure';
+import PaymentHistory from './components/payment/PaymentHistory';
 import { supabase } from './utils/supabase';
 
 const App: React.FC = () => {
@@ -64,6 +68,7 @@ const App: React.FC = () => {
         <Route path="/coach" element={user ? <AICoach studentId={user.id} /> : <Navigate to="/auth" />} />
         <Route path="/weak-areas" element={user ? <WeakAreaManager studentId={user.id} /> : <Navigate to="/auth" />} />
         <Route path="/tutors" element={user ? <FindTutors /> : <Navigate to="/auth" />} />
+        <Route path="/tutoring/tutor/:tutorId" element={user ? <TutorBooking /> : <Navigate to="/auth" />} />
         <Route path="/tutor/register" element={user ? <TutorRegistration /> : <Navigate to="/auth" />} />
         <Route path="/tutor/dashboard" element={user ? <TutorDashboard /> : <Navigate to="/auth" />} />
         <Route path="/messages" element={user ? <MessagingApp userId={user.id} /> : <Navigate to="/auth" />} />
@@ -89,6 +94,11 @@ const App: React.FC = () => {
         <Route path="/crm/tickets/new" element={user ? <TicketsManager /> : <Navigate to="/auth" />} />
         <Route path="/crm/campaigns" element={user ? <MarketingCampaigns /> : <Navigate to="/auth" />} />
         <Route path="/crm/reports" element={user ? <ReportsAnalytics /> : <Navigate to="/auth" />} />
+
+        {/* Protected Routes - Payment */}
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/failure" element={<PaymentFailure />} />
+        <Route path="/payment/history" element={user ? <PaymentHistory /> : <Navigate to="/auth" />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
