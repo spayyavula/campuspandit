@@ -252,31 +252,31 @@ export default function FindTutors() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-4">Find Your Perfect Tutor</h1>
-          <p className="text-xl text-blue-100">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">Find Your Perfect Tutor</h1>
+          <p className="text-base sm:text-lg md:text-xl text-blue-100">
             Expert tutors from around the world for Physics, Chemistry, Math & more
           </p>
 
           {/* Search Bar */}
-          <div className="mt-8 max-w-3xl">
-            <div className="flex gap-4">
+          <div className="mt-6 sm:mt-8 max-w-3xl">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by name, subject, or expertise..."
-                  className="w-full pl-12 pr-4 py-4 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-300"
+                  className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 rounded-lg text-gray-900 focus:ring-2 focus:ring-blue-300 text-sm sm:text-base"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="px-6 py-4 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-2 font-semibold"
+                className="px-4 sm:px-6 py-3 sm:py-4 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2 font-semibold text-sm sm:text-base"
               >
-                <Filter className="w-5 h-5" />
+                <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
                 Filters
               </button>
             </div>
@@ -284,11 +284,11 @@ export default function FindTutors() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex gap-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
           {/* Filters Sidebar */}
           <div className={`${showFilters ? 'block' : 'hidden'} lg:block w-full lg:w-80 flex-shrink-0`}>
-            <div className="bg-white rounded-lg shadow-sm p-6 space-y-6 sticky top-4">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-6 lg:sticky lg:top-4">
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Subject</h3>
                 <select
@@ -388,9 +388,9 @@ export default function FindTutors() {
           </div>
 
           {/* Tutors List */}
-          <div className="flex-1">
-            <div className="mb-6 flex items-center justify-between">
-              <p className="text-gray-600">
+          <div className="flex-1 min-w-0">
+            <div className="mb-4 sm:mb-6 flex items-center justify-between">
+              <p className="text-sm sm:text-base text-gray-600">
                 {filteredTutors.length} tutor{filteredTutors.length !== 1 ? 's' : ''} found
               </p>
             </div>
@@ -406,26 +406,26 @@ export default function FindTutors() {
                 <p className="text-gray-500">Try adjusting your filters</p>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {filteredTutors.map(tutor => (
                   <div
                     key={tutor.id}
-                    className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+                    className="bg-white rounded-lg shadow-sm p-4 sm:p-6 hover:shadow-md transition-shadow"
                   >
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       {/* Avatar */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 mx-auto sm:mx-0">
                         {tutor.profile_image_url && !imageErrors.has(tutor.id!) ? (
                           <img
                             src={tutor.profile_image_url}
                             alt={tutor.full_name}
-                            className="w-24 h-24 rounded-full object-cover"
+                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
                             onError={() => {
                               setImageErrors(prev => new Set(prev).add(tutor.id!));
                             }}
                           />
                         ) : (
-                          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+                          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold">
                             {tutor.full_name.charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -433,10 +433,10 @@ export default function FindTutors() {
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900">{tutor.full_name}</h3>
-                            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2 gap-2">
+                          <div className="text-center sm:text-left">
+                            <h3 className="text-lg sm:text-xl font-bold text-gray-900">{tutor.full_name}</h3>
+                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-1">
                               <span className="flex items-center gap-1">
                                 <Globe className="w-4 h-4" />
                                 {tutor.country}
@@ -453,12 +453,12 @@ export default function FindTutors() {
                               )}
                             </div>
                           </div>
-                          <div className="text-right flex items-start gap-2">
+                          <div className="text-center sm:text-right flex flex-col sm:flex-row items-center sm:items-start gap-2">
                             <div>
-                              <p className="text-2xl font-bold text-blue-600">
+                              <p className="text-xl sm:text-2xl font-bold text-blue-600">
                                 ₹{tutor.hourly_rate_usd}
                               </p>
-                              <p className="text-sm text-gray-500">per hour</p>
+                              <p className="text-xs sm:text-sm text-gray-500">per hour</p>
                             </div>
                             <button
                               onClick={() => toggleFavorite(tutor.id!)}
@@ -475,9 +475,9 @@ export default function FindTutors() {
                           </div>
                         </div>
 
-                        <p className="text-gray-700 mb-3 line-clamp-2">{tutor.bio}</p>
+                        <p className="text-sm sm:text-base text-gray-700 mb-3 line-clamp-2 text-center sm:text-left">{tutor.bio}</p>
 
-                        <div className="flex flex-wrap gap-2 mb-3">
+                        <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-3">
                           {tutor.subjects.slice(0, 4).map(subject => (
                             <span
                               key={subject}
@@ -493,7 +493,7 @@ export default function FindTutors() {
                           )}
                         </div>
 
-                        <div className="flex flex-wrap gap-2 mb-4">
+                        <div className="flex flex-wrap justify-center sm:justify-start gap-2 mb-4">
                           {tutor.specialization.slice(0, 3).map(spec => (
                             <span
                               key={spec}
@@ -505,24 +505,28 @@ export default function FindTutors() {
                           ))}
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row sm:flex-wrap items-center sm:items-start gap-2 sm:gap-3">
                           <button
-                            onClick={() => navigate(`/tutoring/tutor/${tutor.id}`)}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                            onClick={() => navigate(`/tutor/profile/${tutor.id}`)}
+                            className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                           >
                             View Profile
                             <ChevronRight className="w-4 h-4" />
                           </button>
+                          {tutor.accepts_instant_booking && (
+                            <button
+                              onClick={() => navigate(`/tutoring/tutor/${tutor.id}?instant=true`)}
+                              className="w-full sm:w-auto px-4 sm:px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 font-medium text-sm sm:text-base"
+                            >
+                              Instant Booking
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          )}
                           {tutor.video_intro_url && (
-                            <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2">
+                            <button className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
                               <Video className="w-4 h-4" />
                               Intro Video
                             </button>
-                          )}
-                          {tutor.accepts_instant_booking && (
-                            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                              Instant Booking
-                            </span>
                           )}
                         </div>
                       </div>

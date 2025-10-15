@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Brain, TrendingUp, Target, Clock, CheckCircle, AlertCircle, Flame, Trophy, BookOpen, Calendar, LogOut, MessageCircle, Users, BarChart3, Settings, Notebook, GraduationCap, Book } from 'lucide-react';
-import { supabase } from '../../utils/supabase';
+import { useNavigate } from 'react-router-dom';
+import { Brain, TrendingUp, Target, Clock, CheckCircle, AlertCircle, Flame, Trophy, Calendar } from 'lucide-react';
+import Navigation from '../Navigation';
 import {
   getWeakAreas,
   getCoachingSessions,
@@ -108,14 +108,6 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      navigate('/auth');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -155,123 +147,38 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Bar */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">CampusPandit</span>
-            </Link>
-
-            {/* Navigation Links */}
-            <div className="flex items-center gap-1">
-              <Link
-                to="/coach"
-                className="px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 flex items-center gap-2"
-              >
-                <Brain className="w-4 h-4" />
-                AI Coach
-              </Link>
-              <Link
-                to="/weak-areas"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <Target className="w-4 h-4" />
-                Weak Areas
-              </Link>
-              <Link
-                to="/tutors"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <Users className="w-4 h-4" />
-                Tutors
-              </Link>
-              <Link
-                to="/messages"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <MessageCircle className="w-4 h-4" />
-                Messages
-              </Link>
-              <Link
-                to="/crm"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <BarChart3 className="w-4 h-4" />
-                CRM
-              </Link>
-              <Link
-                to="/notebooklm"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <Notebook className="w-4 h-4" />
-                NotebookLM
-              </Link>
-              <Link
-                to="/google-learn"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <GraduationCap className="w-4 h-4" />
-                Google Learn
-              </Link>
-              <Link
-                to="/openstax"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <Book className="w-4 h-4" />
-                OpenStax
-              </Link>
-              <Link
-                to="/preferences"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg flex items-center gap-2"
-              >
-                <Settings className="w-4 h-4" />
-                Settings
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="ml-2 px-4 py-2 text-sm font-medium bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center gap-2"
-                title="Sign Out"
-              >
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navigation currentPage="/coach" />
 
       {/* Main Content */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-                <Brain className="w-8 h-8 text-purple-600" />
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                <Brain className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" />
                 AI Coach
               </h1>
-              <p className="text-gray-600 mt-1">Your personalized learning companion</p>
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">Your personalized learning companion</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={handleAnalyzeWeakAreas}
                 disabled={analyzing}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 <Target className="w-4 h-4" />
-                {analyzing ? 'Analyzing...' : 'Analyze Weak Areas'}
+                <span className="hidden sm:inline">{analyzing ? 'Analyzing...' : 'Analyze Weak Areas'}</span>
+                <span className="sm:hidden">{analyzing ? 'Analyzing...' : 'Analyze'}</span>
               </button>
               <button
                 onClick={handleGenerateCoaching}
                 disabled={analyzing}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 text-sm sm:text-base"
               >
                 <Brain className="w-4 h-4" />
-                {analyzing ? 'Generating...' : 'Generate Coaching'}
+                <span className="hidden sm:inline">{analyzing ? 'Generating...' : 'Generate Coaching'}</span>
+                <span className="sm:hidden">{analyzing ? 'Generating...' : 'Generate'}</span>
               </button>
             </div>
           </div>
@@ -291,55 +198,55 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Active Weak Areas</p>
-                <p className="text-3xl font-bold text-red-600">{activeWeakAreas.length}</p>
+                <p className="text-xs sm:text-sm text-gray-600 mb-1">Active Weak Areas</p>
+                <p className="text-2xl sm:text-3xl font-bold text-red-600">{activeWeakAreas.length}</p>
               </div>
-              <AlertCircle className="w-10 h-10 text-red-600 opacity-20" />
+              <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-red-600 opacity-20" />
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Improving</p>
-                <p className="text-3xl font-bold text-yellow-600">{improvingAreas.length}</p>
+                <p className="text-xs sm:text-sm text-gray-600 mb-1">Improving</p>
+                <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{improvingAreas.length}</p>
               </div>
-              <TrendingUp className="w-10 h-10 text-yellow-600 opacity-20" />
+              <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-600 opacity-20" />
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Resolved</p>
-                <p className="text-3xl font-bold text-green-600">{resolvedAreas.length}</p>
+                <p className="text-xs sm:text-sm text-gray-600 mb-1">Resolved</p>
+                <p className="text-2xl sm:text-3xl font-bold text-green-600">{resolvedAreas.length}</p>
               </div>
-              <CheckCircle className="w-10 h-10 text-green-600 opacity-20" />
+              <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-600 opacity-20" />
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">Study Streak</p>
-                <p className="text-3xl font-bold text-purple-600">{analytics?.study_streak_days || 0}</p>
+                <p className="text-xs sm:text-sm text-gray-600 mb-1">Study Streak</p>
+                <p className="text-2xl sm:text-3xl font-bold text-purple-600">{analytics?.study_streak_days || 0}</p>
               </div>
-              <Flame className="w-10 h-10 text-purple-600 opacity-20" />
+              <Flame className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600 opacity-20" />
             </div>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-          <div className="border-b border-gray-200">
-            <div className="flex gap-4 px-6">
+          <div className="border-b border-gray-200 overflow-x-auto">
+            <div className="flex gap-2 sm:gap-4 px-4 sm:px-6 min-w-max">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                className={`py-3 sm:py-4 px-3 sm:px-2 border-b-2 font-medium transition-colors text-sm sm:text-base whitespace-nowrap ${
                   activeTab === 'overview'
                     ? 'border-purple-600 text-purple-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -349,27 +256,29 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
               </button>
               <button
                 onClick={() => setActiveTab('weak-areas')}
-                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                className={`py-3 sm:py-4 px-3 sm:px-2 border-b-2 font-medium transition-colors text-sm sm:text-base whitespace-nowrap ${
                   activeTab === 'weak-areas'
                     ? 'border-purple-600 text-purple-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Weak Areas ({activeWeakAreas.length})
+                <span className="hidden sm:inline">Weak Areas ({activeWeakAreas.length})</span>
+                <span className="sm:hidden">Weak ({activeWeakAreas.length})</span>
               </button>
               <button
                 onClick={() => setActiveTab('recommendations')}
-                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                className={`py-3 sm:py-4 px-3 sm:px-2 border-b-2 font-medium transition-colors text-sm sm:text-base whitespace-nowrap ${
                   activeTab === 'recommendations'
                     ? 'border-purple-600 text-purple-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Recommendations ({recommendations.length})
+                <span className="hidden sm:inline">Recommendations ({recommendations.length})</span>
+                <span className="sm:hidden">Recs ({recommendations.length})</span>
               </button>
               <button
                 onClick={() => setActiveTab('analytics')}
-                className={`py-4 px-2 border-b-2 font-medium transition-colors ${
+                className={`py-3 sm:py-4 px-3 sm:px-2 border-b-2 font-medium transition-colors text-sm sm:text-base whitespace-nowrap ${
                   activeTab === 'analytics'
                     ? 'border-purple-600 text-purple-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -380,7 +289,7 @@ const AICoach: React.FC<AICoachProps> = ({ studentId }) => {
             </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* Overview Tab */}
             {activeTab === 'overview' && (
             <div className="space-y-6">

@@ -18,7 +18,8 @@ import {
   Bell,
   BellOff,
   Edit2,
-  Trash2
+  Trash2,
+  Menu
 } from 'lucide-react';
 import { supabase } from '../../utils/supabase';
 import {
@@ -57,6 +58,7 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
   const [creating, setCreating] = useState(false);
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState('');
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -352,20 +354,38 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
   }
 
   return (
-    <div className="h-screen flex bg-white">
+    <div className="h-screen flex bg-white relative">
+      {/* Mobile Sidebar Toggle */}
+      <button
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-primary-500 text-white rounded-lg shadow-lg"
+      >
+        <Menu className="w-5 h-5" />
+      </button>
+
       {/* Channel Sidebar */}
-      <div className="w-80 border-r border-neutral-200 flex flex-col">
+      <div className={`${
+        showSidebar ? 'translate-x-0' : '-translate-x-full'
+      } md:translate-x-0 fixed md:relative z-40 w-80 border-r border-neutral-200 flex flex-col bg-white transition-transform duration-300 h-full`}>
         {/* Sidebar Header */}
         <div className="p-4 border-b border-neutral-200">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-neutral-900">Messages</h2>
-            <button
-              onClick={() => setShowCreateChannel(true)}
-              className="p-2 hover:bg-primary-100 rounded-lg transition-colors group"
-              title="Create new channel"
-            >
-              <Plus className="w-5 h-5 text-neutral-600 group-hover:text-primary-600" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowCreateChannel(true)}
+                className="p-2 hover:bg-primary-100 rounded-lg transition-colors group"
+                title="Create new channel"
+              >
+                <Plus className="w-5 h-5 text-neutral-600 group-hover:text-primary-600" />
+              </button>
+              <button
+                onClick={() => setShowSidebar(false)}
+                className="md:hidden p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-neutral-600" />
+              </button>
+            </div>
           </div>
 
           {/* Search */}
@@ -392,7 +412,10 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
               {filteredChannels.map((channel) => (
                 <button
                   key={channel.id}
-                  onClick={() => setSelectedChannel(channel)}
+                  onClick={() => {
+                    setSelectedChannel(channel);
+                    setShowSidebar(false); // Close sidebar on mobile when channel selected
+                  }}
                   className={`w-full p-3 rounded-lg text-left transition-colors ${
                     selectedChannel?.id === channel.id
                       ? 'bg-primary-50 border border-primary-200'
@@ -428,6 +451,14 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
           )}
         </div>
       </div>
+
+      {/* Overlay for mobile */}
+      {showSidebar && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setShowSidebar(false)}
+        />
+      )}
 
       {/* Create Channel Modal */}
       {showCreateChannel && (
@@ -548,18 +579,18 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
       )}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col w-full md:w-auto">
         {selectedChannel ? (
           <>
             {/* Chat Header */}
             <div className="p-4 border-b border-neutral-200 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
                   {getChannelIcon(selectedChannel)}
-                  <h3 className="text-lg font-semibold text-neutral-900">{selectedChannel.name}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-neutral-900 truncate">{selectedChannel.name}</h3>
                 </div>
                 {selectedChannel.description && (
-                  <span className="text-sm text-neutral-500">• {selectedChannel.description}</span>
+                  <span className="hidden sm:inline text-sm text-neutral-500">• {selectedChannel.description}</span>
                 )}
               </div>
 
@@ -714,10 +745,10 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
             </div>
 
             {/* Message Composer */}
-            <div className="p-4 border-t border-neutral-200">
-              <div className="flex items-end gap-3">
+            <div className="p-3 sm:p-4 border-t border-neutral-200">
+              <div className="flex items-end gap-2 sm:gap-3">
                 {/* Attachments */}
-                <button className="p-2 hover:bg-neutral-100 rounded-lg transition-colors self-end mb-2">
+                <button className="hidden sm:block p-2 hover:bg-neutral-100 rounded-lg transition-colors self-end mb-2">
                   <Paperclip className="w-5 h-5 text-neutral-600" />
                 </button>
 
@@ -735,7 +766,7 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
                 </div>
 
                 {/* Emoji */}
-                <button className="p-2 hover:bg-neutral-100 rounded-lg transition-colors self-end mb-2">
+                <button className="hidden sm:block p-2 hover:bg-neutral-100 rounded-lg transition-colors self-end mb-2">
                   <Smile className="w-5 h-5 text-neutral-600" />
                 </button>
 
@@ -752,7 +783,7 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
               </div>
 
               <div className="mt-2 text-xs text-neutral-500 flex items-center gap-4">
-                <span>Press Enter to send, Shift+Enter for new line</span>
+                <span className="hidden sm:inline">Press Enter to send, Shift+Enter for new line</span>
               </div>
             </div>
           </>
