@@ -1,23 +1,22 @@
 import { supabase } from './supabase';
 
-// PayU Configuration - No secrets on client-side!
-const PAYU_CONFIG = {
-  payuBaseUrl: import.meta.env.VITE_PAYU_BASE_URL || 'https://test.payu.in', // Use https://secure.payu.in for production
-  mode: import.meta.env.VITE_PAYU_MODE || 'test' // 'test' or 'live'
+// Shopify Configuration - No secrets on client-side!
+const SHOPIFY_CONFIG = {
+  mode: import.meta.env.VITE_SHOPIFY_MODE || 'test' // 'test' or 'live'
 };
 
 // Supabase Edge Functions URLs
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
-const CREATE_HASH_URL = `${SUPABASE_URL}/functions/v1/create-payu-hash`;
-const VERIFY_PAYMENT_URL = `${SUPABASE_URL}/functions/v1/verify-payu-payment`;
+const CREATE_CHECKOUT_URL = `${SUPABASE_URL}/functions/v1/create-shopify-checkout`;
+const VERIFY_ORDER_URL = `${SUPABASE_URL}/functions/v1/verify-shopify-order`;
 
-export interface PaymentRequest {
+export interface ShopifyPaymentRequest {
   amount: number;
   productInfo: string;
+  userId: string;
   firstName: string;
   email: string;
   phone: string;
-  userId: string;
   metadata?: Record<string, any>;
 }
 
@@ -31,27 +30,28 @@ export interface PaymentTransaction {
   payment_gateway: string;
   status: 'pending' | 'success' | 'failed' | 'cancelled';
   payment_method?: string;
-  payu_payment_id?: string;
-  payu_bank_ref_num?: string;
+  shopify_checkout_id?: string;
+  shopify_order_id?: string;
+  shopify_order_number?: string;
   metadata?: Record<string, any>;
   created_at?: string;
   updated_at?: string;
 }
 
 /**
- * Create PayU payment hash via secure Edge Function
+ * Create Shopify checkout via secure Edge Function
  */
-export const createPayUHash = async (
-  paymentRequest: PaymentRequest,
+export const createShopifyCheckout = async (
+  paymentRequest: ShopifyPaymentRequest,
   transactionId: string
-): Promise<{ success: boolean; hash?: string; key?: string; paymentData?: any; transactionId?: string; error?: string }> => {
+): Promise<{ success: boolean; checkoutUrl?: string; checkoutId?: string; transactionId?: string; error?: string }> => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       throw new Error('User not authenticated');
     }
 
-    const response = await fetch(CREATE_HASH_URL, {
+    const response = await fetch(CREATE_CHECKOUT_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -60,42 +60,41 @@ export const createPayUHash = async (
       body: JSON.stringify({
         txnid: transactionId,
         amount: paymentRequest.amount,
-        productinfo: paymentRequest.productInfo,
-        firstname: paymentRequest.firstName,
+        productInfo: paymentRequest.productInfo,
+        firstName: paymentRequest.firstName,
         email: paymentRequest.email,
         phone: paymentRequest.phone,
-        udf1: paymentRequest.userId,
-        udf2: JSON.stringify(paymentRequest.metadata || {}),
+        userId: paymentRequest.userId,
+        metadata: paymentRequest.metadata || {},
       }),
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || 'Failed to create payment hash');
+      throw new Error(result.error || 'Failed to create Shopify checkout');
     }
 
     return {
       success: true,
-      hash: result.hash,
-      key: result.key,
-      paymentData: result.paymentData,
+      checkoutUrl: result.checkoutUrl,
+      checkoutId: result.checkoutId,
       transactionId: result.transactionId,
     };
   } catch (error: any) {
-    console.error('Error creating PayU hash:', error);
+    console.error('Error creating Shopify checkout:', error);
     return {
       success: false,
-      error: error.message || 'Failed to create payment hash',
+      error: error.message || 'Failed to create checkout',
     };
   }
 };
 
 /**
- * Verify PayU response hash via secure Edge Function
+ * Verify Shopify order via secure Edge Function
  */
-export const verifyPayUHash = async (
-  responseData: Record<string, any>,
+export const verifyShopifyOrder = async (
+  checkoutId: string,
   transactionId?: string
 ): Promise<{ success: boolean; verified: boolean; error?: string; transaction?: any }> => {
   try {
@@ -104,14 +103,14 @@ export const verifyPayUHash = async (
       throw new Error('User not authenticated');
     }
 
-    const response = await fetch(VERIFY_PAYMENT_URL, {
+    const response = await fetch(VERIFY_ORDER_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${session.access_token}`,
       },
       body: JSON.stringify({
-        ...responseData,
+        checkoutId,
         transactionId,
       }),
     });
@@ -124,7 +123,7 @@ export const verifyPayUHash = async (
 
     return result;
   } catch (error: any) {
-    console.error('Error verifying PayU hash:', error);
+    console.error('Error verifying Shopify order:', error);
     return {
       success: false,
       verified: false,
@@ -151,8 +150,9 @@ export const createPaymentTransaction = async (
         payment_gateway: paymentData.payment_gateway,
         status: paymentData.status,
         payment_method: paymentData.payment_method,
-        payu_payment_id: paymentData.payu_payment_id,
-        payu_bank_ref_num: paymentData.payu_bank_ref_num,
+        shopify_checkout_id: paymentData.shopify_checkout_id,
+        shopify_order_id: paymentData.shopify_order_id,
+        shopify_order_number: paymentData.shopify_order_number,
         metadata: paymentData.metadata
       })
       .select()
@@ -179,8 +179,9 @@ export const updatePaymentTransaction = async (
       .update({
         status: updates.status,
         payment_method: updates.payment_method,
-        payu_payment_id: updates.payu_payment_id,
-        payu_bank_ref_num: updates.payu_bank_ref_num,
+        shopify_checkout_id: updates.shopify_checkout_id,
+        shopify_order_id: updates.shopify_order_id,
+        shopify_order_number: updates.shopify_order_number,
         metadata: updates.metadata,
         updated_at: new Date().toISOString()
       })
@@ -246,51 +247,32 @@ export const generateTransactionId = (): string => {
 };
 
 /**
- * Initiate PayU payment
+ * Initiate Shopify payment
  */
-export const initiatePayUPayment = async (
-  paymentRequest: PaymentRequest
-): Promise<{ success: boolean; paymentUrl?: string; transactionId?: string; error?: string }> => {
+export const initiateShopifyPayment = async (
+  paymentRequest: ShopifyPaymentRequest
+): Promise<{ success: boolean; checkoutUrl?: string; transactionId?: string; error?: string }> => {
   try {
     // Generate transaction ID
     const transactionId = generateTransactionId();
 
-    // Create PayU hash via Edge Function (this also creates the DB transaction)
-    const hashResult = await createPayUHash(paymentRequest, transactionId);
+    // Create Shopify checkout via Edge Function (this also creates the DB transaction)
+    const checkoutResult = await createShopifyCheckout(paymentRequest, transactionId);
 
-    if (!hashResult.success || !hashResult.paymentData) {
-      throw new Error(hashResult.error || 'Failed to create payment hash. Please ensure Edge Functions are deployed.');
+    if (!checkoutResult.success || !checkoutResult.checkoutUrl) {
+      throw new Error(checkoutResult.error || 'Failed to create checkout. Please ensure Edge Functions are deployed.');
     }
 
-    // Build PayU payment form data with success and failure URLs
-    const paymentData = {
-      ...hashResult.paymentData,
-      surl: `${window.location.origin}/payment/success`,
-      furl: `${window.location.origin}/payment/failure`,
-    };
-
-    // Create a form and submit to PayU
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `${PAYU_CONFIG.payuBaseUrl}/_payment`;
-
-    Object.entries(paymentData).forEach(([key, value]) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value?.toString() || '';
-      form.appendChild(input);
-    });
-
-    document.body.appendChild(form);
-    form.submit();
+    // Redirect to Shopify checkout
+    window.location.href = checkoutResult.checkoutUrl;
 
     return {
       success: true,
-      transactionId: hashResult.transactionId || transactionId
+      checkoutUrl: checkoutResult.checkoutUrl,
+      transactionId: checkoutResult.transactionId || transactionId
     };
   } catch (error: any) {
-    console.error('Error initiating PayU payment:', error);
+    console.error('Error initiating Shopify payment:', error);
     return {
       success: false,
       error: error.message || 'Failed to initiate payment'
@@ -299,53 +281,37 @@ export const initiatePayUPayment = async (
 };
 
 /**
- * Handle PayU payment response (callback from PayU)
+ * Handle Shopify payment response (callback after checkout)
  */
-export const handlePayUResponse = async (
-  responseData: Record<string, any>
+export const handleShopifyResponse = async (
+  checkoutId: string,
+  transactionId?: string
 ): Promise<{ success: boolean; message: string; transaction?: PaymentTransaction }> => {
   try {
-    const {
-      status,
-      txnid,
-      error_Message
-    } = responseData;
-
-    // Verify hash via Edge Function
-    const verification = await verifyPayUHash(responseData);
+    // Verify order via Edge Function
+    const verification = await verifyShopifyOrder(checkoutId, transactionId);
 
     if (!verification.verified) {
-      console.error('Invalid PayU hash received');
+      console.error('Failed to verify Shopify order');
       return {
         success: false,
-        message: verification.error || 'Payment verification failed. Invalid signature.'
+        message: verification.error || 'Order verification failed'
       };
-    }
-
-    // Determine message based on status
-    let message = 'Payment failed';
-
-    if (status === 'success') {
-      message = 'Payment successful';
-    } else if (status === 'failure') {
-      message = error_Message || 'Payment failed';
-    } else if (status === 'cancel') {
-      message = 'Payment cancelled';
     }
 
     // Transaction is already updated by Edge Function
     const transaction = verification.transaction;
 
     return {
-      success: status === 'success',
-      message,
+      success: true,
+      message: 'Order completed successfully',
       transaction: transaction || undefined
     };
   } catch (error: any) {
-    console.error('Error handling PayU response:', error);
+    console.error('Error handling Shopify response:', error);
     return {
       success: false,
-      message: error.message || 'Error processing payment response'
+      message: error.message || 'Error processing order response'
     };
   }
 };
@@ -396,4 +362,4 @@ export const getUserPaymentStats = async (
   }
 };
 
-export { PAYU_CONFIG };
+export { SHOPIFY_CONFIG };

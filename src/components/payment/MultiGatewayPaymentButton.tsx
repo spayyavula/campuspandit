@@ -3,9 +3,11 @@ import { CreditCard, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { initiatePayUPayment, PaymentRequest as PayUPaymentRequest } from '../../utils/payuPayment';
 import { initiateRazorpayPayment, RazorpayPaymentRequest } from '../../utils/razorpayPayment';
 import { initiateInstamojoPayment, InstamojoPaymentRequest } from '../../utils/instamojoPayment';
+import { initiateShopifyPayment, ShopifyPaymentRequest } from '../../utils/shopifyPayment';
+import { initiateTestPaymentWithUI, TestPaymentRequest } from '../../utils/testPayment';
 import { Button } from '../ui';
 
-type PaymentGateway = 'payu' | 'razorpay' | 'instamojo';
+type PaymentGateway = 'test' | 'payu' | 'razorpay' | 'instamojo' | 'shopify';
 
 interface MultiGatewayPaymentButtonProps {
   amount: number;
@@ -44,27 +46,51 @@ const MultiGatewayPaymentButton: React.FC<MultiGatewayPaymentButtonProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [selectedGateway, setSelectedGateway] = useState<PaymentGateway>(defaultGateway);
 
-  const gateways = [
+  interface Gateway {
+    id: PaymentGateway;
+    name: string;
+    logo: string;
+    description: string;
+    available: boolean;
+    recommended?: boolean;
+  }
+
+  const gateways: Gateway[] = [
     {
-      id: 'razorpay' as PaymentGateway,
+      id: 'test',
+      name: 'Test Mode',
+      logo: '🧪',
+      description: 'Demo payment (no real charges)',
+      available: true,
+      recommended: true
+    },
+    {
+      id: 'razorpay',
       name: 'Razorpay',
       logo: '💳',
       description: 'Cards, UPI, Wallets, NetBanking',
       available: true
     },
     {
-      id: 'payu' as PaymentGateway,
+      id: 'payu',
       name: 'PayU',
       logo: '💰',
       description: 'Cards, UPI, EMI, Wallets',
       available: true
     },
     {
-      id: 'instamojo' as PaymentGateway,
+      id: 'instamojo',
       name: 'Instamojo',
       logo: '🛒',
       description: 'Cards, UPI, Wallets',
       available: false // Set to false as it requires backend implementation
+    },
+    {
+      id: 'shopify',
+      name: 'Shopify',
+      logo: '🛍️',
+      description: 'Shopify Checkout - All payment methods',
+      available: true
     }
   ];
 
@@ -85,6 +111,19 @@ const MultiGatewayPaymentButton: React.FC<MultiGatewayPaymentButtonProps> = ({
       let result: { success: boolean; transactionId?: string; error?: string };
 
       switch (selectedGateway) {
+        case 'test':
+          const testRequest: TestPaymentRequest = {
+            amount,
+            productInfo,
+            userId,
+            firstName,
+            email,
+            phone,
+            metadata
+          };
+          result = await initiateTestPaymentWithUI(testRequest);
+          break;
+
         case 'payu':
           const payuRequest: PayUPaymentRequest = {
             amount,
@@ -122,6 +161,19 @@ const MultiGatewayPaymentButton: React.FC<MultiGatewayPaymentButtonProps> = ({
             metadata
           };
           result = await initiateInstamojoPayment(instamojoRequest);
+          break;
+
+        case 'shopify':
+          const shopifyRequest: ShopifyPaymentRequest = {
+            amount,
+            productInfo,
+            userId,
+            firstName,
+            email,
+            phone,
+            metadata
+          };
+          result = await initiateShopifyPayment(shopifyRequest);
           break;
 
         default:
@@ -175,7 +227,14 @@ const MultiGatewayPaymentButton: React.FC<MultiGatewayPaymentButtonProps> = ({
                     <CheckCircle className="w-5 h-5 text-primary-600" />
                   )}
                 </div>
-                <div className="font-semibold text-neutral-900 mb-1">{gateway.name}</div>
+                <div className="font-semibold text-neutral-900 mb-1">
+                  {gateway.name}
+                  {gateway.recommended && (
+                    <span className="ml-2 text-xs bg-success-100 text-success-700 px-2 py-0.5 rounded-full">
+                      Recommended
+                    </span>
+                  )}
+                </div>
                 <div className="text-xs text-neutral-600">{gateway.description}</div>
                 {!gateway.available && (
                   <div className="mt-2 text-xs text-warning-600 font-medium">

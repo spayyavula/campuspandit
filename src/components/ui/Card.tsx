@@ -7,7 +7,23 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
+// Style constants (moved outside to prevent recreation on each render)
+const baseStyles = 'bg-white rounded-lg transition-all duration-200';
+
+const variants = {
+  default: 'border border-neutral-200',
+  bordered: 'border-2 border-neutral-300',
+  elevated: 'shadow-md',
+};
+
+const paddings = {
+  none: '',
+  sm: 'p-4',
+  md: 'p-6',
+  lg: 'p-8',
+};
+
+const Card = React.memo(React.forwardRef<HTMLDivElement, CardProps>(
   (
     {
       variant = 'default',
@@ -19,21 +35,6 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     },
     ref
   ) => {
-    const baseStyles = 'bg-white rounded-lg transition-all duration-200';
-
-    const variants = {
-      default: 'border border-neutral-200',
-      bordered: 'border-2 border-neutral-300',
-      elevated: 'shadow-md',
-    };
-
-    const paddings = {
-      none: '',
-      sm: 'p-4',
-      md: 'p-6',
-      lg: 'p-8',
-    };
-
     const hoverStyles = hoverable ? 'hover:border-primary-300 hover:shadow-lg cursor-pointer' : '';
 
     return (
@@ -46,7 +47,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
       </div>
     );
   }
-);
+));
 
 Card.displayName = 'Card';
 

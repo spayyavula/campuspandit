@@ -35,13 +35,142 @@ const TutorBooking: React.FC = () => {
     loadTutorAndUser();
   }, [tutorId]);
 
+  // Sample tutor data (same as FindTutors and TutorProfile)
+  const getSampleTutorData = (id: string): TutorProfile | null => {
+    const sampleTutors: TutorProfile[] = [
+      {
+        id: 'sample-1',
+        full_name: 'Dr. Priya Sharma',
+        bio: 'IIT Delhi alumna with 8 years of experience teaching Physics for JEE Advanced. Helped 50+ students crack top IITs. Interactive teaching with real-world examples.',
+        country: 'India',
+        timezone: 'Asia/Kolkata',
+        languages: ['English', 'Hindi'],
+        teaching_experience_years: 8,
+        specialization: ['JEE Advanced', 'JEE Main', 'IIT'],
+        subjects: ['Physics', 'Mathematics'],
+        hourly_rate_usd: 1200,
+        average_rating: 4.9,
+        total_reviews: 127,
+        total_sessions: 450,
+        accepts_instant_booking: true,
+        is_active: true,
+        verification_status: 'verified',
+        profile_image_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia'
+      },
+      {
+        id: 'sample-2',
+        full_name: 'Rajesh Kumar',
+        bio: 'NEET coach with 95% success rate. Specialized in Organic Chemistry and Biology. Former professor at Delhi University. Patient and thorough teaching style.',
+        country: 'India',
+        timezone: 'Asia/Kolkata',
+        languages: ['English', 'Hindi', 'Tamil'],
+        teaching_experience_years: 12,
+        specialization: ['NEET', 'CBSE'],
+        subjects: ['Chemistry', 'Biology'],
+        hourly_rate_usd: 900,
+        average_rating: 4.8,
+        total_reviews: 203,
+        total_sessions: 680,
+        accepts_instant_booking: true,
+        is_active: true,
+        verification_status: 'verified',
+        profile_image_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh'
+      },
+      {
+        id: 'sample-3',
+        full_name: 'Ananya Patel',
+        bio: 'Cambridge IGCSE & IB Mathematics specialist. International board expert with students in 15+ countries. Makes complex calculus concepts simple and fun!',
+        country: 'India',
+        timezone: 'Asia/Kolkata',
+        languages: ['English'],
+        teaching_experience_years: 6,
+        specialization: ['Cambridge IGCSE', 'IB'],
+        subjects: ['Mathematics', 'Physics'],
+        hourly_rate_usd: 1500,
+        average_rating: 5.0,
+        total_reviews: 89,
+        total_sessions: 320,
+        accepts_instant_booking: false,
+        is_active: true,
+        verification_status: 'verified',
+        profile_image_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ananya',
+        video_intro_url: 'https://example.com/intro'
+      },
+      {
+        id: 'sample-4',
+        full_name: 'Vikram Singh',
+        bio: 'JEE Mains expert and competitive exam strategist. Gold medalist in Mathematics Olympiad. Focus on problem-solving techniques and time management.',
+        country: 'India',
+        timezone: 'Asia/Kolkata',
+        languages: ['English', 'Hindi', 'Punjabi'],
+        teaching_experience_years: 5,
+        specialization: ['JEE Main', 'CBSE'],
+        subjects: ['Mathematics'],
+        hourly_rate_usd: 800,
+        average_rating: 4.7,
+        total_reviews: 156,
+        total_sessions: 540,
+        accepts_instant_booking: true,
+        is_active: true,
+        verification_status: 'verified',
+        profile_image_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vikram'
+      },
+      {
+        id: 'sample-5',
+        full_name: 'Meera Iyer',
+        bio: 'ICSE/ISC Chemistry wizard with unique teaching methods. Research scholar at IISC Bangalore. Helped 100+ students achieve 95+ in board exams.',
+        country: 'India',
+        timezone: 'Asia/Kolkata',
+        languages: ['English', 'Hindi', 'Kannada'],
+        teaching_experience_years: 7,
+        specialization: ['ICSE', 'ISC', 'CBSE'],
+        subjects: ['Chemistry', 'Physics'],
+        hourly_rate_usd: 1000,
+        average_rating: 4.9,
+        total_reviews: 178,
+        total_sessions: 590,
+        accepts_instant_booking: true,
+        is_active: true,
+        verification_status: 'verified',
+        profile_image_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Meera',
+        video_intro_url: 'https://example.com/intro'
+      },
+      {
+        id: 'sample-6',
+        full_name: 'Arjun Reddy',
+        bio: 'Young IIT Bombay graduate teaching Physics with passion. Relatable teaching style for students. Specializes in problem-solving and conceptual clarity.',
+        country: 'India',
+        timezone: 'Asia/Kolkata',
+        languages: ['English', 'Hindi', 'Telugu'],
+        teaching_experience_years: 3,
+        specialization: ['JEE Main', 'JEE Advanced', 'CBSE'],
+        subjects: ['Physics'],
+        hourly_rate_usd: 600,
+        average_rating: 4.6,
+        total_reviews: 94,
+        total_sessions: 280,
+        accepts_instant_booking: true,
+        is_active: true,
+        verification_status: 'verified',
+        profile_image_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam'
+      }
+    ];
+
+    return sampleTutors.find(t => t.id === id) || null;
+  };
+
   const loadTutorAndUser = async () => {
     try {
       setLoading(true);
-      const [tutorData, { data: { user: userData } }] = await Promise.all([
-        tutorAPI.getTutorById(tutorId!),
-        supabase.auth.getUser()
-      ]);
+      const { data: { user: userData } } = await supabase.auth.getUser();
+
+      // Try to fetch from database first
+      let tutorData = await tutorAPI.getTutor(tutorId!);
+
+      // If not found in database, try sample data
+      if (!tutorData) {
+        tutorData = getSampleTutorData(tutorId!);
+      }
 
       setTutor(tutorData);
       setUser(userData);
@@ -52,6 +181,12 @@ const TutorBooking: React.FC = () => {
       }
     } catch (error) {
       console.error('Error loading tutor:', error);
+      // Fallback to sample data on error
+      const sampleTutor = getSampleTutorData(tutorId!);
+      setTutor(sampleTutor);
+      if (sampleTutor?.subjects && sampleTutor.subjects.length > 0) {
+        setSubject(sampleTutor.subjects[0]);
+      }
     } finally {
       setLoading(false);
     }
@@ -366,7 +501,7 @@ const TutorBooking: React.FC = () => {
                   onSuccess={handleBookingSuccess}
                   onError={handleBookingError}
                   disabled={!isBookingValid()}
-                  defaultGateway="razorpay"
+                  defaultGateway="test"
                   allowGatewaySelection={true}
                   className="mt-6"
                 >

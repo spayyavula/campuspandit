@@ -1,12 +1,14 @@
 import { supabase } from './supabase';
-import CryptoJS from 'crypto-js';
 
-// Razorpay Configuration
+// Razorpay Configuration - No secrets on client-side!
 const RAZORPAY_CONFIG = {
-  keyId: import.meta.env.VITE_RAZORPAY_KEY_ID || '',
-  keySecret: import.meta.env.VITE_RAZORPAY_KEY_SECRET || '',
   mode: import.meta.env.VITE_RAZORPAY_MODE || 'test' // 'test' or 'live'
 };
+
+// Supabase Edge Functions URLs
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const CREATE_ORDER_URL = `${SUPABASE_URL}/functions/v1/create-razorpay-order`;
+const VERIFY_PAYMENT_URL = `${SUPABASE_URL}/functions/v1/verify-razorpay-payment`;
 
 export interface RazorpayPaymentRequest {
   amount: number;
@@ -63,27 +65,49 @@ export const loadRazorpaySDK = (): Promise<boolean> => {
 };
 
 /**
- * Generate Razorpay signature for verification
+ * Verify Razorpay signature via secure Edge Function
  */
-export const generateRazorpaySignature = (
-  orderId: string,
-  paymentId: string
-): string => {
-  const { keySecret } = RAZORPAY_CONFIG;
-  const text = `${orderId}|${paymentId}`;
-  return CryptoJS.HmacSHA256(text, keySecret).toString();
-};
-
-/**
- * Verify Razorpay signature
- */
-export const verifyRazorpaySignature = (
+export const verifyRazorpaySignature = async (
   orderId: string,
   paymentId: string,
-  signature: string
-): boolean => {
-  const generatedSignature = generateRazorpaySignature(orderId, paymentId);
-  return generatedSignature === signature;
+  signature: string,
+  transactionId?: string
+): Promise<{ success: boolean; verified: boolean; error?: string; transaction?: any }> => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error('User not authenticated');
+    }
+
+    const response = await fetch(VERIFY_PAYMENT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        razorpay_order_id: orderId,
+        razorpay_payment_id: paymentId,
+        razorpay_signature: signature,
+        transactionId,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Verification failed');
+    }
+
+    return result;
+  } catch (error: any) {
+    console.error('Error verifying signature:', error);
+    return {
+      success: false,
+      verified: false,
+      error: error.message || 'Verification failed',
+    };
+  }
 };
 
 /**
@@ -201,20 +225,49 @@ export const generateTransactionId = (): string => {
 };
 
 /**
- * Create Razorpay Order (Server-side in production)
- * This is a simplified version for client-side. In production, create orders on backend.
+ * Create Razorpay Order via secure Edge Function
  */
 export const createRazorpayOrder = async (
   amount: number,
   currency: string = 'INR',
-  receipt: string
-): Promise<{ orderId: string; amount: number } | null> => {
+  receipt: string,
+  notes?: Record<string, any>,
+  bookingId?: string,
+  bookingType?: string
+): Promise<{ orderId: string; amount: number; keyId: string; transactionId?: string } | null> => {
   try {
-    // In production, this should be done on the server
-    // For now, we'll use the transaction ID as order ID
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error('User not authenticated');
+    }
+
+    const response = await fetch(CREATE_ORDER_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        amount: amount / 100, // Convert from paise to rupees
+        currency,
+        receipt,
+        notes,
+        bookingId,
+        bookingType,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to create order');
+    }
+
     return {
-      orderId: receipt,
-      amount: amount
+      orderId: result.orderId,
+      amount: result.amount,
+      keyId: result.keyId,
+      transactionId: result.transactionId,
     };
   } catch (error) {
     console.error('Error creating Razorpay order:', error);
@@ -229,11 +282,6 @@ export const initiateRazorpayPayment = async (
   paymentRequest: RazorpayPaymentRequest
 ): Promise<{ success: boolean; transactionId?: string; error?: string }> => {
   try {
-    // Validate configuration
-    if (!RAZORPAY_CONFIG.keyId) {
-      throw new Error('Razorpay Key ID not configured. Please add VITE_RAZORPAY_KEY_ID to environment variables.');
-    }
-
     // Load Razorpay SDK
     const loaded = await loadRazorpaySDK();
     if (!loaded) {
@@ -243,37 +291,22 @@ export const initiateRazorpayPayment = async (
     // Generate transaction ID
     const transactionId = generateTransactionId();
 
-    // Create payment transaction record
-    const transaction = await createPaymentTransaction({
-      user_id: paymentRequest.userId,
-      amount: paymentRequest.amount,
-      currency: 'INR',
-      product_info: paymentRequest.productInfo,
-      transaction_id: transactionId,
-      payment_gateway: 'razorpay',
-      status: 'pending',
-      metadata: paymentRequest.metadata
-    });
-
-    if (!transaction) {
-      throw new Error('Failed to create payment transaction record');
-    }
-
-    // Create Razorpay order
+    // Create Razorpay order via Edge Function (this also creates the DB transaction)
     const order = await createRazorpayOrder(
       paymentRequest.amount * 100, // Razorpay expects amount in paise
       'INR',
-      transactionId
+      transactionId,
+      paymentRequest.metadata
     );
 
     if (!order) {
-      throw new Error('Failed to create Razorpay order');
+      throw new Error('Failed to create Razorpay order. Please ensure Edge Functions are deployed.');
     }
 
     // Configure Razorpay options
     const options = {
-      key: RAZORPAY_CONFIG.keyId,
-      amount: paymentRequest.amount * 100, // Amount in paise
+      key: order.keyId, // Key ID from server
+      amount: order.amount, // Amount in paise from server
       currency: 'INR',
       name: 'CampusPandit',
       description: paymentRequest.productInfo,
@@ -289,40 +322,32 @@ export const initiateRazorpayPayment = async (
       modal: {
         ondismiss: async () => {
           // User closed the modal
-          await updatePaymentTransaction(transactionId, {
-            status: 'cancelled'
-          });
+          if (order.transactionId) {
+            await updatePaymentTransaction(transactionId, {
+              status: 'cancelled'
+            });
+          }
           window.location.href = `/payment/failure?txnid=${transactionId}&status=cancelled`;
         }
       },
       handler: async (response: any) => {
         try {
-          // Payment successful, verify signature
-          const isValid = verifyRazorpaySignature(
+          // Payment successful, verify signature via Edge Function
+          const verification = await verifyRazorpaySignature(
             response.razorpay_order_id,
             response.razorpay_payment_id,
-            response.razorpay_signature
+            response.razorpay_signature,
+            order.transactionId
           );
 
-          if (!isValid) {
-            throw new Error('Invalid payment signature');
+          if (!verification.verified) {
+            throw new Error(verification.error || 'Invalid payment signature');
           }
-
-          // Update transaction
-          await updatePaymentTransaction(transactionId, {
-            status: 'success',
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature
-          });
 
           // Redirect to success page
           window.location.href = `/payment/success?txnid=${transactionId}&razorpay_payment_id=${response.razorpay_payment_id}&razorpay_order_id=${response.razorpay_order_id}&status=success`;
         } catch (error: any) {
           console.error('Payment verification failed:', error);
-          await updatePaymentTransaction(transactionId, {
-            status: 'failed'
-          });
           window.location.href = `/payment/failure?txnid=${transactionId}&status=failed&error=${encodeURIComponent(error.message)}`;
         }
       }
@@ -332,14 +357,16 @@ export const initiateRazorpayPayment = async (
     const razorpay = new window.Razorpay(options);
     razorpay.on('payment.failed', async (response: any) => {
       console.error('Payment failed:', response.error);
-      await updatePaymentTransaction(transactionId, {
-        status: 'failed',
-        metadata: {
-          error_code: response.error.code,
-          error_description: response.error.description,
-          error_reason: response.error.reason
-        }
-      });
+      if (order.transactionId) {
+        await updatePaymentTransaction(transactionId, {
+          status: 'failed',
+          metadata: {
+            error_code: response.error.code,
+            error_description: response.error.description,
+            error_reason: response.error.reason
+          }
+        });
+      }
       window.location.href = `/payment/failure?txnid=${transactionId}&status=failed&error=${encodeURIComponent(response.error.description)}`;
     });
 
