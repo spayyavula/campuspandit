@@ -13,6 +13,8 @@
     "scrape-questions": "node scripts/scrape-questions.js"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "^5.2.0",
+    "@stripe/stripe-js": "^8.1.0",
     "@supabase/supabase-js": "^2.39.0",
     "crypto-js": "^4.2.0",
     "csv-parse": "^6.0.0",

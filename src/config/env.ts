@@ -1,5 +1,9 @@
 // Environment configuration with type safety and validation
-
+export const ENV = {
+    API_URL: 'http://192.168.1.47:8000/api/v1',  // Not localhost!
+    SUPABASE_URL: 'https://ecnrvbyzbfhrorxwxkms.supabase.co',
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjbnJ2Ynl6YmZocm9yeHd4a21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA2MDUwMzQsImV4cCI6MjA2NjE4MTAzNH0.hknG5yowBpViyiTN_ftY_WQ8RL8SJfrGClGdBEvx98U'
+  };
 interface AppConfig {
   app: {
     title: string;

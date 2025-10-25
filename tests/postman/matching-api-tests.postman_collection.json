@@ -1,0 +1,822 @@
+{
+  "info": {
+    "name": "CampusPandit - AI Matching API Tests",
+    "description": "Complete test suite for AI-powered tutor matching system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "student_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tutor_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "match_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Check Matching Service Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Service is healthy', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('healthy');",
+                  "    pm.expect(jsonData.service).to.eql('AI Matching');",
+                  "    pm.expect(jsonData.ai_provider).to.exist;",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/health",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tutor Matching",
+      "item": [
+        {
+          "name": "Find Matching Tutors - Full Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Matches returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('matches');",
+                  "    pm.expect(jsonData.matches).to.be.an('array');",
+                  "    pm.expect(jsonData).to.have.property('total_matches');",
+                  "});",
+                  "",
+                  "pm.test('Matches have correct structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.matches.length > 0) {",
+                  "        const match = jsonData.matches[0];",
+                  "        pm.expect(match).to.have.property('tutor_id');",
+                  "        pm.expect(match).to.have.property('name');",
+                  "        pm.expect(match).to.have.property('match_score');",
+                  "        pm.expect(match).to.have.property('overall_match_percentage');",
+                  "        pm.expect(match).to.have.property('avg_rating');",
+                  "        pm.expect(match).to.have.property('hourly_rate');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Match scores are valid', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.matches.forEach(match => {",
+                  "        pm.expect(match.overall_match_percentage).to.be.at.least(0);",
+                  "        pm.expect(match.overall_match_percentage).to.be.at.most(100);",
+                  "        ",
+                  "        const score = match.match_score;",
+                  "        pm.expect(score.subject_expertise).to.be.at.least(0);",
+                  "        pm.expect(score.subject_expertise).to.be.at.most(1);",
+                  "    });",
+                  "});",
+                  "",
+                  "pm.test('Response time is acceptable', function () {",
+                  "    // AI matching should complete within 5 seconds",
+                  "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"subject\": \"Mathematics\",\n  \"grade_level\": \"10\",\n  \"learning_style\": \"visual\",\n  \"learning_pace\": \"moderate\",\n  \"goals\": [\"improve grades\", \"prepare for exams\"],\n  \"budget_max\": 60,\n  \"preferred_times\": [\"afternoon\", \"evening\"],\n  \"max_results\": 5,\n  \"include_ai_reasoning\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/matching/find-tutors",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "find-tutors"]
+            }
+          }
+        },
+        {
+          "name": "Quick Match - Minimal Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Quick match returns results', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.matches).to.be.an('array');",
+                  "    pm.expect(jsonData.matches.length).to.be.at.most(3);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Physics\",\n  \"budget_max\": 50,\n  \"max_results\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/matching/quick-match",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "quick-match"]
+            }
+          }
+        },
+        {
+          "name": "Find Tutors - Budget Filter Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('All tutors within budget', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.matches.forEach(match => {",
+                  "        pm.expect(match.hourly_rate).to.be.at.most(40);",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"subject\": \"Mathematics\",\n  \"budget_max\": 40,\n  \"max_results\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/matching/find-tutors",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "find-tutors"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tutor Profiles",
+      "item": [
+        {
+          "name": "Create Tutor Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Profile created with correct data', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('user_id');",
+                  "    pm.expect(jsonData.bio).to.exist;",
+                  "    pm.expect(jsonData.subjects).to.be.an('array');",
+                  "    pm.expect(jsonData.hourly_rate_min).to.be.a('number');",
+                  "});",
+                  "",
+                  "// Save tutor_id for later tests",
+                  "pm.collectionVariables.set('tutor_id', pm.response.json().user_id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bio\": \"Experienced math tutor with 5 years of teaching calculus and algebra to high school and college students. I believe in making math fun and accessible through real-world examples and interactive problem-solving.\",\n  \"headline\": \"Expert Math Tutor - Calculus & SAT Specialist\",\n  \"years_experience\": 5,\n  \"education_level\": \"master\",\n  \"subjects\": [\"Mathematics\", \"Calculus\", \"Algebra\"],\n  \"specializations\": [\"AP Calculus AB\", \"AP Calculus BC\", \"SAT Math\"],\n  \"grade_levels\": [\"9-10\", \"11-12\", \"college\"],\n  \"teaching_style\": \"patient\",\n  \"teaching_methods\": [\"visual\", \"interactive\", \"hands-on\"],\n  \"languages\": [\"English\", \"Spanish\"],\n  \"hourly_rate_min\": 40,\n  \"hourly_rate_max\": 60,\n  \"certifications\": [\n    {\n      \"name\": \"Certified Math Teacher\",\n      \"issuer\": \"State Board of Education\",\n      \"year\": 2019\n    }\n  ],\n  \"degrees\": [\n    {\n      \"degree\": \"Master of Education\",\n      \"field\": \"Mathematics Education\",\n      \"institution\": \"University of California\",\n      \"year\": 2020\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/matching/tutors/profile?user_id={{tutor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "tutors", "profile"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{tutor_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tutor Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Profile has all required fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('user_id');",
+                  "    pm.expect(jsonData).to.have.property('bio');",
+                  "    pm.expect(jsonData).to.have.property('subjects');",
+                  "    pm.expect(jsonData).to.have.property('avg_rating');",
+                  "    pm.expect(jsonData).to.have.property('total_reviews');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/tutors/{{tutor_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "tutors", "{{tutor_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List All Tutors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Returns array of tutors', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/tutors?limit=20&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "tutors"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Tutors - With Filters",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('All tutors match filters', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    jsonData.forEach(tutor => {",
+                  "        pm.expect(tutor.subjects).to.include('Mathematics');",
+                  "        pm.expect(tutor.avg_rating).to.be.at.least(4.5);",
+                  "        pm.expect(tutor.hourly_rate_min).to.be.at.most(50);",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/tutors?subject=Mathematics&min_rating=4.5&max_rate=50",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "tutors"],
+              "query": [
+                {
+                  "key": "subject",
+                  "value": "Mathematics"
+                },
+                {
+                  "key": "min_rating",
+                  "value": "4.5"
+                },
+                {
+                  "key": "max_rate",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Tutor Reviews",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Reviews array returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/tutors/{{tutor_id}}/reviews?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "tutors", "{{tutor_id}}", "reviews"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student Profiles",
+      "item": [
+        {
+          "name": "Create Student Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Profile created successfully', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('user_id');",
+                  "    pm.expect(jsonData.grade_level).to.eql('10');",
+                  "    pm.expect(jsonData.primary_goals).to.be.an('array');",
+                  "});",
+                  "",
+                  "// Save student_id",
+                  "pm.collectionVariables.set('student_id', pm.response.json().user_id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"grade_level\": \"10\",\n  \"learning_style\": \"visual\",\n  \"learning_pace\": \"moderate\",\n  \"primary_goals\": [\"improve grades\", \"prepare for SAT\"],\n  \"target_subjects\": [\"Mathematics\", \"Physics\"],\n  \"budget_per_hour\": 60,\n  \"preferred_session_length\": 60,\n  \"timezone\": \"America/New_York\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/matching/students/profile?user_id={{student_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "students", "profile"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "{{student_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Student Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Profile has correct structure', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('learning_style');",
+                  "    pm.expect(jsonData).to.have.property('primary_goals');",
+                  "    pm.expect(jsonData).to.have.property('budget_per_hour');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/students/{{student_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "students", "{{student_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Matching History",
+      "item": [
+        {
+          "name": "Get Matching History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('History is array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/history/{{student_id}}?limit=20&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "history", "{{student_id}}"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Match Feedback",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Feedback submitted', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "    pm.expect(jsonData).to.have.property('match_id');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_id\": \"{{match_id}}\",\n  \"rating\": 5,\n  \"feedback_text\": \"Perfect match! The tutor's teaching style is exactly what I needed.\",\n  \"what_worked\": [\"patient\", \"explains concepts clearly\", \"flexible schedule\"],\n  \"what_didnt_work\": [],\n  \"would_recommend\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/matching/feedback",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "feedback"]
+            }
+          }
+        },
+        {
+          "name": "Mark Tutor Contacted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Contact timestamp updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "    pm.expect(jsonData).to.have.property('contacted_at');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/mark-contacted/{{match_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "mark-contacted", "{{match_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Mark Session Booked",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Booking timestamp updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('success');",
+                  "    pm.expect(jsonData).to.have.property('booked_at');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/mark-booked/{{match_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "mark-booked", "{{match_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Matching Analytics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Analytics data is complete', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('total_matches_generated');",
+                  "    pm.expect(jsonData).to.have.property('success_rate');",
+                  "    pm.expect(jsonData).to.have.property('avg_match_score');",
+                  "    pm.expect(jsonData).to.have.property('top_match_factors');",
+                  "});",
+                  "",
+                  "pm.test('Metrics are valid numbers', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.total_matches_generated).to.be.a('number');",
+                  "    pm.expect(jsonData.success_rate).to.be.at.least(0);",
+                  "    pm.expect(jsonData.success_rate).to.be.at.most(100);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/analytics?days=30",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "analytics"],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Top Tutors - By Match Success",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Top tutors returned', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.at.most(10);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/analytics/top-tutors?limit=10&metric=match_success",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "analytics", "top-tutors"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "metric",
+                  "value": "match_success"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Top Tutors - By Rating",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Tutors sorted by rating', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    let prevRating = 5.0;",
+                  "    jsonData.forEach(tutor => {",
+                  "        pm.expect(tutor.avg_rating).to.be.at.most(prevRating);",
+                  "        prevRating = tutor.avg_rating;",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/matching/analytics/top-tutors?limit=10&metric=avg_rating",
+              "host": ["{{base_url}}"],
+              "path": ["matching", "analytics", "top-tutors"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "metric",
+                  "value": "avg_rating"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

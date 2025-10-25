@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "CampusPandit",
+    "slug": "campuspandit",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.campuspandit.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "CampusPandit needs access to your camera to send photos in chat.",
+        "NSPhotoLibraryUsageDescription": "CampusPandit needs access to your photo library to send images.",
+        "NSMicrophoneUsageDescription": "CampusPandit needs access to your microphone for voice messages."
+      }
+    },
+    "android": {
+      "package": "com.campuspandit.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "plugins": [
+      "expo-notifications",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "CampusPandit needs access to your camera to send photos in chat."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CampusPandit needs access to your photo library to send images."
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "newArchEnabled": true
+  }
+}
