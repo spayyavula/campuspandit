@@ -1,0 +1,27 @@
+# Azure App Service Deployment Configuration
+# This file is used by Azure to deploy your FastAPI backend
+
+name: CampusPandit Backend
+runtime: python|3.11
+
+# App Service Plan
+sku:
+  name: B1  # Basic tier - upgrade to P1V2 for production
+  tier: Basic
+
+# Application settings
+app_settings:
+  - name: SCM_DO_BUILD_DURING_DEPLOYMENT
+    value: "true"
+  - name: ENABLE_ORYX_BUILD
+    value: "true"
+  - name: POST_BUILD_COMMAND
+    value: "python -m alembic upgrade head"
+
+# Startup command
+startup_command: "uvicorn main:app --host 0.0.0.0 --port 8000"
+
+# Health check
+health_check:
+  path: /health
+  interval: 300

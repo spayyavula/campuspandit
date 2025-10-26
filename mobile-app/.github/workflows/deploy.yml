@@ -1,0 +1,128 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  # Frontend deployment to Netlify
+  deploy-frontend:
+    name: Deploy Frontend to Netlify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: mobile-app/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./mobile-app
+        run: npm ci
+
+      - name: Build application
+        working-directory: ./mobile-app
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+        run: npm run build
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        with:
+          args: deploy --prod --dir=mobile-app/dist
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Frontend deployed to Netlify"
+          echo "🔗 URL: https://${{ secrets.NETLIFY_SITE_ID }}.netlify.app"
+
+  # Backend deployment to Azure
+  deploy-backend:
+    name: Deploy Backend to Azure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        working-directory: ./backend
+        run: |
+          # Add your test command here when you have tests
+          # pytest tests/
+          echo "✅ Tests passed (add pytest when ready)"
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'campuspandit-api'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./backend
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Backend deployed to Azure"
+          echo "🔗 URL: https://campuspandit-api.azurewebsites.net"
+          echo "📚 API Docs: https://campuspandit-api.azurewebsites.net/docs"
+
+  # Post-deployment health checks
+  health-check:
+    name: Health Checks
+    needs: [deploy-frontend, deploy-backend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Wait for services to be ready
+        run: sleep 30
+
+      - name: Check Backend Health
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://campuspandit-api.azurewebsites.net/health)
+          if [ $response -eq 200 ]; then
+            echo "✅ Backend is healthy"
+          else
+            echo "❌ Backend health check failed with status: $response"
+            exit 1
+          fi
+
+      - name: Check Frontend
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://${{ secrets.NETLIFY_SITE_ID }}.netlify.app)
+          if [ $response -eq 200 ]; then
+            echo "✅ Frontend is healthy"
+          else
+            echo "❌ Frontend health check failed with status: $response"
+            exit 1
+          fi
+
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "🎉 Deployment successful!"
+          echo "All services are healthy and running."

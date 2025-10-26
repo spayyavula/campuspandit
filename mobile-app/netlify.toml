@@ -1,0 +1,28 @@
+# Netlify Configuration for CampusPandit Frontend
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://campuspandit-api.azurewebsites.net/:splat"
+  status = 200
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+[context.production.environment]
+  VITE_API_URL = "https://campuspandit-api.azurewebsites.net"
