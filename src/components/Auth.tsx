@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, ArrowRight, Mail, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { authAPI, APIError } from '../services/api';
 
 interface AuthProps {
   onAuthStateChange?: (user: any) => void;
@@ -24,67 +24,43 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
 
     try {
       if (mode === 'signup') {
-        const { data, error } = await supabase.auth.signUp({
+        // Call backend API for signup
+        const response = await authAPI.signup({
           email,
           password,
-          options: {
-            data: {
-              name: name,
-              role: role, // Pass selected role to user metadata
-            },
-          },
+          first_name: name,
+          role: role,
         });
-
-        if (error) throw error;
-
-        // Assign role manually since trigger isn't working
-        if (data.user) {
-          try {
-            // Get the role ID
-            const { data: roleData } = await supabase
-              .from('roles')
-              .select('id')
-              .eq('name', role)
-              .single();
-
-            if (roleData) {
-              // Assign the role to the user
-              await supabase
-                .from('user_roles')
-                .insert({
-                  user_id: data.user.id,
-                  role_id: roleData.id,
-                  is_active: true
-                });
-            }
-          } catch (roleError) {
-            console.warn('Could not assign role automatically:', roleError);
-            // Don't fail signup if role assignment fails
-          }
-        }
 
         setMessage({
           type: 'success',
-          text: 'Account created! Please check your email to verify your account.',
+          text: 'Account created successfully! You can now log in.',
         });
 
-        // Auto-switch to login after 2 seconds
+        if (onAuthStateChange && response.user) {
+          onAuthStateChange(response.user);
+        }
+
+        // Auto-switch to login after 2 seconds or redirect if verified
         setTimeout(() => {
-          setMode('login');
-          setPassword('');
+          if (response.user.is_verified) {
+            navigate('/coach');
+          } else {
+            setMode('login');
+            setPassword('');
+          }
         }, 2000);
       } else if (mode === 'login') {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        // Call backend API for login
+        const response = await authAPI.login({
           email,
           password,
         });
 
-        if (error) throw error;
-
         setMessage({ type: 'success', text: 'Login successful!' });
 
-        if (onAuthStateChange && data.user) {
-          onAuthStateChange(data.user);
+        if (onAuthStateChange && response.user) {
+          onAuthStateChange(response.user);
         }
 
         // Redirect to coach page
@@ -92,11 +68,8 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           navigate('/coach');
         }, 500);
       } else if (mode === 'reset') {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth`,
-        });
-
-        if (error) throw error;
+        // Call backend API for password reset
+        await authAPI.requestPasswordReset(email);
 
         setMessage({
           type: 'success',
@@ -105,9 +78,18 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
       }
     } catch (error: any) {
       console.error('Auth error:', error);
+
+      let errorMessage = 'Something went wrong. Please try again.';
+
+      if (error instanceof APIError) {
+        errorMessage = error.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       setMessage({
         type: 'error',
-        text: error.message || error.error_description || 'Something went wrong. Please try again.',
+        text: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -260,11 +242,11 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter your password"
-                    minLength={6}
+                    minLength={8}
                   />
                 </div>
                 {mode === 'signup' && (
-                  <p className="mt-1 text-xs text-neutral-500">Must be at least 6 characters</p>
+                  <p className="mt-1 text-xs text-neutral-500">Must be at least 8 characters with uppercase, lowercase, and a digit</p>
                 )}
               </div>
             )}
