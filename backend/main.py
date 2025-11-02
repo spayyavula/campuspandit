@@ -15,7 +15,7 @@ from app.core.database import engine, Base
 from app.api.v1 import api_router
 
 # Import models to create tables
-from app.models import scheduling, users, payments
+from app.models import scheduling, tutors
 
 
 @asynccontextmanager
@@ -26,11 +26,11 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"Database: {settings.DATABASE_URL[:30]}...")
 
-    # Create database tables
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Create database tables (commented out for quick start without DB)
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.create_all)
 
-    logger.info("✅ Database tables created/verified")
+    logger.info("✅ Database tables skipped (development mode)")
     logger.info("✅ Application startup complete")
 
     yield
