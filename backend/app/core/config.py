@@ -34,6 +34,9 @@ class Settings(BaseSettings):
         "http://localhost:8080",
         "https://campuspandit.com",
         "https://www.campuspandit.com",
+        "https://campuspandit.ai",
+        "https://www.campuspandit.ai",
+        "https://ambitious-river-04fdcd510.azurestaticapps.net",
     ]
 
     # AI Services
