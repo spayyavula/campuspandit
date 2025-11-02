@@ -192,6 +192,25 @@ az webapp config set \
   --health-check-path "/health"
 ```
 
+#### Step 9.5: Enable Always On Mode
+
+**IMPORTANT:** Always On keeps your app loaded even when there's no traffic, preventing cold starts and ensuring faster response times.
+
+```bash
+az webapp config set \
+  --name campuspandit-api \
+  --resource-group campuspandit-rg \
+  --always-on true
+```
+
+**Benefits:**
+- Prevents cold starts
+- Keeps app instances warm and ready
+- Faster first request response times
+- Better user experience
+
+**Note:** Always On requires Basic (B1) tier or higher. It's NOT available on Free (F1) tier.
+
 ## Database Setup
 
 ### Option 1: Azure Database for PostgreSQL

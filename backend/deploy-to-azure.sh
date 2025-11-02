@@ -123,6 +123,14 @@ az webapp config set \
 echo -e "${GREEN}✓ Health check configured${NC}"
 
 echo ""
+echo -e "${GREEN}Step 6.5: Enabling Always On...${NC}"
+az webapp config set \
+    --name $APP_NAME \
+    --resource-group $RESOURCE_GROUP \
+    --always-on true
+echo -e "${GREEN}✓ Always On enabled (prevents cold starts)${NC}"
+
+echo ""
 echo -e "${GREEN}Step 7: Enabling Logging...${NC}"
 az webapp log config \
     --name $APP_NAME \

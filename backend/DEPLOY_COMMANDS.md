@@ -166,6 +166,27 @@ az webapp config set `
   --health-check-path "/health"
 ```
 
+### Step 9.5: Enable Always On Mode
+
+**IMPORTANT:** This keeps your app loaded even when there's no traffic, preventing cold starts.
+
+```bash
+az webapp config set \
+  --name $APP_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --always-on true
+```
+
+**PowerShell:**
+```powershell
+az webapp config set `
+  --name $APP_NAME `
+  --resource-group $RESOURCE_GROUP `
+  --always-on true
+```
+
+**Note:** Always On is NOT available on the Free (F1) tier. It requires Basic (B1) or higher.
+
 ### Step 10: Enable Logging
 
 ```bash
