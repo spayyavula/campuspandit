@@ -4,7 +4,7 @@ import {
   BookOpen, Brain, Target, Users, MessageCircle, BarChart3,
   Settings, LogOut, Menu, X, Notebook, GraduationCap, Book
 } from 'lucide-react';
-import { supabase } from '../utils/supabase';
+import { authAPI } from '../services/api';
 
 interface NavigationProps {
   currentPage?: string;
@@ -16,7 +16,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      authAPI.logout();
       navigate('/auth');
     } catch (error) {
       console.error('Error signing out:', error);

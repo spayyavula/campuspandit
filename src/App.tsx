@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { supabase } from './utils/supabase';
+import { authAPI } from './services/api';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Loading Component
@@ -65,19 +65,15 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
-    });
+    // Check if user is authenticated on mount
+    const currentUser = authAPI.getCurrentUser();
+    const isAuthenticated = authAPI.isAuthenticated();
 
-    // Check initial session
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user || null);
-      setLoading(false);
-    });
+    if (isAuthenticated && currentUser) {
+      setUser(currentUser);
+    }
 
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
+    setLoading(false);
   }, []);
 
   // Show loading state
