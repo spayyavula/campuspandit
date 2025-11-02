@@ -15,7 +15,7 @@ from app.core.database import engine, Base
 from app.api.v1 import api_router
 
 # Import models to create tables
-from app.models import scheduling, tutors
+from app.models import scheduling, tutors, user
 
 
 @asynccontextmanager
