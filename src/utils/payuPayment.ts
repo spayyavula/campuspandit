@@ -12,8 +12,11 @@ export interface PaymentTransaction {
   payment_method: string;
   transaction_id: string;
   description: string;
-  created_at: string;
+  product_info: string;
+  created_at?: string;
   updated_at: string;
+  payu_payment_id?: string;
+  payu_bank_ref_num?: string;
 }
 
 export interface PaymentStats {
@@ -84,4 +87,27 @@ export async function verifyPayUPayment(transactionId: string): Promise<{
     status: 'pending',
     message: 'Payment verification not yet implemented'
   };
+}
+
+/**
+ * Handle PayU payment response
+ */
+export async function handlePayUResponse(responseData: Record<string, any>): Promise<{
+  success: boolean;
+  message: string;
+  transaction?: PaymentTransaction;
+}> {
+  // TODO: Implement actual PayU response handling
+  return {
+    success: false,
+    message: 'PayU response handling not yet implemented'
+  };
+}
+
+/**
+ * Get payment transaction by ID
+ */
+export async function getPaymentTransaction(transactionId: string): Promise<PaymentTransaction | null> {
+  // TODO: Implement actual transaction fetching
+  return null;
 }
