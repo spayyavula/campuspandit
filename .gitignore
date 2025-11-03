@@ -31,3 +31,14 @@ dist-ssr
 # Deployment archives
 deploy*.zip
 deploy*.tar.gz
+*.zip
+*.tar.gz
+
+# Backend
+backend/migrations/
+backend/azure-logs/
+
+# Documentation and setup files
+API_DOMAIN_SETUP.md
+DEPLOYMENT_STATUS.md
+backend/apply_schema.py
