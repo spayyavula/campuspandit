@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "main.py",
+      "src": "simple_main.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "main.py"
+      "dest": "simple_main.py"
     }
   ],
   "env": {
@@ -17,7 +17,7 @@
     "DEBUG": "false"
   },
   "functions": {
-    "main.py": {
+    "simple_main.py": {
       "maxDuration": 30
     }
   }
