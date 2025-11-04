@@ -15,10 +15,5 @@
   "env": {
     "ENVIRONMENT": "production",
     "DEBUG": "false"
-  },
-  "functions": {
-    "simple_main.py": {
-      "maxDuration": 30
-    }
   }
 }
