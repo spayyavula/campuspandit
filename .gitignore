@@ -38,6 +38,12 @@ deploy*.tar.gz
 backend/migrations/
 backend/azure-logs/
 
+# Azure PostgreSQL sensitive files
+azure-postgresql-connection.txt
+temp_migration_header.sql
+backup-*.sql
+*-backup.sql
+
 # Documentation and setup files
 API_DOMAIN_SETUP.md
 DEPLOYMENT_STATUS.md
