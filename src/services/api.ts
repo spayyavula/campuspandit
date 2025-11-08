@@ -75,6 +75,21 @@ async function fetchAPI<T>(
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+
+      // Handle Pydantic validation errors (422 status with detail array)
+      if (Array.isArray(error.detail)) {
+        // Extract and format validation error messages
+        const messages = error.detail.map((err: any) => {
+          if (err.msg) {
+            // Include field location if available
+            const field = err.loc && err.loc.length > 1 ? err.loc[err.loc.length - 1] : '';
+            return field ? `${field}: ${err.msg}` : err.msg;
+          }
+          return 'Validation error';
+        });
+        throw new APIError(response.status, messages.join(', '));
+      }
+
       throw new APIError(response.status, error.detail || error.message || 'Request failed');
     }
 
