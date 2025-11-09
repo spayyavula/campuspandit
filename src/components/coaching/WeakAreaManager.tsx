@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, CheckCircle, Clock, TrendingUp, AlertCircle, BookOpen, Target, RefreshCw, Plus, X } from 'lucide-react';
-import { supabase } from '../../utils/supabase';
 import {
   getWeakAreas,
-  getUpcomingRepetitions,
-  scheduleRepetitions,
-  completeRepetition,
-  updateWeakArea,
+  getUpcomingRepetitions
+} from '../../services/coaching';
+import type {
   WeakArea,
   RepetitionSchedule
 } from '../../utils/coachingAI';
@@ -64,23 +62,21 @@ const WeakAreaManager: React.FC<WeakAreaManagerProps> = ({ studentId }) => {
 
   const loadRepetitionsForArea = async (weakAreaId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('repetition_schedule')
-        .select('*')
-        .eq('weak_area_id', weakAreaId)
-        .order('scheduled_date', { ascending: true });
-
-      if (error) throw error;
-      setRepetitions(data || []);
+      // MVP: Load all upcoming repetitions and filter by weak area
+      const data = await getUpcomingRepetitions(studentId, 30);
+      // Filter repetitions for this specific weak area
+      const areaRepetitions = data.filter((r: any) => r.weak_area_id === weakAreaId);
+      setRepetitions(areaRepetitions || []);
     } catch (error) {
       console.error('Error loading repetitions:', error);
+      setRepetitions([]);
     }
   };
 
   const handleScheduleRepetitions = async (weakAreaId: string) => {
     try {
-      await scheduleRepetitions(weakAreaId, studentId);
-      await loadRepetitionsForArea(weakAreaId);
+      // MVP: This feature is not yet implemented in the backend
+      alert('Scheduling repetitions will be available soon! For now, the AI Coach will automatically schedule them.');
     } catch (error) {
       console.error('Error scheduling repetitions:', error);
       alert('Failed to schedule repetitions');
@@ -102,17 +98,9 @@ const WeakAreaManager: React.FC<WeakAreaManagerProps> = ({ studentId }) => {
     if (!selectedRepetition) return;
 
     try {
-      await completeRepetition(
-        selectedRepetition.id,
-        completionForm.accuracy,
-        completionForm.problemsAttempted,
-        completionForm.problemsSolved,
-        completionForm.notes
-      );
-
+      // MVP: This feature is not yet implemented in the backend
+      alert('Completing repetitions will be available soon! The AI Coach will track your progress automatically.');
       setShowCompleteModal(false);
-      await loadRepetitionsForArea(selectedArea!.id);
-      await loadWeakAreas();
     } catch (error) {
       console.error('Error completing repetition:', error);
       alert('Failed to complete repetition');
@@ -131,13 +119,9 @@ const WeakAreaManager: React.FC<WeakAreaManagerProps> = ({ studentId }) => {
     if (!selectedArea) return;
 
     try {
-      await updateWeakArea(selectedArea.id, {
-        student_notes: notesForm.studentNotes,
-        tutor_notes: notesForm.tutorNotes
-      } as Partial<WeakArea>);
-
+      // MVP: This feature is not yet implemented in the backend
+      alert('Saving notes will be available soon!');
       setShowNotesModal(false);
-      await loadWeakAreas();
     } catch (error) {
       console.error('Error saving notes:', error);
       alert('Failed to save notes');
@@ -148,13 +132,8 @@ const WeakAreaManager: React.FC<WeakAreaManagerProps> = ({ studentId }) => {
     if (!confirm('Are you sure you want to mark this weak area as resolved?')) return;
 
     try {
-      await updateWeakArea(weakAreaId, {
-        status: 'resolved',
-        resolved_at: new Date().toISOString()
-      } as Partial<WeakArea>);
-
-      await loadWeakAreas();
-      setSelectedArea(null);
+      // MVP: This feature is not yet implemented in the backend
+      alert('Marking weak areas as resolved will be available soon!');
     } catch (error) {
       console.error('Error marking as resolved:', error);
       alert('Failed to update weak area');

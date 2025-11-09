@@ -4,7 +4,7 @@ Includes all API endpoints for CampusPandit backend
 """
 
 from fastapi import APIRouter
-from app.api.v1.endpoints import matching, chat, auth, channels
+from app.api.v1.endpoints import matching, chat, auth, channels, coaching
 
 api_router = APIRouter()
 
@@ -13,6 +13,7 @@ api_router.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 api_router.include_router(matching.router, tags=["AI Matching"])
 api_router.include_router(chat.router, tags=["Chat & Messaging"])
 api_router.include_router(channels.router, prefix="/channels", tags=["Channels & Messaging"])
+api_router.include_router(coaching.router, prefix="/coaching", tags=["AI Coaching"])
 
 # Add other routers here as they're created
 # api_router.include_router(scheduling.router, tags=["Scheduling"])

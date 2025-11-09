@@ -18,10 +18,9 @@ import LandingPage from './components/LandingPage';
 import { Auth } from './components/Auth';
 
 // Lazy load all other routes for better performance
-// Coaching - Temporarily disabled (Supabase migration in progress)
-// const AICoach = lazy(() => import('./components/coaching/AICoach'));
-// const WeakAreaManager = lazy(() => import('./components/coaching/WeakAreaManager'));
-import ComingSoon from './components/ComingSoon';
+// Coaching
+const AICoach = lazy(() => import('./components/coaching/AICoach'));
+const WeakAreaManager = lazy(() => import('./components/coaching/WeakAreaManager'));
 
 // Tutoring
 const FindTutors = lazy(() => import('./components/tutoring/FindTutors'));
@@ -93,11 +92,11 @@ const App: React.FC = () => {
           <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/auth" element={!user ? <Auth onAuthStateChange={setUser} /> : <Navigate to="/messages" />} />
+          <Route path="/auth" element={!user ? <Auth onAuthStateChange={setUser} /> : <Navigate to="/coach" />} />
 
           {/* Protected Routes - Student */}
-          <Route path="/coach" element={user ? <ComingSoon featureName="AI Coach" /> : <Navigate to="/auth" />} />
-          <Route path="/weak-areas" element={user ? <ComingSoon featureName="Weak Area Manager" /> : <Navigate to="/auth" />} />
+          <Route path="/coach" element={user ? <AICoach studentId={user.id} /> : <Navigate to="/auth" />} />
+          <Route path="/weak-areas" element={user ? <WeakAreaManager studentId={user.id} /> : <Navigate to="/auth" />} />
           <Route path="/tutors" element={user ? <FindTutors /> : <Navigate to="/auth" />} />
           <Route path="/tutor/profile/:tutorId" element={user ? <TutorProfile /> : <Navigate to="/auth" />} />
           <Route path="/tutoring/tutor/:tutorId" element={user ? <TutorBooking /> : <Navigate to="/auth" />} />

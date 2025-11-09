@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Brain, TrendingUp, Target, Clock, CheckCircle, AlertCircle, Flame, Trophy, Calendar } from 'lucide-react';
+import { Brain, TrendingUp, Target, Clock, CheckCircle, AlertCircle, Flame, Trophy, Calendar, BookOpen } from 'lucide-react';
 import Navigation from '../Navigation';
 import {
   getWeakAreas,
@@ -11,7 +11,9 @@ import {
   generateDailyCoachingSession,
   performComprehensiveWeakAreaAnalysis,
   markCoachingSessionViewed,
-  updateRecommendationStatus,
+  updateRecommendationStatus
+} from '../../services/coaching';
+import type {
   WeakArea,
   CoachingSession,
   CoachingRecommendation,
