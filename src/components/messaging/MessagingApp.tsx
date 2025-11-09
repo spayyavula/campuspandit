@@ -33,6 +33,7 @@ import {
   addReaction,
   updateMessage,
   deleteMessage,
+  createChannel,
   Channel,
   Message
 } from '../../utils/messagingAPI';
