@@ -35,7 +35,7 @@ router = APIRouter()
 # CHANNEL ENDPOINTS
 # =====================================================
 
-@router.get("/channels", response_model=List[ChannelResponse])
+@router.get("/", response_model=List[ChannelResponse])
 async def get_user_channels(
     current_user_id: UUID = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -79,7 +79,7 @@ async def get_user_channels(
     return channel_responses
 
 
-@router.post("/channels", response_model=ChannelResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ChannelResponse, status_code=status.HTTP_201_CREATED)
 async def create_channel(
     request: ChannelCreate,
     current_user_id: UUID = Depends(get_current_user),
@@ -131,7 +131,7 @@ async def create_channel(
     )
 
 
-@router.post("/channels/direct", response_model=ChannelResponse)
+@router.post("/direct", response_model=ChannelResponse)
 async def get_or_create_direct_message(
     request: DirectMessageCreate,
     current_user_id: UUID = Depends(get_current_user),
@@ -212,7 +212,7 @@ async def get_or_create_direct_message(
     )
 
 
-@router.get("/channels/{channel_id}", response_model=ChannelResponse)
+@router.get("/{channel_id}", response_model=ChannelResponse)
 async def get_channel(
     channel_id: UUID,
     current_user_id: UUID = Depends(get_current_user),
@@ -256,7 +256,7 @@ async def get_channel(
     )
 
 
-@router.patch("/channels/{channel_id}", response_model=ChannelResponse)
+@router.patch("/{channel_id}", response_model=ChannelResponse)
 async def update_channel(
     channel_id: UUID,
     request: ChannelUpdate,
@@ -318,7 +318,7 @@ async def update_channel(
 # MESSAGE ENDPOINTS
 # =====================================================
 
-@router.get("/channels/{channel_id}/messages", response_model=List[MessageResponse])
+@router.get("/{channel_id}/messages", response_model=List[MessageResponse])
 async def get_channel_messages(
     channel_id: UUID,
     current_user_id: UUID = Depends(get_current_user),
@@ -365,7 +365,7 @@ async def get_channel_messages(
     return [MessageResponse.from_orm(msg) for msg in messages]
 
 
-@router.post("/channels/{channel_id}/messages", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/{channel_id}/messages", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 async def send_message(
     channel_id: UUID,
     request: MessageCreate,
@@ -432,7 +432,7 @@ async def send_message(
     return MessageResponse.from_orm(message)
 
 
-@router.patch("/channels/{channel_id}/messages/{message_id}", response_model=MessageResponse)
+@router.patch("/{channel_id}/messages/{message_id}", response_model=MessageResponse)
 async def update_message(
     channel_id: UUID,
     message_id: UUID,
@@ -477,7 +477,7 @@ async def update_message(
     return MessageResponse.from_orm(message)
 
 
-@router.delete("/channels/{channel_id}/messages/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{channel_id}/messages/{message_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_message(
     channel_id: UUID,
     message_id: UUID,
@@ -521,7 +521,7 @@ async def delete_message(
 # MEMBER ENDPOINTS
 # =====================================================
 
-@router.post("/channels/{channel_id}/members")
+@router.post("/{channel_id}/members")
 async def add_channel_members(
     channel_id: UUID,
     request: ChannelMemberAdd,
@@ -584,7 +584,7 @@ async def add_channel_members(
     return {"message": f"Added {added_count} members"}
 
 
-@router.patch("/channels/{channel_id}/members/me")
+@router.patch("/{channel_id}/members/me")
 async def update_my_membership(
     channel_id: UUID,
     request: ChannelMemberUpdate,
@@ -626,7 +626,7 @@ async def update_my_membership(
     return {"message": "Membership updated"}
 
 
-@router.post("/channels/{channel_id}/read")
+@router.post("/{channel_id}/read")
 async def mark_channel_as_read(
     channel_id: UUID,
     request: MarkAsReadRequest,
@@ -666,7 +666,7 @@ async def mark_channel_as_read(
 # REACTION ENDPOINTS
 # =====================================================
 
-@router.post("/channels/{channel_id}/messages/{message_id}/reactions")
+@router.post("/{channel_id}/messages/{message_id}/reactions")
 async def add_reaction(
     channel_id: UUID,
     message_id: UUID,
@@ -725,7 +725,7 @@ async def add_reaction(
     return {"message": "Reaction added"}
 
 
-@router.delete("/channels/{channel_id}/messages/{message_id}/reactions/{emoji}")
+@router.delete("/{channel_id}/messages/{message_id}/reactions/{emoji}")
 async def remove_reaction(
     channel_id: UUID,
     message_id: UUID,

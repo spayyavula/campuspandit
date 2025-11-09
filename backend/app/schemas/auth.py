@@ -3,6 +3,8 @@ Authentication Schemas
 Pydantic schemas for authentication requests and responses
 """
 
+from __future__ import annotations
+
 from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional
 from datetime import datetime
@@ -38,14 +40,6 @@ class LoginRequest(BaseModel):
     password: str
 
 
-class TokenResponse(BaseModel):
-    """JWT token response"""
-    access_token: str
-    token_type: str = "bearer"
-    expires_in: int
-    user: "UserResponse"
-
-
 class UserResponse(BaseModel):
     """User response"""
     id: str
@@ -61,6 +55,14 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class TokenResponse(BaseModel):
+    """JWT token response"""
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    user: UserResponse
 
 
 class VerifyEmailRequest(BaseModel):
