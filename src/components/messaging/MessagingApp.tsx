@@ -113,30 +113,12 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
       );
     });
 
-    // Subscribe to message deletions
-    const deleteSubscription = supabase
-      .channel(`message-deletes:${selectedChannel.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `channel_id=eq.${selectedChannel.id}`
-        },
-        (payload) => {
-          // Check if message was deleted (is_deleted = true)
-          if (payload.new.is_deleted) {
-            setMessages(prev => prev.filter(msg => msg.id !== payload.new.id));
-          }
-        }
-      )
-      .subscribe();
+    // Note: Real-time message deletions will be implemented with WebSockets in the future
+    // For now, deleted messages will be reflected when the page is refreshed
 
     return () => {
       insertSubscription.unsubscribe();
       updateSubscription.unsubscribe();
-      deleteSubscription.unsubscribe();
     };
   }, [selectedChannel, userId]);
 
