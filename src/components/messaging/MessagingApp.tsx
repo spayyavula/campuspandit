@@ -21,7 +21,6 @@ import {
   Trash2,
   Menu
 } from 'lucide-react';
-import { supabase } from '../../utils/supabase';
 import {
   getUserChannels,
   getChannelMessages,
@@ -274,28 +273,14 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
 
     try {
       setCreating(true);
-      const { data, error } = await supabase
-        .from('channels')
-        .insert({
-          name: newChannelName.trim(),
-          description: newChannelDescription.trim() || null,
-          is_private: newChannelType === 'private',
-          channel_type: 'group',
-          created_by: userId
-        })
-        .select()
-        .single();
 
-      if (error) throw error;
-
-      // Add creator as member
-      if (data) {
-        await supabase.from('channel_members').insert({
-          channel_id: data.id,
-          user_id: userId,
-          role: 'admin'
-        });
-      }
+      // Use the backend API
+      await createChannel({
+        name: newChannelName.trim(),
+        description: newChannelDescription.trim() || undefined,
+        channel_type: 'group',
+        is_private: newChannelType === 'private'
+      });
 
       // Reset form and close modal
       setNewChannelName('');
@@ -307,13 +292,7 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
       await loadChannels();
     } catch (error: any) {
       console.error('Error creating channel:', error);
-      console.error('Error details:', {
-        message: error?.message,
-        details: error?.details,
-        hint: error?.hint,
-        code: error?.code
-      });
-      alert(`Failed to create channel: ${error?.message || 'Unknown error'}. Check console for details.`);
+      alert(`Failed to create channel: ${error?.message || 'Unknown error'}`);
     } finally {
       setCreating(false);
     }
