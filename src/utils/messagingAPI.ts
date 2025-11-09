@@ -1,6 +1,3 @@
-import { supabase } from './supabase';
-import { RealtimeChannel } from '@supabase/supabase-js';
-
 // =====================================================
 // TYPES
 // =====================================================
@@ -21,11 +18,10 @@ export interface Channel {
   last_message_at?: string;
   created_at: string;
   updated_at: string;
+  my_membership?: ChannelMember;
 }
 
 export interface ChannelMember {
-  id: string;
-  channel_id: string;
   user_id: string;
   role: 'owner' | 'admin' | 'member' | 'guest';
   notifications_enabled: boolean;
@@ -35,7 +31,6 @@ export interface ChannelMember {
   last_read_at: string;
   unread_count: number;
   joined_at: string;
-  last_viewed_at: string;
 }
 
 export interface Message {
@@ -59,6 +54,7 @@ export interface Message {
   reaction_count: number;
   created_at: string;
   updated_at: string;
+  reactions?: MessageReaction[];
   user?: {
     id: string;
     email: string;
@@ -67,11 +63,55 @@ export interface Message {
 }
 
 export interface MessageReaction {
-  id: string;
-  message_id: string;
-  user_id: string;
   emoji: string;
+  user_id: string;
   created_at: string;
+}
+
+// =====================================================
+// API CONFIGURATION
+// =====================================================
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://campuspandit-backend.delightfulpond-e2c9744c.eastus.azurecontainerapps.io';
+const API_VERSION = '/api/v1';
+
+/**
+ * Get authentication token from localStorage
+ */
+function getAuthToken(): string | null {
+  return localStorage.getItem('auth_token');
+}
+
+/**
+ * Make authenticated API request
+ */
+async function apiRequest<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = getAuthToken();
+
+  if (!token) {
+    throw new Error('Not authenticated');
+  }
+
+  const url = `${API_BASE_URL}${API_VERSION}${endpoint}`;
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ detail: 'An error occurred' }));
+    throw new Error(errorData.detail || `API request failed: ${response.statusText}`);
+  }
+
+  return response.json();
 }
 
 // =====================================================
@@ -81,16 +121,9 @@ export interface MessageReaction {
 /**
  * Get all channels for the current user
  */
-export async function getUserChannels(userId: string) {
+export async function getUserChannels(userId?: string): Promise<Channel[]> {
   try {
-    const { data, error } = await supabase
-      .from('user_channels_with_unread')
-      .select('*')
-      .eq('user_id', userId)
-      .order('last_message_at', { ascending: false });
-
-    if (error) throw error;
-    return data;
+    return await apiRequest<Channel[]>('/channels');
   } catch (error) {
     console.error('Error fetching user channels:', error);
     throw error;
@@ -108,26 +141,13 @@ export async function createChannel(channel: {
   subject?: string;
   topic?: string;
   tutor_id?: string;
-}) {
+  member_ids?: string[];
+}): Promise<Channel> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
-
-    const { data, error } = await supabase
-      .from('channels')
-      .insert({
-        ...channel,
-        created_by: user.id
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    // Add creator as owner
-    await addChannelMember(data.id, user.id, 'owner');
-
-    return data;
+    return await apiRequest<Channel>('/channels', {
+      method: 'POST',
+      body: JSON.stringify(channel),
+    });
   } catch (error) {
     console.error('Error creating channel:', error);
     throw error;
@@ -137,60 +157,12 @@ export async function createChannel(channel: {
 /**
  * Get or create direct message channel between two users
  */
-export async function getOrCreateDirectMessage(otherUserId: string) {
+export async function getOrCreateDirectMessage(otherUserId: string): Promise<Channel> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
-
-    const [user1Id, user2Id] = [user.id, otherUserId].sort();
-
-    // Check if DM already exists
-    const { data: existingDM } = await supabase
-      .from('direct_messages')
-      .select('channel_id')
-      .eq('user1_id', user1Id)
-      .eq('user2_id', user2Id)
-      .single();
-
-    if (existingDM) {
-      const { data: channel } = await supabase
-        .from('channels')
-        .select('*')
-        .eq('id', existingDM.channel_id)
-        .single();
-      return channel;
-    }
-
-    // Create new DM channel
-    const { data: channel, error: channelError } = await supabase
-      .from('channels')
-      .insert({
-        name: `DM: ${user1Id}-${user2Id}`,
-        channel_type: 'direct',
-        is_private: true,
-        created_by: user.id
-      })
-      .select()
-      .single();
-
-    if (channelError) throw channelError;
-
-    // Add both users as members
-    await Promise.all([
-      addChannelMember(channel.id, user1Id, 'owner'),
-      addChannelMember(channel.id, user2Id, 'owner')
-    ]);
-
-    // Create DM record
-    await supabase
-      .from('direct_messages')
-      .insert({
-        channel_id: channel.id,
-        user1_id,
-        user2_id
-      });
-
-    return channel;
+    return await apiRequest<Channel>('/channels/direct', {
+      method: 'POST',
+      body: JSON.stringify({ user_id: otherUserId }),
+    });
   } catch (error) {
     console.error('Error creating DM:', error);
     throw error;
@@ -200,17 +172,12 @@ export async function getOrCreateDirectMessage(otherUserId: string) {
 /**
  * Update channel
  */
-export async function updateChannel(channelId: string, updates: Partial<Channel>) {
+export async function updateChannel(channelId: string, updates: Partial<Channel>): Promise<Channel> {
   try {
-    const { data, error } = await supabase
-      .from('channels')
-      .update(updates)
-      .eq('id', channelId)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    return await apiRequest<Channel>(`/channels/${channelId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    });
   } catch (error) {
     console.error('Error updating channel:', error);
     throw error;
@@ -220,7 +187,7 @@ export async function updateChannel(channelId: string, updates: Partial<Channel>
 /**
  * Archive channel
  */
-export async function archiveChannel(channelId: string) {
+export async function archiveChannel(channelId: string): Promise<Channel> {
   return updateChannel(channelId, { is_archived: true });
 }
 
@@ -235,20 +202,15 @@ export async function addChannelMember(
   channelId: string,
   userId: string,
   role: 'owner' | 'admin' | 'member' | 'guest' = 'member'
-) {
+): Promise<void> {
   try {
-    const { data, error } = await supabase
-      .from('channel_members')
-      .insert({
-        channel_id: channelId,
-        user_id: userId,
-        role
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    await apiRequest(`/channels/${channelId}/members`, {
+      method: 'POST',
+      body: JSON.stringify({
+        user_ids: [userId],
+        role,
+      }),
+    });
   } catch (error) {
     console.error('Error adding channel member:', error);
     throw error;
@@ -258,15 +220,11 @@ export async function addChannelMember(
 /**
  * Remove member from channel
  */
-export async function removeChannelMember(channelId: string, userId: string) {
+export async function removeChannelMember(channelId: string, userId: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('channel_members')
-      .delete()
-      .eq('channel_id', channelId)
-      .eq('user_id', userId);
-
-    if (error) throw error;
+    await apiRequest(`/channels/${channelId}/members/${userId}`, {
+      method: 'DELETE',
+    });
   } catch (error) {
     console.error('Error removing channel member:', error);
     throw error;
@@ -276,15 +234,10 @@ export async function removeChannelMember(channelId: string, userId: string) {
 /**
  * Get channel members
  */
-export async function getChannelMembers(channelId: string) {
+export async function getChannelMembers(channelId: string): Promise<ChannelMember[]> {
   try {
-    const { data, error } = await supabase
-      .from('channel_members')
-      .select('*')
-      .eq('channel_id', channelId);
-
-    if (error) throw error;
-    return data;
+    const channel = await apiRequest<Channel>(`/channels/${channelId}`);
+    return channel.my_membership ? [channel.my_membership] : [];
   } catch (error) {
     console.error('Error fetching channel members:', error);
     throw error;
@@ -294,22 +247,12 @@ export async function getChannelMembers(channelId: string) {
 /**
  * Mark channel as read
  */
-export async function markChannelAsRead(channelId: string) {
+export async function markChannelAsRead(channelId: string, messageId?: string): Promise<void> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
-
-    const { error } = await supabase
-      .from('channel_members')
-      .update({
-        last_read_at: new Date().toISOString(),
-        unread_count: 0,
-        last_viewed_at: new Date().toISOString()
-      })
-      .eq('channel_id', channelId)
-      .eq('user_id', user.id);
-
-    if (error) throw error;
+    await apiRequest(`/channels/${channelId}/read`, {
+      method: 'POST',
+      body: JSON.stringify({ message_id: messageId }),
+    });
   } catch (error) {
     console.error('Error marking channel as read:', error);
     throw error;
@@ -319,18 +262,12 @@ export async function markChannelAsRead(channelId: string) {
 /**
  * Toggle channel star
  */
-export async function toggleChannelStar(channelId: string, isStarred: boolean) {
+export async function toggleChannelStar(channelId: string, isStarred: boolean): Promise<void> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
-
-    const { error } = await supabase
-      .from('channel_members')
-      .update({ is_starred: isStarred })
-      .eq('channel_id', channelId)
-      .eq('user_id', user.id);
-
-    if (error) throw error;
+    await apiRequest(`/channels/${channelId}/members/me`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_starred: isStarred }),
+    });
   } catch (error) {
     console.error('Error toggling star:', error);
     throw error;
@@ -344,50 +281,21 @@ export async function toggleChannelStar(channelId: string, isStarred: boolean) {
 /**
  * Get messages for a channel
  */
-export async function getChannelMessages(channelId: string, limit: number = 50, before?: string) {
+export async function getChannelMessages(
+  channelId: string,
+  limit: number = 50,
+  before?: string
+): Promise<Message[]> {
   try {
-    let query = supabase
-      .from('messages')
-      .select('*')
-      .eq('channel_id', channelId)
-      .eq('is_deleted', false)
-      .is('parent_message_id', null)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+    });
 
     if (before) {
-      query = query.lt('created_at', before);
+      params.append('before', before);
     }
 
-    const { data, error } = await query;
-
-    if (error) throw error;
-
-    // Fetch user data for each unique user_id
-    if (data && data.length > 0) {
-      const userIds = [...new Set(data.map(m => m.user_id))];
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-
-      // Enrich messages with user data
-      const enrichedMessages = await Promise.all(
-        data.map(async (message) => {
-          // For now, we'll use a placeholder since we can't query auth.users directly
-          // In production, you should create a user_profiles table
-          return {
-            ...message,
-            user: {
-              id: message.user_id,
-              email: message.user_id === currentUser?.id ? currentUser.email : 'user@example.com',
-              raw_user_meta_data: message.user_id === currentUser?.id ? currentUser.user_metadata : {}
-            }
-          };
-        })
-      );
-
-      return enrichedMessages.reverse();
-    }
-
-    return [];
+    return await apiRequest<Message[]>(`/channels/${channelId}/messages?${params}`);
   } catch (error) {
     console.error('Error fetching messages:', error);
     throw error;
@@ -406,37 +314,20 @@ export async function sendMessage(message: {
   file_name?: string;
   file_type?: string;
   file_size?: number;
-}) {
+}): Promise<Message> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
-
-    // Extract mentions from content (e.g., @userId)
-    const mentionRegex = /@([a-f0-9-]{36})/g;
-    const mentions = Array.from(message.content.matchAll(mentionRegex), m => m[1]);
-
-    const { data, error } = await supabase
-      .from('messages')
-      .insert({
-        ...message,
-        user_id: user.id,
-        mentioned_user_ids: mentions.length > 0 ? mentions : null,
-        message_type: message.message_type || 'text'
-      })
-      .select('*')
-      .single();
-
-    if (error) throw error;
-
-    // Add user data to the message
-    return {
-      ...data,
-      user: {
-        id: user.id,
-        email: user.email || '',
-        raw_user_meta_data: user.user_metadata || {}
-      }
-    };
+    return await apiRequest<Message>(`/channels/${message.channel_id}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({
+        content: message.content,
+        message_type: message.message_type || 'text',
+        parent_message_id: message.parent_message_id,
+        file_url: message.file_url,
+        file_name: message.file_name,
+        file_type: message.file_type,
+        file_size: message.file_size,
+      }),
+    });
   } catch (error) {
     console.error('Error sending message:', error);
     throw error;
@@ -446,21 +337,16 @@ export async function sendMessage(message: {
 /**
  * Update message
  */
-export async function updateMessage(messageId: string, content: string) {
+export async function updateMessage(messageId: string, content: string, channelId?: string): Promise<Message> {
   try {
-    const { data, error } = await supabase
-      .from('messages')
-      .update({
-        content,
-        is_edited: true,
-        edited_at: new Date().toISOString()
-      })
-      .eq('id', messageId)
-      .select()
-      .single();
+    if (!channelId) {
+      throw new Error('Channel ID is required to update message');
+    }
 
-    if (error) throw error;
-    return data;
+    return await apiRequest<Message>(`/channels/${channelId}/messages/${messageId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ content }),
+    });
   } catch (error) {
     console.error('Error updating message:', error);
     throw error;
@@ -470,17 +356,15 @@ export async function updateMessage(messageId: string, content: string) {
 /**
  * Delete message
  */
-export async function deleteMessage(messageId: string) {
+export async function deleteMessage(messageId: string, channelId?: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('messages')
-      .update({
-        is_deleted: true,
-        deleted_at: new Date().toISOString()
-      })
-      .eq('id', messageId);
+    if (!channelId) {
+      throw new Error('Channel ID is required to delete message');
+    }
 
-    if (error) throw error;
+    await apiRequest(`/channels/${channelId}/messages/${messageId}`, {
+      method: 'DELETE',
+    });
   } catch (error) {
     console.error('Error deleting message:', error);
     throw error;
@@ -490,17 +374,17 @@ export async function deleteMessage(messageId: string) {
 /**
  * Get thread replies
  */
-export async function getThreadReplies(parentMessageId: string) {
+export async function getThreadReplies(parentMessageId: string, channelId?: string): Promise<Message[]> {
   try {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('parent_message_id', parentMessageId)
-      .eq('is_deleted', false)
-      .order('created_at', { ascending: true });
+    if (!channelId) {
+      throw new Error('Channel ID is required to fetch thread replies');
+    }
 
-    if (error) throw error;
-    return data || [];
+    const params = new URLSearchParams({
+      parent_id: parentMessageId,
+    });
+
+    return await apiRequest<Message[]>(`/channels/${channelId}/messages?${params}`);
   } catch (error) {
     console.error('Error fetching thread replies:', error);
     throw error;
@@ -514,23 +398,16 @@ export async function getThreadReplies(parentMessageId: string) {
 /**
  * Add reaction to message
  */
-export async function addReaction(messageId: string, emoji: string) {
+export async function addReaction(messageId: string, emoji: string, channelId?: string): Promise<void> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
+    if (!channelId) {
+      throw new Error('Channel ID is required to add reaction');
+    }
 
-    const { data, error } = await supabase
-      .from('message_reactions')
-      .insert({
-        message_id: messageId,
-        user_id: user.id,
-        emoji
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+    await apiRequest(`/channels/${channelId}/messages/${messageId}/reactions`, {
+      method: 'POST',
+      body: JSON.stringify({ emoji }),
+    });
   } catch (error) {
     console.error('Error adding reaction:', error);
     throw error;
@@ -540,19 +417,15 @@ export async function addReaction(messageId: string, emoji: string) {
 /**
  * Remove reaction from message
  */
-export async function removeReaction(messageId: string, emoji: string) {
+export async function removeReaction(messageId: string, emoji: string, channelId?: string): Promise<void> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('Not authenticated');
+    if (!channelId) {
+      throw new Error('Channel ID is required to remove reaction');
+    }
 
-    const { error } = await supabase
-      .from('message_reactions')
-      .delete()
-      .eq('message_id', messageId)
-      .eq('user_id', user.id)
-      .eq('emoji', emoji);
-
-    if (error) throw error;
+    await apiRequest(`/channels/${channelId}/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`, {
+      method: 'DELETE',
+    });
   } catch (error) {
     console.error('Error removing reaction:', error);
     throw error;
@@ -562,15 +435,14 @@ export async function removeReaction(messageId: string, emoji: string) {
 /**
  * Get reactions for a message
  */
-export async function getMessageReactions(messageId: string) {
+export async function getMessageReactions(messageId: string, channelId?: string): Promise<MessageReaction[]> {
   try {
-    const { data, error } = await supabase
-      .from('message_reactions')
-      .select('*')
-      .eq('message_id', messageId);
+    if (!channelId) {
+      throw new Error('Channel ID is required to fetch reactions');
+    }
 
-    if (error) throw error;
-    return data || [];
+    const message = await apiRequest<Message>(`/channels/${channelId}/messages/${messageId}`);
+    return message.reactions || [];
   } catch (error) {
     console.error('Error fetching reactions:', error);
     throw error;
@@ -578,119 +450,73 @@ export async function getMessageReactions(messageId: string) {
 }
 
 // =====================================================
-// REAL-TIME SUBSCRIPTIONS
+// REAL-TIME SUBSCRIPTIONS (PLACEHOLDER - WebSocket TBD)
 // =====================================================
 
 /**
  * Subscribe to new messages in a channel
+ * NOTE: Real-time subscriptions will be implemented with WebSockets in future
  */
 export function subscribeToChannelMessages(
   channelId: string,
   callback: (message: Message) => void
-): RealtimeChannel {
-  return supabase
-    .channel(`messages:${channelId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
-        filter: `channel_id=eq.${channelId}`
-      },
-      async (payload) => {
-        // Get current user for comparison
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
+): { unsubscribe: () => void } {
+  console.warn('Real-time subscriptions not yet implemented. Use polling for now.');
 
-        // Add user data to the message
-        const message = payload.new as Message;
-        callback({
-          ...message,
-          user: {
-            id: message.user_id,
-            email: message.user_id === currentUser?.id ? currentUser.email || '' : 'user@example.com',
-            raw_user_meta_data: message.user_id === currentUser?.id ? currentUser.user_metadata || {} : {}
-          }
-        });
-      }
-    )
-    .subscribe();
+  // Return a dummy unsubscribe function
+  return {
+    unsubscribe: () => {
+      console.log('Unsubscribed from channel messages');
+    }
+  };
 }
 
 /**
  * Subscribe to message updates
+ * NOTE: Real-time subscriptions will be implemented with WebSockets in future
  */
 export function subscribeToMessageUpdates(
   channelId: string,
   callback: (message: Message) => void
-): RealtimeChannel {
-  return supabase
-    .channel(`message-updates:${channelId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'messages',
-        filter: `channel_id=eq.${channelId}`
-      },
-      (payload) => {
-        callback(payload.new as Message);
-      }
-    )
-    .subscribe();
+): { unsubscribe: () => void } {
+  console.warn('Real-time message updates not yet implemented. Use polling for now.');
+
+  return {
+    unsubscribe: () => {
+      console.log('Unsubscribed from message updates');
+    }
+  };
 }
 
 /**
  * Subscribe to typing indicators
+ * NOTE: Real-time subscriptions will be implemented with WebSockets in future
  */
 export function subscribeToTypingIndicators(
   channelId: string,
   callback: (indicator: { user_id: string; started_typing_at: string }) => void
-): RealtimeChannel {
-  return supabase
-    .channel(`typing:${channelId}`)
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'typing_indicators',
-        filter: `channel_id=eq.${channelId}`
-      },
-      (payload) => {
-        callback(payload.new as any);
-      }
-    )
-    .subscribe();
+): { unsubscribe: () => void } {
+  console.warn('Typing indicators not yet implemented. Use polling for now.');
+
+  return {
+    unsubscribe: () => {
+      console.log('Unsubscribed from typing indicators');
+    }
+  };
 }
 
 /**
  * Send typing indicator
+ * NOTE: Will be implemented with WebSockets in future
  */
-export async function sendTypingIndicator(channelId: string) {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    await supabase
-      .from('typing_indicators')
-      .upsert({
-        channel_id: channelId,
-        user_id: user.id,
-        started_typing_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + 10000).toISOString()
-      }, {
-        onConflict: 'channel_id,user_id'
-      });
-  } catch (error) {
-    console.error('Error sending typing indicator:', error);
-  }
+export async function sendTypingIndicator(channelId: string): Promise<void> {
+  // Placeholder - will implement with WebSockets
+  console.log('Typing indicator sent for channel:', channelId);
 }
 
 /**
  * Unsubscribe from a channel
  */
-export function unsubscribeChannel(channel: RealtimeChannel) {
-  supabase.removeChannel(channel);
+export function unsubscribeChannel(channel: { unsubscribe: () => void }): void {
+  channel.unsubscribe();
 }

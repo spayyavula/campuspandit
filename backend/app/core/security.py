@@ -7,6 +7,11 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 from passlib.context import CryptContext
 from jose import JWTError, jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthCredentials
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from uuid import UUID
 import secrets
 
 from app.core.config import settings
@@ -84,3 +89,46 @@ def generate_verification_token() -> str:
 def generate_reset_token() -> str:
     """Generate a secure random token for password reset"""
     return secrets.token_urlsafe(32)
+
+
+# HTTP Bearer token scheme
+security = HTTPBearer()
+
+
+async def get_current_user(
+    credentials: HTTPAuthCredentials = Depends(security)
+):
+    """
+    Dependency to get the current authenticated user from JWT token
+
+    NOTE: This function returns user_id as UUID. The route should fetch the full User object from database.
+
+    Args:
+        credentials: HTTP Bearer credentials from request
+
+    Returns:
+        User ID as UUID if authenticated
+
+    Raises:
+        HTTPException: If authentication fails
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    # Decode the JWT token
+    token_data = decode_access_token(credentials.credentials)
+    if token_data is None:
+        raise credentials_exception
+
+    user_id: str = token_data.get("sub")
+    if user_id is None:
+        raise credentials_exception
+
+    # Return user ID
+    try:
+        return UUID(user_id)
+    except ValueError:
+        raise credentials_exception
