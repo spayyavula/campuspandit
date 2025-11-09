@@ -123,7 +123,7 @@ async function apiRequest<T>(
  */
 export async function getUserChannels(userId?: string): Promise<Channel[]> {
   try {
-    return await apiRequest<Channel[]>('/channels');
+    return await apiRequest<Channel[]>('/channels/');
   } catch (error) {
     console.error('Error fetching user channels:', error);
     throw error;
@@ -144,7 +144,7 @@ export async function createChannel(channel: {
   member_ids?: string[];
 }): Promise<Channel> {
   try {
-    return await apiRequest<Channel>('/channels', {
+    return await apiRequest<Channel>('/channels/', {
       method: 'POST',
       body: JSON.stringify(channel),
     });
