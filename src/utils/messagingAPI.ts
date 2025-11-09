@@ -79,7 +79,7 @@ const API_VERSION = '/api/v1';
  * Get authentication token from localStorage
  */
 function getAuthToken(): string | null {
-  return localStorage.getItem('auth_token');
+  return localStorage.getItem('access_token');
 }
 
 /**
