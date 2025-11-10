@@ -25,11 +25,8 @@ import {
   getUserChannels,
   getChannelMessages,
   sendMessage,
-  subscribeToChannelMessages,
-  subscribeToMessageUpdates,
   markChannelAsRead,
   toggleChannelStar,
-  sendTypingIndicator,
   addReaction,
   updateMessage,
   deleteMessage,
@@ -38,6 +35,7 @@ import {
   Message
 } from '../../utils/messagingAPI';
 import { Button, Card } from '../ui';
+import { useWebSocket } from '../../hooks/useWebSocket';
 
 interface MessagingAppProps {
   userId: string;
@@ -59,10 +57,73 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState('');
   const [showSidebar, setShowSidebar] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<Map<string, NodeJS.Timeout>>(new Map());
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // WebSocket connection for real-time messaging
+  const { isConnected, sendTyping, joinChannel } = useWebSocket({
+    userId,
+    onNewMessage: (message) => {
+      // Only add message if it doesn't already exist (avoid duplicates)
+      setMessages(prev => {
+        const messageExists = prev.some(m => m.id === message.id);
+        if (messageExists) {
+          return prev;
+        }
+        return [...prev, message];
+      });
+
+      // Mark channel as read if it's not our own message
+      if (message.user_id !== userId && selectedChannel?.id === message.channel_id) {
+        markChannelAsRead(message.channel_id);
+      }
+    },
+    onMessageUpdate: (channelId, messageId, content) => {
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === messageId
+            ? { ...msg, content, is_edited: true, edited_at: new Date().toISOString() }
+            : msg
+        )
+      );
+    },
+    onMessageDelete: (channelId, messageId) => {
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+    },
+    onTyping: (typingUserId, channelId, isTyping) => {
+      if (typingUserId === userId || channelId !== selectedChannel?.id) return;
+
+      setTypingUsers(prev => {
+        const newMap = new Map(prev);
+        const existingTimeout = newMap.get(typingUserId);
+
+        if (existingTimeout) {
+          clearTimeout(existingTimeout);
+        }
+
+        if (isTyping) {
+          const timeout = setTimeout(() => {
+            setTypingUsers(current => {
+              const updated = new Map(current);
+              updated.delete(typingUserId);
+              return updated;
+            });
+          }, 3000);
+          newMap.set(typingUserId, timeout);
+        } else {
+          newMap.delete(typingUserId);
+        }
+
+        return newMap;
+      });
+    },
+    onConnection: (status) => {
+      console.log('WebSocket connection status:', status);
+    }
+  });
 
   // Load channels on mount
   useEffect(() => {
@@ -82,45 +143,13 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Subscribe to real-time messages (INSERT, UPDATE, DELETE)
+  // Join channel via WebSocket when selected
   useEffect(() => {
-    if (!selectedChannel) return;
-
-    // Subscribe to new messages (INSERT)
-    const insertSubscription = subscribeToChannelMessages(selectedChannel.id, (message) => {
-      // Only add message if it doesn't already exist (avoid duplicates)
-      setMessages(prev => {
-        const messageExists = prev.some(m => m.id === message.id);
-        if (messageExists) {
-          return prev;
-        }
-        return [...prev, message];
-      });
-
-      if (message.user_id !== userId) {
-        markChannelAsRead(selectedChannel.id);
-      }
-    });
-
-    // Subscribe to message updates (EDIT)
-    const updateSubscription = subscribeToMessageUpdates(selectedChannel.id, (updatedMessage) => {
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === updatedMessage.id
-            ? { ...msg, content: updatedMessage.content, is_edited: true, edited_at: updatedMessage.edited_at }
-            : msg
-        )
-      );
-    });
-
-    // Note: Real-time message deletions will be implemented with WebSockets in the future
-    // For now, deleted messages will be reflected when the page is refreshed
-
-    return () => {
-      insertSubscription.unsubscribe();
-      updateSubscription.unsubscribe();
-    };
-  }, [selectedChannel, userId]);
+    if (selectedChannel && isConnected) {
+      joinChannel(selectedChannel.id);
+      console.log('Joined channel via WebSocket:', selectedChannel.id);
+    }
+  }, [selectedChannel, isConnected, joinChannel]);
 
   const loadChannels = async () => {
     try {
@@ -186,9 +215,11 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
-    // Send typing indicator
-    if (selectedChannel && e.target.value) {
-      sendTypingIndicator(selectedChannel.id);
+    // Send typing indicator via WebSocket
+    if (selectedChannel && e.target.value && isConnected) {
+      sendTyping(selectedChannel.id, true);
+    } else if (selectedChannel && !e.target.value && isConnected) {
+      sendTyping(selectedChannel.id, false);
     }
   };
 
