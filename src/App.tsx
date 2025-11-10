@@ -16,6 +16,7 @@ const PageLoader = () => (
 // Critical - Load immediately (used on landing/auth)
 import LandingPage from './components/LandingPage';
 import { Auth } from './components/Auth';
+import ComingSoon from './components/ComingSoon';
 
 // Lazy load all other routes for better performance
 // Coaching
