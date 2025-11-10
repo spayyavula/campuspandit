@@ -12,7 +12,7 @@ from datetime import datetime
 from loguru import logger
 
 from app.websockets.connection_manager import manager
-from app.core.database import get_db
+from app.core.database import get_db, async_session_maker
 from app.models.messaging import Channel, ChannelMember, ChannelMessage, MessageReaction
 
 router = APIRouter()
@@ -222,8 +222,7 @@ EVENT_HANDLERS = {
 @router.websocket("/ws/{user_id}")
 async def websocket_endpoint(
     websocket: WebSocket,
-    user_id: str,
-    db: AsyncSession = Depends(get_db)
+    user_id: str
 ):
     """
     WebSocket endpoint for real-time messaging
@@ -255,13 +254,14 @@ async def websocket_endpoint(
             "timestamp": datetime.utcnow().isoformat()
         })
 
-        # Get user's channels and auto-join them
-        result = await db.execute(
-            select(ChannelMember.channel_id).where(
-                ChannelMember.user_id == user_id
+        # Get user's channels and auto-join them (using a temporary session)
+        async with async_session_maker() as db:
+            result = await db.execute(
+                select(ChannelMember.channel_id).where(
+                    ChannelMember.user_id == user_id
+                )
             )
-        )
-        channel_ids = [row[0] for row in result.all()]
+            channel_ids = [row[0] for row in result.all()]
 
         for channel_id in channel_ids:
             await manager.join_channel(channel_id, user_id)
@@ -278,10 +278,14 @@ async def websocket_endpoint(
                 event_type = message.get("type")
                 event_data = message.get("data", {})
 
-                # Handle the event
+                # Handle the event (creating a new db session for each event)
                 if event_type in EVENT_HANDLERS:
                     handler = EVENT_HANDLERS[event_type]
-                    response = await handler(event_data, user_id, db)
+
+                    # Create a new database session for this event
+                    async with async_session_maker() as db:
+                        response = await handler(event_data, user_id, db)
+                        await db.commit()
 
                     # Send acknowledgment
                     await websocket.send_json({
