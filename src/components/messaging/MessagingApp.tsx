@@ -35,7 +35,7 @@ import {
   Message
 } from '../../utils/messagingAPI';
 import { Button, Card } from '../ui';
-import { useWebSocket } from '../../hooks/useWebSocket';
+import { useSSE } from '../../hooks/useSSE';
 
 interface MessagingAppProps {
   userId: string;
@@ -63,8 +63,8 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // WebSocket connection for real-time messaging
-  const { isConnected, sendTyping, joinChannel } = useWebSocket({
+  // SSE connection for real-time messaging
+  const { isConnected } = useSSE({
     userId,
     onNewMessage: (message) => {
       // Only add message if it doesn't already exist (avoid duplicates)
@@ -121,7 +121,7 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
       });
     },
     onConnection: (status) => {
-      console.log('WebSocket connection status:', status);
+      console.log('SSE connection status:', status);
     }
   });
 
@@ -143,13 +143,8 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
     scrollToBottom();
   }, [messages]);
 
-  // Join channel via WebSocket when selected
-  useEffect(() => {
-    if (selectedChannel && isConnected) {
-      joinChannel(selectedChannel.id);
-      console.log('Joined channel via WebSocket:', selectedChannel.id);
-    }
-  }, [selectedChannel, isConnected, joinChannel]);
+  // SSE automatically joins channels on connection
+  // No manual join needed as backend auto-joins user's channels
 
   const loadChannels = async () => {
     try {
@@ -215,12 +210,9 @@ const MessagingApp: React.FC<MessagingAppProps> = ({ userId }) => {
       textareaRef.current.style.height = 'auto';
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
-    // Send typing indicator via WebSocket
-    if (selectedChannel && e.target.value && isConnected) {
-      sendTyping(selectedChannel.id, true);
-    } else if (selectedChannel && !e.target.value && isConnected) {
-      sendTyping(selectedChannel.id, false);
-    }
+    // Note: Typing indicators would need an HTTP POST endpoint
+    // SSE is unidirectional (server → client only)
+    // TODO: Implement typing indicator via HTTP POST if needed
   };
 
   const handleToggleStar = async (channelId: string, currentlyStarred: boolean) => {

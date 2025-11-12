@@ -11,12 +11,17 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Create the Supabase client with error handling
+// Realtime COMPLETELY disabled - using backend SSE for real-time features
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storageKey: 'campuspandit-auth-storage'
+  },
+  realtime: {
+    // Disable realtime completely
+    enabled: false
   },
   global: {
     fetch: (...args) => {
@@ -25,7 +30,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         throw err;
       });
     }
-  } 
+  }
 });
 
 // Database types

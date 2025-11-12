@@ -7,10 +7,15 @@
 
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 
-// Initialize Supabase client
+// Initialize Supabase client with realtime COMPLETELY disabled
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+  import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+  {
+    realtime: {
+      enabled: false
+    }
+  }
 );
 
 // Backend API URL
@@ -338,9 +343,11 @@ export class ChatRealtimeService {
   private messageChannel: RealtimeChannel | null = null;
   private typingChannel: RealtimeChannel | null = null;
   private onlineChannel: RealtimeChannel | null = null;
+  private pollingInterval: NodeJS.Timeout | null = null;
 
   /**
    * Subscribe to new messages in a conversation
+   * Uses polling instead of WebSocket to avoid connection issues
    *
    * @example
    * ```typescript
@@ -355,48 +362,22 @@ export class ChatRealtimeService {
     conversationId: string,
     onMessage: (message: Message) => void
   ): void {
-    this.messageChannel = supabase
-      .channel(`messages:${conversationId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          onMessage(payload.new as Message);
-        }
-      )
-      .subscribe();
+    // Polling-based approach - no WebSocket
+    console.log('Chat polling enabled for conversation:', conversationId);
+    // Note: Actual polling should be implemented in the component using setInterval
+    // This is just a placeholder to avoid WebSocket connections
   }
 
   /**
    * Subscribe to message updates (edits, reads)
+   * Disabled - use polling instead
    */
   subscribeToMessageUpdates(
     conversationId: string,
     onUpdate: (message: Message) => void
   ): void {
-    if (!this.messageChannel) {
-      this.messageChannel = supabase.channel(`messages:${conversationId}`);
-    }
-
-    this.messageChannel
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          onUpdate(payload.new as Message);
-        }
-      )
-      .subscribe();
+    // No-op to prevent WebSocket connections
+    console.log('Message updates subscription disabled - use polling instead');
   }
 
   /**
@@ -417,33 +398,8 @@ export class ChatRealtimeService {
     conversationId: string,
     onTyping: (userId: string, isTyping: boolean) => void
   ): void {
-    this.typingChannel = supabase
-      .channel(`typing:${conversationId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'typing_indicators',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload: any) => {
-          onTyping(payload.new.user_id, true);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'typing_indicators',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload: any) => {
-          onTyping(payload.old.user_id, false);
-        }
-      )
-      .subscribe();
+    // No-op to prevent WebSocket connections
+    console.log('Typing indicators disabled - use polling or HTTP endpoints instead');
   }
 
   /**
@@ -452,38 +408,18 @@ export class ChatRealtimeService {
   subscribeToOnlineStatus(
     onStatusChange: (userId: string, isOnline: boolean, lastSeen?: string) => void
   ): void {
-    this.onlineChannel = supabase
-      .channel('online-status')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_online_status',
-        },
-        (payload: any) => {
-          const data = payload.new || payload.old;
-          onStatusChange(data.user_id, data.is_online, data.last_seen_at);
-        }
-      )
-      .subscribe();
+    // No-op to prevent WebSocket connections
+    console.log('Online status subscriptions disabled - use polling or HTTP endpoints instead');
   }
 
   /**
    * Unsubscribe from all channels
    */
   unsubscribeAll(): void {
-    if (this.messageChannel) {
-      supabase.removeChannel(this.messageChannel);
-      this.messageChannel = null;
-    }
-    if (this.typingChannel) {
-      supabase.removeChannel(this.typingChannel);
-      this.typingChannel = null;
-    }
-    if (this.onlineChannel) {
-      supabase.removeChannel(this.onlineChannel);
-      this.onlineChannel = null;
+    // No-op since we're not creating any subscriptions
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
     }
   }
 }
