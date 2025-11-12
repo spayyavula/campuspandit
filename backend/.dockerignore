@@ -27,3 +27,16 @@ alembic/
 tests/
 *.test.py
 .pytest_cache/
+# Azure deployment artifacts
+azure-logs/
+azure-logs.zip
+LogFiles/
+*.zip
+deploy.zip
+deploy-fixed.zip
+simple-deploy.zip
+# Docker files
+docker-compose.yml
+Dockerfile
+# Database migrations
+database/migrations/

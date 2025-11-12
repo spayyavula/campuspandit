@@ -44,6 +44,11 @@ temp_migration_header.sql
 backup-*.sql
 *-backup.sql
 
+# Azure deployment secrets (IMPORTANT: Do not commit!)
+.azure/
+!.azure/.gitignore
+!.azure/README.md
+
 # Documentation and setup files
 API_DOMAIN_SETUP.md
 DEPLOYMENT_STATUS.md

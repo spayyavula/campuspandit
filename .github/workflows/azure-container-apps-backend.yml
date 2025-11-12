@@ -4,50 +4,130 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - 'backend/**'
+      - '.github/workflows/azure-container-apps-backend.yml'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
 
 env:
-  AZURE_CONTAINER_REGISTRY: campuspanditcr
-  CONTAINER_APP_NAME: campuspandit-backend
-  RESOURCE_GROUP: campuspandit-rg
-  IMAGE_NAME: campuspandit-backend
+  APP_NAME: campuspandit
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+
+    - name: Set environment variables
+      id: set-env
+      run: |
+        if [ "${{ github.event.inputs.environment }}" != "" ]; then
+          ENV="${{ github.event.inputs.environment }}"
+        elif [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          ENV="prod"
+        else
+          ENV="dev"
+        fi
+        echo "ENVIRONMENT=$ENV" >> $GITHUB_ENV
+        echo "RESOURCE_GROUP=${{ env.APP_NAME }}-rg-$ENV" >> $GITHUB_ENV
+        echo "CONTAINER_APP_NAME=${{ env.APP_NAME }}-backend-$ENV" >> $GITHUB_ENV
+        echo "IMAGE_NAME=${{ env.APP_NAME }}-backend" >> $GITHUB_ENV
 
     - name: Log in to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+    - name: Get Container Registry name
+      id: get-acr
+      run: |
+        ACR_NAME=$(az deployment group show \
+          --name $(az deployment group list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].name" -o tsv) \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --query properties.outputs.containerRegistryName.value -o tsv)
+        echo "ACR_NAME=$ACR_NAME" >> $GITHUB_ENV
+        echo "ACR_LOGIN_SERVER=$ACR_NAME.azurecr.io" >> $GITHUB_ENV
+
     - name: Log in to Azure Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
-        username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
-        password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+      run: |
+        az acr login --name ${{ env.ACR_NAME }}
 
     - name: Build and push Docker image
       working-directory: ./backend
       run: |
-        docker build -f Dockerfile.azure -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} -t ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest .
-        docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        docker push ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+        IMAGE_TAG="${{ github.sha }}"
+        docker build -f Dockerfile.azure \
+          -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG} \
+          -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest \
+          -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT }} \
+          .
+        docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
+        docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
+        docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.ENVIRONMENT }}
 
     - name: Deploy to Azure Container Apps
-      uses: azure/container-apps-deploy-action@v1
-      with:
-        acrName: ${{ env.AZURE_CONTAINER_REGISTRY }}
-        containerAppName: ${{ env.CONTAINER_APP_NAME }}
-        resourceGroup: ${{ env.RESOURCE_GROUP }}
-        imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      run: |
+        az containerapp update \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --image ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Verify deployment
+      run: |
+        # Get the FQDN
+        FQDN=$(az containerapp show \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --query properties.configuration.ingress.fqdn -o tsv)
+
+        echo "🔗 Backend URL: https://$FQDN"
+        echo "🔗 API Docs: https://$FQDN/api/docs"
+        echo "🔗 Health Check: https://$FQDN/health"
+
+        # Wait for deployment to stabilize
+        sleep 30
+
+        # Check health endpoint
+        HEALTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://$FQDN/health)
+        if [ "$HEALTH_STATUS" == "200" ]; then
+          echo "✅ Deployment successful - Health check passed"
+        else
+          echo "⚠️ Warning - Health check returned status: $HEALTH_STATUS"
+        fi
+
+    - name: Post deployment summary
+      run: |
+        FQDN=$(az containerapp show \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --query properties.configuration.ingress.fqdn -o tsv)
+
+        echo "### 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Environment**: ${{ env.ENVIRONMENT }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Resource Group**: ${{ env.RESOURCE_GROUP }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Container App**: ${{ env.CONTAINER_APP_NAME }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Image**: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "#### 🔗 URLs" >> $GITHUB_STEP_SUMMARY
+        echo "- [API Backend](https://$FQDN)" >> $GITHUB_STEP_SUMMARY
+        echo "- [API Documentation](https://$FQDN/api/docs)" >> $GITHUB_STEP_SUMMARY
+        echo "- [Health Check](https://$FQDN/health)" >> $GITHUB_STEP_SUMMARY
 
     - name: Logout from Azure
+      if: always()
       run: az logout
