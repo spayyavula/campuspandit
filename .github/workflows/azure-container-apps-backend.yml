@@ -43,8 +43,16 @@ jobs:
           ENV="dev"
         fi
         echo "ENVIRONMENT=$ENV" >> $GITHUB_ENV
-        echo "RESOURCE_GROUP=${{ env.APP_NAME }}-rg-$ENV" >> $GITHUB_ENV
-        echo "CONTAINER_APP_NAME=${{ env.APP_NAME }}-backend-$ENV" >> $GITHUB_ENV
+
+        # Set resource group (production has no suffix)
+        if [ "$ENV" == "prod" ]; then
+          echo "RESOURCE_GROUP=${{ env.APP_NAME }}-rg" >> $GITHUB_ENV
+          echo "CONTAINER_APP_NAME=${{ env.APP_NAME }}-backend" >> $GITHUB_ENV
+        else
+          echo "RESOURCE_GROUP=${{ env.APP_NAME }}-rg-$ENV" >> $GITHUB_ENV
+          echo "CONTAINER_APP_NAME=${{ env.APP_NAME }}-backend-$ENV" >> $GITHUB_ENV
+        fi
+
         echo "IMAGE_NAME=${{ env.APP_NAME }}-backend" >> $GITHUB_ENV
 
     - name: Log in to Azure
