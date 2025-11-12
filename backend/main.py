@@ -15,7 +15,11 @@ from app.core.database import engine, Base
 from app.api.v1 import api_router
 
 # Import models to create tables
-from app.models import scheduling, tutors, user
+from app.models import scheduling, tutors, user, coaching, messaging
+
+# Import real-time components
+from app.realtime.pg_listener import pg_listener
+from app.sse.sse_manager import sse_manager
 
 
 @asynccontextmanager
@@ -26,17 +30,41 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {settings.ENVIRONMENT}")
     logger.info(f"Database: {settings.DATABASE_URL[:30]}...")
 
-    # Create database tables (commented out for quick start without DB)
-    # async with engine.begin() as conn:
-    #     await conn.run_sync(Base.metadata.create_all)
+    # Create database tables
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
-    logger.info("✅ Database tables skipped (development mode)")
+    logger.info("✅ Database tables created/verified")
+
+    # Setup real-time messaging with PostgreSQL LISTEN/NOTIFY
+    try:
+        # Register SSE manager callback with PostgreSQL listener
+        pg_listener.register_callback('channel_messages', sse_manager.handle_pg_notification)
+        pg_listener.register_callback('message_reactions', sse_manager.handle_pg_notification)
+
+        # Start PostgreSQL listener as background task
+        pg_listener.start_background_task()
+
+        logger.info("✅ PostgreSQL LISTEN/NOTIFY service started")
+        logger.info("✅ Real-time messaging enabled")
+    except Exception as e:
+        logger.error(f"Failed to start PostgreSQL listener: {e}")
+        logger.warning("Real-time messaging will not be available")
+
     logger.info("✅ Application startup complete")
 
     yield
 
     # Shutdown
     logger.info("🛑 Shutting down CampusPandit Backend...")
+
+    # Stop PostgreSQL listener
+    try:
+        await pg_listener.stop_listening()
+        logger.info("✅ PostgreSQL listener stopped")
+    except Exception as e:
+        logger.error(f"Error stopping PostgreSQL listener: {e}")
+
     await engine.dispose()
     logger.info("✅ Cleanup complete")
 
