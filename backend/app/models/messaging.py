@@ -4,7 +4,7 @@ Slack-like messaging system with channels, direct messages, and real-time featur
 """
 
 from sqlalchemy import Column, String, Boolean, Integer, DateTime, ForeignKey, Text, Enum as SQLEnum, JSON
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import uuid
@@ -140,7 +140,7 @@ class ChannelMessage(Base):
     thread_last_reply_at = Column(DateTime(timezone=True))
 
     # Mentions
-    mentioned_user_ids = Column(JSON)  # Array of user IDs
+    mentioned_user_ids = Column(ARRAY(UUID(as_uuid=True)))  # Array of user IDs
 
     # Attachments
     file_url = Column(String(500))
