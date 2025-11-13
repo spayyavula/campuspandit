@@ -137,6 +137,11 @@ async def global_exception_handler(request: Request, exc: Exception):
             "message": str(exc) if settings.DEBUG else "An error occurred",
             "path": str(request.url.path),
         },
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
     )
 
 
