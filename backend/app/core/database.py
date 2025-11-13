@@ -6,12 +6,21 @@ Async SQLAlchemy with PostgreSQL
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from typing import AsyncGenerator
+import ssl
 
 from app.core.config import settings
 
-# Create async engine
+# Prepare database URL for asyncpg (remove sslmode parameter if present)
+database_url = settings.DATABASE_URL.replace('?sslmode=require', '').replace('&sslmode=require', '')
+
+# Configure SSL context for Azure PostgreSQL
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+
+# Create async engine with SSL configuration
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    database_url,
     echo=settings.DB_ECHO,
     future=True,
     pool_pre_ping=True,
@@ -19,6 +28,10 @@ engine = create_async_engine(
     max_overflow=40,  # Increased from 20
     pool_recycle=3600,  # Recycle connections after 1 hour
     pool_timeout=60,  # Wait up to 60 seconds for a connection
+    connect_args={
+        "ssl": ssl_context,
+        "server_settings": {"application_name": "campuspandit-backend"}
+    }
 )
 
 # Create session factory
