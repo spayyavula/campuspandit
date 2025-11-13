@@ -15,7 +15,28 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
   const [role, setRole] = useState<'student' | 'tutor'>('student');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const navigate = useNavigate();
+
+  // Validate password in real-time
+  const validatePassword = (pwd: string): string[] => {
+    const errors: string[] = [];
+    if (pwd.length < 8) errors.push('At least 8 characters');
+    if (!/[A-Z]/.test(pwd)) errors.push('One uppercase letter');
+    if (!/[a-z]/.test(pwd)) errors.push('One lowercase letter');
+    if (!/[0-9]/.test(pwd)) errors.push('One digit');
+    return errors;
+  };
+
+  // Handle password change with validation
+  const handlePasswordChange = (pwd: string) => {
+    setPassword(pwd);
+    if (mode === 'signup' && pwd.length > 0) {
+      setPasswordErrors(validatePassword(pwd));
+    } else {
+      setPasswordErrors([]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +45,17 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
 
     try {
       if (mode === 'signup') {
+        // Validate password before submitting
+        const errors = validatePassword(password);
+        if (errors.length > 0) {
+          setMessage({
+            type: 'error',
+            text: `Password must include: ${errors.join(', ')}`,
+          });
+          setLoading(false);
+          return;
+        }
+
         // Call backend API for signup
         const response = await authAPI.signup({
           email,
@@ -239,14 +271,36 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
                     type="password"
                     required
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => handlePasswordChange(e.target.value)}
                     className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Enter your password"
                     minLength={8}
                   />
                 </div>
                 {mode === 'signup' && (
-                  <p className="mt-1 text-xs text-neutral-500">Must be at least 8 characters with uppercase, lowercase, and a digit</p>
+                  <div className="mt-2">
+                    {passwordErrors.length === 0 && password.length >= 8 ? (
+                      <p className="text-xs text-success-600 flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        Password meets requirements
+                      </p>
+                    ) : (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-neutral-600">Password must include:</p>
+                        <ul className="text-xs space-y-0.5">
+                          {['At least 8 characters', 'One uppercase letter', 'One lowercase letter', 'One digit'].map((req) => {
+                            const isError = passwordErrors.includes(req);
+                            const isMet = password.length > 0 && !isError;
+                            return (
+                              <li key={req} className={`flex items-center gap-1 ${isMet ? 'text-success-600' : isError ? 'text-error-600' : 'text-neutral-500'}`}>
+                                {isMet ? '✓' : '•'} {req}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -256,7 +310,10 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
               <div className="flex justify-end">
                 <button
                   type="button"
-                  onClick={() => setMode('reset')}
+                  onClick={() => {
+                    setMode('reset');
+                    setPasswordErrors([]);
+                  }}
                   className="text-sm text-primary-600 hover:text-primary-700"
                 >
                   Forgot password?
@@ -293,6 +350,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
                   onClick={() => {
                     setMode('signup');
                     setMessage(null);
+                    setPasswordErrors([]);
                   }}
                   className="text-primary-600 font-medium hover:text-primary-700"
                 >
@@ -309,6 +367,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
                   onClick={() => {
                     setMode('login');
                     setMessage(null);
+                    setPasswordErrors([]);
                   }}
                   className="text-primary-600 font-medium hover:text-primary-700"
                 >
@@ -325,6 +384,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
                   onClick={() => {
                     setMode('login');
                     setMessage(null);
+                    setPasswordErrors([]);
                   }}
                   className="text-primary-600 font-medium hover:text-primary-700"
                 >
