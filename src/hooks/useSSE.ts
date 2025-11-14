@@ -43,7 +43,7 @@ export const useSSE = ({
 }: UseSSEOptions) => {
   const eventSource = useRef<EventSource | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [reconnectAttempt, setReconnectAttempt] = useState(0);
+  const reconnectAttempt = useRef(0);  // Changed to useRef to prevent infinite loop
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const getSSEUrl = () => {
@@ -61,7 +61,7 @@ export const useSSE = ({
       eventSource.current.onopen = () => {
         console.log('SSE connected');
         setIsConnected(true);
-        setReconnectAttempt(0);
+        reconnectAttempt.current = 0;  // Reset reconnect attempt counter
         onConnection?.('connected');
       };
 
@@ -149,11 +149,11 @@ export const useSSE = ({
           onConnection?.('disconnected');
 
           // Attempt to reconnect with exponential backoff
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttempt), 30000);
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempt.current), 30000);
           console.log(`SSE reconnecting in ${delay}ms...`);
 
           reconnectTimeout.current = setTimeout(() => {
-            setReconnectAttempt(prev => prev + 1);
+            reconnectAttempt.current += 1;  // Increment reconnect attempt
             connect();
           }, delay);
         }
@@ -162,7 +162,7 @@ export const useSSE = ({
       console.error('Error creating SSE connection:', error);
       onConnection?.('error');
     }
-  }, [userId, reconnectAttempt, onMessage, onNewMessage, onTyping, onPresence, onReadReceipt, onMessageUpdate, onMessageDelete, onConnection]);
+  }, [userId, onMessage, onNewMessage, onTyping, onPresence, onReadReceipt, onMessageUpdate, onMessageDelete, onConnection]);  // Removed reconnectAttempt from dependencies
 
   const disconnect = useCallback(() => {
     if (reconnectTimeout.current) {
