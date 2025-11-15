@@ -17,6 +17,13 @@ from app.models.messaging import (
     TypingIndicator, DirectMessage,
     ChannelType, MemberRole, NotificationLevel, MessageType
 )
+from app.models.crm import (
+    CRMContact, CRMCompany, CRMDeal, CRMActivity, CRMTask,
+    CRMCampaign, CRMTicket, CRMTicketComment,
+    ContactType, ContactStatus, CompanyStatus, DealStage,
+    ActivityType, ActivityStatus, TaskStatus, Priority,
+    CampaignType, CampaignStatus, TicketStatus
+)
 
 __all__ = [
     # User models
@@ -56,4 +63,25 @@ __all__ = [
     "MemberRole",
     "NotificationLevel",
     "MessageType",
+    # CRM models
+    "CRMContact",
+    "CRMCompany",
+    "CRMDeal",
+    "CRMActivity",
+    "CRMTask",
+    "CRMCampaign",
+    "CRMTicket",
+    "CRMTicketComment",
+    # CRM Enums
+    "ContactType",
+    "ContactStatus",
+    "CompanyStatus",
+    "DealStage",
+    "ActivityType",
+    "ActivityStatus",
+    "TaskStatus",
+    "Priority",
+    "CampaignType",
+    "CampaignStatus",
+    "TicketStatus",
 ]
