@@ -329,40 +329,52 @@ async def get_channel_messages(
     """
     Get messages in a channel
     """
-    # Verify user is a member
-    member_result = await db.execute(
-        select(ChannelMember).where(
-            and_(
-                ChannelMember.channel_id == channel_id,
-                ChannelMember.user_id == current_user_id
+    try:
+        # Verify user is a member
+        member_result = await db.execute(
+            select(ChannelMember).where(
+                and_(
+                    ChannelMember.channel_id == channel_id,
+                    ChannelMember.user_id == current_user_id
+                )
             )
         )
-    )
-    membership = member_result.scalar_one_or_none()
+        membership = member_result.scalar_one_or_none()
 
-    if not membership:
+        if not membership:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not a member of this channel"
+            )
+
+        # Build query
+        query = select(ChannelMessage).where(
+            and_(
+                ChannelMessage.channel_id == channel_id,
+                ChannelMessage.is_deleted == False
+            )
+        )
+
+        if before_id:
+            query = query.where(ChannelMessage.id < before_id)
+
+        query = query.order_by(ChannelMessage.created_at.desc()).limit(limit)
+
+        result = await db.execute(query)
+        messages = result.scalars().all()
+
+        logger.info(f"Retrieved {len(messages)} messages from channel {channel_id}")
+        return [MessageResponse.from_orm(msg) for msg in messages]
+
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching messages for channel {channel_id}: {e}", exc_info=True)
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not a member of this channel"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to retrieve messages: {str(e)}"
         )
-
-    # Build query
-    query = select(ChannelMessage).where(
-        and_(
-            ChannelMessage.channel_id == channel_id,
-            ChannelMessage.is_deleted == False
-        )
-    )
-
-    if before_id:
-        query = query.where(ChannelMessage.id < before_id)
-
-    query = query.order_by(ChannelMessage.created_at.desc()).limit(limit)
-
-    result = await db.execute(query)
-    messages = result.scalars().all()
-
-    return [MessageResponse.from_orm(msg) for msg in messages]
 
 
 @router.post("/{channel_id}/messages", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
