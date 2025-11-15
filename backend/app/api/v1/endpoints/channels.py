@@ -347,13 +347,13 @@ async def get_channel_messages(
                 detail="Not a member of this channel"
             )
 
-        # Build query
+        # Build query with eager loading of reactions to avoid lazy-loading issues
         query = select(ChannelMessage).where(
             and_(
                 ChannelMessage.channel_id == channel_id,
                 ChannelMessage.is_deleted == False
             )
-        )
+        ).options(selectinload(ChannelMessage.reactions))
 
         if before_id:
             query = query.where(ChannelMessage.id < before_id)
