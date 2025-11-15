@@ -439,15 +439,14 @@ async def send_message(
         )
 
     await db.commit()
-    await db.refresh(message)
 
-    # Eagerly load reactions to prevent lazy-loading error
-    await db.execute(
+    # Query the message back with reactions eagerly loaded to prevent lazy-loading error
+    result = await db.execute(
         select(ChannelMessage)
         .where(ChannelMessage.id == message.id)
         .options(selectinload(ChannelMessage.reactions))
     )
-    await db.refresh(message, attribute_names=['reactions'])
+    message = result.scalar_one()
 
     return MessageResponse.from_orm(message)
 
