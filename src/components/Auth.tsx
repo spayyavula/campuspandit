@@ -61,7 +61,7 @@ export const Auth: React.FC<AuthProps> = ({ onAuthStateChange }) => {
           email,
           password,
           first_name: name,
-          role: role,
+          role: role.toLowerCase() as 'student' | 'tutor',
         });
 
         setMessage({
