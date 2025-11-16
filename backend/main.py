@@ -15,7 +15,7 @@ from app.core.database import engine, Base
 from app.api.v1 import api_router
 
 # Import models to create tables
-from app.models import scheduling, tutors, user, coaching, messaging, crm
+from app.models import scheduling, tutors, user, coaching, messaging, crm, courses
 
 # Import real-time components
 from app.realtime.pg_listener import pg_listener
