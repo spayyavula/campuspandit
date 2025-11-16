@@ -61,6 +61,12 @@ const PaymentSuccess = lazy(() => import('./components/payment/PaymentSuccess'))
 const PaymentFailure = lazy(() => import('./components/payment/PaymentFailure'));
 const PaymentHistory = lazy(() => import('./components/payment/PaymentHistory'));
 
+// Courses
+const CourseCatalog = lazy(() => import('./components/courses/CourseCatalog'));
+const CourseDetail = lazy(() => import('./components/courses/CourseDetail'));
+const LearningDashboard = lazy(() => import('./components/courses/LearningDashboard'));
+const LessonPlayer = lazy(() => import('./components/courses/LessonPlayer'));
+
 const App: React.FC = () => {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -132,6 +138,12 @@ const App: React.FC = () => {
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failure" element={<PaymentFailure />} />
           <Route path="/payment/history" element={user ? <PaymentHistory /> : <Navigate to="/auth" />} />
+
+          {/* Protected Routes - Courses */}
+          <Route path="/courses/my-learning" element={user ? <LearningDashboard /> : <Navigate to="/auth" />} />
+          <Route path="/courses/:courseId/lessons/:lessonId" element={user ? <LessonPlayer /> : <Navigate to="/auth" />} />
+          <Route path="/courses/:courseId" element={user ? <CourseDetail /> : <Navigate to="/auth" />} />
+          <Route path="/courses" element={user ? <CourseCatalog /> : <Navigate to="/auth" />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" />} />
