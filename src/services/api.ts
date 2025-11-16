@@ -139,8 +139,22 @@ export const authAPI = {
    * Log out the current user
    */
   logout(): void {
+    // Clear backend API auth
     localStorage.removeItem('access_token');
     localStorage.removeItem('user');
+
+    // Also clear Supabase auth (if present)
+    localStorage.removeItem('campuspandit-auth-storage');
+
+    // Clear any other auth-related items
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.includes('supabase') || key.includes('auth'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
   },
 
   /**

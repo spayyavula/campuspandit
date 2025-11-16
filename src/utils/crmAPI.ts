@@ -2,8 +2,13 @@ import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://campuspandit-backend.delightfulpond-e2c9744c.eastus.azurecontainerapps.io/api/v1';
 
-// Get auth token from localStorage (Supabase auth format)
+// Get auth token from localStorage (supports both backend API and Supabase auth)
 const getAuthToken = () => {
+  // First, try backend API auth (direct access_token in localStorage)
+  const backendToken = localStorage.getItem('access_token');
+  if (backendToken) return backendToken;
+
+  // Fallback to Supabase auth format
   const authData = localStorage.getItem('campuspandit-auth-storage');
   if (!authData) return null;
 
