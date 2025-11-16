@@ -25,7 +25,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
 
   const navLinks = [
     { to: '/coach', icon: Brain, label: 'AI Coach', color: 'purple' },
-    { to: '/courses', icon: PlayCircle, label: 'Courses', color: 'gray' },
+    { to: '/courses/my-learning', icon: PlayCircle, label: 'My Courses', color: 'gray' },
     { to: '/weak-areas', icon: Target, label: 'Weak Areas', color: 'gray' },
     { to: '/tutors', icon: Users, label: 'Tutors', color: 'gray' },
     { to: '/messages', icon: MessageCircle, label: 'Messages', color: 'gray' },
