@@ -47,7 +47,7 @@ async def get_contacts(
     order_by: str = "created_at",
     ascending: bool = False,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get all contacts with optional filters and eager-loaded company relationship."""
     try:
@@ -91,7 +91,7 @@ async def get_contacts(
 async def get_contact(
     contact_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get a single contact by ID with eager-loaded company relationship."""
     try:
@@ -117,15 +117,15 @@ async def get_contact(
 async def create_contact(
     contact_data: ContactCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Create a new contact."""
     try:
         # Create contact
         contact = CRMContact(
             **contact_data.model_dump(exclude={'owner_id'}),
-            created_by=current_user.id,
-            owner_id=contact_data.owner_id or current_user.id
+            created_by=current_user,
+            owner_id=contact_data.owner_id or current_user
         )
 
         db.add(contact)
@@ -152,7 +152,7 @@ async def update_contact(
     contact_id: UUID,
     contact_data: ContactUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Update a contact."""
     try:
@@ -194,7 +194,7 @@ async def update_contact(
 async def delete_contact(
     contact_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Delete a contact."""
     try:
@@ -231,7 +231,7 @@ async def get_companies(
     order_by: str = "created_at",
     ascending: bool = False,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get all companies with optional filters."""
     try:
@@ -261,14 +261,14 @@ async def get_companies(
 async def create_company(
     company_data: CompanyCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Create a new company."""
     try:
         company = CRMCompany(
             **company_data.model_dump(exclude={'owner_id'}),
-            created_by=current_user.id,
-            owner_id=company_data.owner_id or current_user.id
+            created_by=current_user,
+            owner_id=company_data.owner_id or current_user
         )
 
         db.add(company)
@@ -288,7 +288,7 @@ async def update_company(
     company_id: UUID,
     company_data: CompanyUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Update a company."""
     try:
@@ -329,7 +329,7 @@ async def get_deals(
     order_by: str = "created_at",
     ascending: bool = False,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get all deals with eager-loaded contact and company relationships."""
     try:
@@ -362,7 +362,7 @@ async def get_deals(
 async def get_deal(
     deal_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get a single deal by ID with eager-loaded relationships."""
     try:
@@ -391,14 +391,14 @@ async def get_deal(
 async def create_deal(
     deal_data: DealCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Create a new deal."""
     try:
         deal = CRMDeal(
             **deal_data.model_dump(exclude={'owner_id'}),
-            created_by=current_user.id,
-            owner_id=deal_data.owner_id or current_user.id
+            created_by=current_user,
+            owner_id=deal_data.owner_id or current_user
         )
 
         db.add(deal)
@@ -428,7 +428,7 @@ async def update_deal(
     deal_id: UUID,
     deal_data: DealUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Update a deal."""
     try:
@@ -471,7 +471,7 @@ async def update_deal(
 async def delete_deal(
     deal_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Delete a deal."""
     try:
@@ -509,7 +509,7 @@ async def get_activities(
     order_by: str = "created_at",
     ascending: bool = False,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get all activities with eager-loaded relationships."""
     try:
@@ -544,14 +544,14 @@ async def get_activities(
 async def create_activity(
     activity_data: ActivityCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Create a new activity."""
     try:
         activity = CRMActivity(
             **activity_data.model_dump(exclude={'owner_id'}),
-            created_by=current_user.id,
-            owner_id=activity_data.owner_id or current_user.id
+            created_by=current_user,
+            owner_id=activity_data.owner_id or current_user
         )
 
         db.add(activity)
@@ -581,7 +581,7 @@ async def update_activity(
     activity_id: UUID,
     activity_data: ActivityUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Update an activity."""
     try:
@@ -632,7 +632,7 @@ async def get_tasks(
     order_by: str = "due_date",
     ascending: bool = True,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get all tasks with eager-loaded relationships."""
     try:
@@ -665,14 +665,14 @@ async def get_tasks(
 async def create_task(
     task_data: TaskCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Create a new task."""
     try:
         task = CRMTask(
             **task_data.model_dump(exclude={'assigned_to'}),
-            created_by=current_user.id,
-            assigned_to=task_data.assigned_to or current_user.id
+            created_by=current_user,
+            assigned_to=task_data.assigned_to or current_user
         )
 
         db.add(task)
@@ -702,7 +702,7 @@ async def update_task(
     task_id: UUID,
     task_data: TaskUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Update a task."""
     try:
@@ -745,7 +745,7 @@ async def update_task(
 async def delete_task(
     task_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Delete a task."""
     try:
@@ -781,7 +781,7 @@ async def get_campaigns(
     order_by: str = "created_at",
     ascending: bool = False,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get all campaigns."""
     try:
@@ -809,14 +809,14 @@ async def get_campaigns(
 async def create_campaign(
     campaign_data: CampaignCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Create a new campaign."""
     try:
         campaign = CRMCampaign(
             **campaign_data.model_dump(),
-            created_by=current_user.id,
-            owner_id=current_user.id
+            created_by=current_user,
+            owner_id=current_user
         )
 
         db.add(campaign)
@@ -836,7 +836,7 @@ async def update_campaign(
     campaign_id: UUID,
     campaign_data: CampaignUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Update a campaign."""
     try:
@@ -878,7 +878,7 @@ async def get_tickets(
     order_by: str = "created_at",
     ascending: bool = False,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get all tickets with eager-loaded contact and comments relationships."""
     try:
@@ -918,7 +918,7 @@ async def get_tickets(
 async def get_ticket(
     ticket_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get a single ticket by ID with eager-loaded relationships."""
     try:
@@ -947,7 +947,7 @@ async def get_ticket(
 async def create_ticket(
     ticket_data: TicketCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Create a new ticket with auto-incrementing ticket number."""
     try:
@@ -961,7 +961,7 @@ async def create_ticket(
         ticket = CRMTicket(
             **ticket_data.model_dump(),
             ticket_number=next_ticket_number,
-            created_by=current_user.id
+            created_by=current_user
         )
 
         db.add(ticket)
@@ -991,7 +991,7 @@ async def update_ticket(
     ticket_id: UUID,
     ticket_data: TicketUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Update a ticket."""
     try:
@@ -1035,7 +1035,7 @@ async def add_ticket_comment(
     ticket_id: UUID,
     comment_data: TicketCommentCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Add a comment to a ticket."""
     try:
@@ -1051,7 +1051,7 @@ async def add_ticket_comment(
         comment = CRMTicketComment(
             ticket_id=ticket_id,
             **comment_data.model_dump(),
-            created_by=current_user.id
+            created_by=current_user
         )
 
         db.add(comment)
@@ -1076,7 +1076,7 @@ async def add_ticket_comment(
 async def get_dashboard_stats(
     user_id: Optional[UUID] = None,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get dashboard statistics."""
     try:
@@ -1134,7 +1134,7 @@ async def get_dashboard_stats(
 @router.get("/deal-pipeline", response_model=List[PipelineStage])
 async def get_deal_pipeline(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get deal pipeline statistics grouped by stage."""
     try:
@@ -1166,7 +1166,7 @@ async def get_deal_pipeline(
 @router.get("/contact-summary", response_model=List[ContactSummary])
 async def get_contact_summary(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get contact summary statistics grouped by contact type."""
     try:
@@ -1196,7 +1196,7 @@ async def get_contact_summary(
 @router.get("/ticket-stats", response_model=List[TicketStats])
 async def get_ticket_stats(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: UUID = Depends(get_current_user)
 ):
     """Get ticket statistics grouped by status."""
     try:
