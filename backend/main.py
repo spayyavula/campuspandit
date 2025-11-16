@@ -82,7 +82,7 @@ app = FastAPI(
     - Intelligent notifications
     - Analytics & insights
     """,
-    version="1.0.3",
+    version="1.0.4",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
@@ -152,7 +152,7 @@ async def health_check():
     return {
         "status": "healthy",
         "environment": settings.ENVIRONMENT,
-        "version": "1.0.3",
+        "version": "1.0.4",
     }
 
 
@@ -162,7 +162,7 @@ async def root():
     """Root endpoint with API info"""
     return {
         "message": "Welcome to CampusPandit API",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "docs": "/api/docs",
         "health": "/health",
     }
