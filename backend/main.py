@@ -15,7 +15,7 @@ from app.core.database import engine, Base
 from app.api.v1 import api_router
 
 # Import models to create tables
-from app.models import scheduling, tutors, user, coaching, messaging
+from app.models import scheduling, tutors, user, coaching, messaging, crm
 
 # Import real-time components
 from app.realtime.pg_listener import pg_listener
@@ -82,7 +82,7 @@ app = FastAPI(
     - Intelligent notifications
     - Analytics & insights
     """,
-    version="1.0.1",
+    version="1.0.2",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
@@ -152,7 +152,7 @@ async def health_check():
     return {
         "status": "healthy",
         "environment": settings.ENVIRONMENT,
-        "version": "1.0.1",
+        "version": "1.0.2",
     }
 
 
@@ -162,7 +162,7 @@ async def root():
     """Root endpoint with API info"""
     return {
         "message": "Welcome to CampusPandit API",
-        "version": "1.0.1",
+        "version": "1.0.2",
         "docs": "/api/docs",
         "health": "/health",
     }

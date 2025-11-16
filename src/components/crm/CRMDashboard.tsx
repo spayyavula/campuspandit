@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import { getDashboardStats, getSalesPipeline } from '../../utils/crmAPI';
 import { Button, Card } from '../ui';
-import { diagnoseSupabaseConnection } from '../../utils/debugSupabase';
 import CRMNav from './CRMNav';
 
 interface CRMDashboardProps {
@@ -39,8 +38,6 @@ const CRMDashboard: React.FC<CRMDashboardProps> = ({ userId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Run diagnostic on mount (remove this after debugging)
-    diagnoseSupabaseConnection();
     loadDashboardData();
   }, [userId]);
 
