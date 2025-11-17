@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, BookOpen, Users, Target, TrendingUp, Check, Menu, X, Star, MessageCircle, Award, Brain, Zap, Shield } from 'lucide-react';
+import { ArrowRight, BookOpen, Users, Target, TrendingUp, Check, Menu, X, Star, MessageCircle, Award, Brain, Zap, Shield, PlayCircle, Video, BarChart3 } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -82,7 +82,7 @@ const LandingPage: React.FC = () => {
                 Excel in exams.
               </h1>
               <p className="text-lg sm:text-xl text-neutral-600 mb-8 leading-relaxed">
-                Complete learning platform with AI coaching, expert tutors, real-time messaging, and progress tracking. Everything you need in one place.
+                Complete learning platform with video courses, AI coaching, live tutoring sessions, real-time messaging, CRM tools, and progress tracking. Everything you need in one place.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a href="/auth" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
@@ -195,7 +195,18 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature Card 1 - AI Coaching */}
+            {/* Feature Card 1 - Video Courses */}
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
+                <PlayCircle className="w-6 h-6 text-primary-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Video Courses</h3>
+              <p className="text-neutral-600 leading-relaxed">
+                High-quality video lessons with Cloudflare Stream. Progress tracking. Resume from where you left off. Course completion certificates.
+              </p>
+            </div>
+
+            {/* Feature Card 2 - AI Coaching */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
                 <Brain className="w-6 h-6 text-success-500" />
@@ -206,7 +217,18 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 2 - Expert Tutors */}
+            {/* Feature Card 3 - Live Video Sessions */}
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
+                <Video className="w-6 h-6 text-secondary-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Live Tutoring</h3>
+              <p className="text-neutral-600 leading-relaxed">
+                One-on-one video sessions with expert tutors. Screen sharing. Interactive whiteboard. Recorded sessions for review.
+              </p>
+            </div>
+
+            {/* Feature Card 4 - Expert Tutors */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
                 <Users className="w-6 h-6 text-primary-500" />
@@ -217,7 +239,7 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 3 - Real-time Messaging */}
+            {/* Feature Card 5 - Real-time Messaging */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
                 <MessageCircle className="w-6 h-6 text-secondary-500" />
@@ -228,10 +250,21 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 4 - Smart Flashcards */}
+            {/* Feature Card 6 - CRM System */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
-                <BookOpen className="w-6 h-6 text-primary-500" />
+                <BarChart3 className="w-6 h-6 text-primary-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">CRM & Analytics</h3>
+              <p className="text-neutral-600 leading-relaxed">
+                Track contacts, deals, and activities. Marketing campaigns. Support tickets. Advanced reporting and analytics.
+              </p>
+            </div>
+
+            {/* Feature Card 7 - Smart Flashcards */}
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
+              <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
+                <BookOpen className="w-6 h-6 text-success-500" />
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">Smart Flashcards</h3>
               <p className="text-neutral-600 leading-relaxed">
@@ -239,7 +272,7 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 5 - Progress Tracking */}
+            {/* Feature Card 8 - Progress Tracking */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
                 <TrendingUp className="w-6 h-6 text-secondary-500" />
@@ -250,14 +283,14 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 6 - Learning Resources */}
+            {/* Feature Card 9 - Learning Resources */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
                 <Target className="w-6 h-6 text-success-500" />
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">Curated Resources</h3>
               <p className="text-neutral-600 leading-relaxed">
-                Recommended textbooks. Google Learn Your Way integration. Video lessons. Practice problems. Everything in one place.
+                OpenStax textbooks. Google Learn Your Way. NotebookLM guides. Practice problems. Everything in one place.
               </p>
             </div>
           </div>
@@ -439,6 +472,10 @@ const LandingPage: React.FC = () => {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Access to video courses</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
                   <span className="text-neutral-600">AI Coach & weak area identification</span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -481,7 +518,15 @@ const LandingPage: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">Live video tutoring sessions</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                   <span className="text-white">Real-time messaging with tutors</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white">CRM tools & advanced analytics</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
@@ -490,10 +535,6 @@ const LandingPage: React.FC = () => {
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                   <span className="text-white">Priority support</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">Advanced analytics & reports</span>
                 </li>
               </ul>
 
