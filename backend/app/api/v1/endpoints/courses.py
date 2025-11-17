@@ -140,7 +140,7 @@ async def get_courses(
 # MY COURSES ENDPOINT (must be before /courses/{course_id} to avoid route conflict)
 # ============================================================================
 
-@router.get("/my-courses", response_model=List[CourseDetailResponse])
+@router.get("/courses/my-courses", response_model=List[CourseDetailResponse])
 async def get_my_courses(
     current_user_id: UUID = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
