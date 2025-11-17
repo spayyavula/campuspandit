@@ -5,19 +5,6 @@
  * Built for CampusPandit to find the best tutors for students
  */
 
-import { createClient } from '@supabase/supabase-js';
-
-// Initialize Supabase client with realtime COMPLETELY disabled
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-  {
-    realtime: {
-      enabled: false
-    }
-  }
-);
-
 // Backend API URL (Python FastAPI)
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || 'https://campuspandit-backend.delightfulpond-e2c9744c.eastus.azurecontainerapps.io/api/v1';
 
@@ -134,11 +121,10 @@ export interface MatchFeedback {
 // =====================================================
 
 /**
- * Get authentication token from Supabase
+ * Get authentication token from localStorage
  */
 async function getAuthToken(): Promise<string | null> {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token || null;
+  return localStorage.getItem('access_token');
 }
 
 /**

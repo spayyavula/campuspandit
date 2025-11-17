@@ -1,22 +1,9 @@
 /**
  * Real-Time Chat Service
  *
- * Handles all chat and messaging functionality with Supabase Realtime
+ * Handles all chat and messaging functionality
  * Features: messaging, typing indicators, read receipts, online status
  */
-
-import { createClient, RealtimeChannel } from '@supabase/supabase-js';
-
-// Initialize Supabase client with realtime COMPLETELY disabled
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-  {
-    realtime: {
-      enabled: false
-    }
-  }
-);
 
 // Backend API URL
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || 'https://campuspandit-backend.delightfulpond-e2c9744c.eastus.azurecontainerapps.io/api/v1';
@@ -90,8 +77,7 @@ export interface UnreadCount {
 // =====================================================
 
 async function getAuthToken(): Promise<string | null> {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token || null;
+  return localStorage.getItem('access_token');
 }
 
 async function apiRequest<T>(

@@ -3,8 +3,6 @@
  * Handles all API calls for course platform
  */
 
-import { supabase } from '../utils/supabase';
-
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://campuspandit-backend.delightfulpond-e2c9744c.eastus.azurecontainerapps.io';
 
 // ============================================================================
@@ -124,8 +122,7 @@ export interface CourseDetail extends Course {
 
 class CourseAPI {
   private async getAuthToken(): Promise<string | null> {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session?.access_token || null;
+    return localStorage.getItem('access_token');
   }
 
   private async makeRequest<T>(
