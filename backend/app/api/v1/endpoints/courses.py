@@ -136,6 +136,53 @@ async def get_courses(
     )
 
 
+# ============================================================================
+# MY COURSES ENDPOINT (must be before /courses/{course_id} to avoid route conflict)
+# ============================================================================
+
+@router.get("/my-courses", response_model=List[CourseDetailResponse])
+async def get_my_courses(
+    current_user_id: UUID = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get all courses student is enrolled in"""
+
+    enrollments_result = await db.execute(
+        select(Enrollment)
+        .where(Enrollment.student_id == current_user_id)
+        .where(Enrollment.is_active == True)
+        .order_by(Enrollment.last_accessed_at.desc())
+    )
+    enrollments = enrollments_result.scalars().all()
+
+    courses = []
+    for enrollment in enrollments:
+        course_result = await db.execute(
+            select(Course).where(Course.id == enrollment.course_id)
+        )
+        course = course_result.scalar_one()
+
+        # Get instructor name
+        instructor_result = await db.execute(select(User).where(User.id == course.instructor_id))
+        instructor = instructor_result.scalar_one_or_none()
+
+        # Construct instructor name from first_name and last_name
+        instructor_name = None
+        if instructor:
+            name_parts = [instructor.first_name, instructor.last_name]
+            instructor_name = " ".join(filter(None, name_parts)) or None
+
+        courses.append(CourseDetailResponse(
+            **CourseResponse.model_validate(course).model_dump(),
+            sections=[],
+            instructor_name=instructor_name,
+            is_enrolled=True,
+            enrollment=EnrollmentResponse.model_validate(enrollment)
+        ))
+
+    return courses
+
+
 @router.get("/courses/{course_id}", response_model=CourseDetailResponse)
 async def get_course(
     course_id: UUID,
@@ -361,49 +408,6 @@ async def enroll_in_course(
 
     logger.info(f"Student {current_user.id} enrolled in course {course_id}")
     return enrollment
-
-
-@router.get("/my-courses", response_model=List[CourseDetailResponse])
-async def get_my_courses(
-    current_user_id: UUID = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Get all courses student is enrolled in"""
-
-    enrollments_result = await db.execute(
-        select(Enrollment)
-        .where(Enrollment.student_id == current_user_id)
-        .where(Enrollment.is_active == True)
-        .order_by(Enrollment.last_accessed_at.desc())
-    )
-    enrollments = enrollments_result.scalars().all()
-
-    courses = []
-    for enrollment in enrollments:
-        course_result = await db.execute(
-            select(Course).where(Course.id == enrollment.course_id)
-        )
-        course = course_result.scalar_one()
-
-        # Get instructor name
-        instructor_result = await db.execute(select(User).where(User.id == course.instructor_id))
-        instructor = instructor_result.scalar_one_or_none()
-
-        # Construct instructor name from first_name and last_name
-        instructor_name = None
-        if instructor:
-            name_parts = [instructor.first_name, instructor.last_name]
-            instructor_name = " ".join(filter(None, name_parts)) or None
-
-        courses.append(CourseDetailResponse(
-            **CourseResponse.model_validate(course).model_dump(),
-            sections=[],
-            instructor_name=instructor_name,
-            is_enrolled=True,
-            enrollment=EnrollmentResponse.model_validate(enrollment)
-        ))
-
-    return courses
 
 
 # ============================================================================
