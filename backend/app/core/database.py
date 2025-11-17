@@ -15,6 +15,10 @@ from app.core.config import settings
 # Prepare database URL for asyncpg (remove sslmode parameter if present)
 database_url = settings.DATABASE_URL.replace('?sslmode=require', '').replace('&sslmode=require', '')
 
+# Ensure we're using the asyncpg driver
+if database_url.startswith('postgresql://'):
+    database_url = database_url.replace('postgresql://', 'postgresql+asyncpg://', 1)
+
 # Configure SSL context for Azure PostgreSQL
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
