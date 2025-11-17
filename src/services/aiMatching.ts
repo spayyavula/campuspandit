@@ -19,7 +19,7 @@ const supabase = createClient(
 );
 
 // Backend API URL (Python FastAPI)
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_API_URL || 'https://campuspandit-backend.delightfulpond-e2c9744c.eastus.azurecontainerapps.io/api/v1';
 
 // =====================================================
 // Types

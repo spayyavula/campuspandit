@@ -5,7 +5,7 @@
 
 import { supabase } from '../utils/supabase';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://campuspandit-backend.delightfulpond-e2c9744c.eastus.azurecontainerapps.io';
 
 // ============================================================================
 // TYPES
