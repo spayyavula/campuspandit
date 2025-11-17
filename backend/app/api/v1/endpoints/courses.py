@@ -216,10 +216,16 @@ async def get_course(
     instructor_result = await db.execute(select(User).where(User.id == course.instructor_id))
     instructor = instructor_result.scalar_one_or_none()
 
+    # Construct instructor name from first_name and last_name
+    instructor_name = None
+    if instructor:
+        name_parts = [instructor.first_name, instructor.last_name]
+        instructor_name = " ".join(filter(None, name_parts)) or None
+
     return CourseDetailResponse(
         **CourseResponse.model_validate(course).model_dump(),
         sections=sections_with_lessons,
-        instructor_name=instructor.full_name if instructor else None,
+        instructor_name=instructor_name,
         is_enrolled=enrollment is not None,
         enrollment=EnrollmentResponse.model_validate(enrollment) if enrollment else None
     )
@@ -383,10 +389,16 @@ async def get_my_courses(
         instructor_result = await db.execute(select(User).where(User.id == course.instructor_id))
         instructor = instructor_result.scalar_one_or_none()
 
+        # Construct instructor name from first_name and last_name
+        instructor_name = None
+        if instructor:
+            name_parts = [instructor.first_name, instructor.last_name]
+            instructor_name = " ".join(filter(None, name_parts)) or None
+
         courses.append(CourseDetailResponse(
             **CourseResponse.model_validate(course).model_dump(),
             sections=[],
-            instructor_name=instructor.full_name if instructor else None,
+            instructor_name=instructor_name,
             is_enrolled=True,
             enrollment=EnrollmentResponse.model_validate(enrollment)
         ))
