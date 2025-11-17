@@ -365,14 +365,14 @@ async def enroll_in_course(
 
 @router.get("/my-courses", response_model=List[CourseDetailResponse])
 async def get_my_courses(
-    current_user: User = Depends(get_current_user),
+    current_user_id: UUID = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get all courses student is enrolled in"""
 
     enrollments_result = await db.execute(
         select(Enrollment)
-        .where(Enrollment.student_id == current_user.id)
+        .where(Enrollment.student_id == current_user_id)
         .where(Enrollment.is_active == True)
         .order_by(Enrollment.last_accessed_at.desc())
     )
