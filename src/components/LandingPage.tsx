@@ -381,7 +381,7 @@ const LandingPage: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-neutral-900 mb-1">Flexible Schedule</h4>
-                    <p className="text-neutral-600">Teach when you want. Set your own availability and rates (₹200-₹5000/hr)</p>
+                    <p className="text-neutral-600">Teach when you want. Set your own availability and rates ($20-$50/hr)</p>
                   </div>
                 </div>
 
@@ -425,7 +425,7 @@ const LandingPage: React.FC = () => {
             {/* Right Stats */}
             <div className="grid grid-cols-2 gap-6">
               <div className="bg-gradient-to-br from-primary-50 to-primary-100 p-8 rounded-2xl">
-                <div className="text-4xl font-bold text-primary-600 mb-2">₹800-₹1500</div>
+                <div className="text-4xl font-bold text-primary-600 mb-2">$30/hr</div>
                 <div className="text-sm text-neutral-600">Average hourly rate</div>
               </div>
 
@@ -465,7 +465,7 @@ const LandingPage: React.FC = () => {
             <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200 hover:border-primary-300 transition-all">
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-neutral-900 mb-2">Free</h3>
-                <div className="text-4xl font-bold text-neutral-900 mb-2">₹0</div>
+                <div className="text-4xl font-bold text-neutral-900 mb-2">$0</div>
                 <div className="text-sm text-neutral-500">First 6 months</div>
               </div>
 
@@ -507,7 +507,7 @@ const LandingPage: React.FC = () => {
 
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-white mb-2">Student Pro</h3>
-                <div className="text-4xl font-bold text-white mb-2">₹299</div>
+                <div className="text-4xl font-bold text-white mb-2">$10</div>
                 <div className="text-sm text-primary-100">per month after free period</div>
               </div>
 
@@ -547,7 +547,7 @@ const LandingPage: React.FC = () => {
             <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200 hover:border-primary-300 transition-all">
               <div className="text-center mb-6">
                 <h3 className="text-xl font-bold text-neutral-900 mb-2">Pay Per Session</h3>
-                <div className="text-4xl font-bold text-neutral-900 mb-2">₹200+</div>
+                <div className="text-4xl font-bold text-neutral-900 mb-2">$25+</div>
                 <div className="text-sm text-neutral-500">per hour with tutor</div>
               </div>
 
@@ -562,7 +562,7 @@ const LandingPage: React.FC = () => {
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Rates from ₹200-₹5000/hr</span>
+                  <span className="text-neutral-600">Rates from $20-$50/hr</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
