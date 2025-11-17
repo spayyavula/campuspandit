@@ -16,8 +16,15 @@ from app.core.config import settings
 database_url = settings.DATABASE_URL.replace('?sslmode=require', '').replace('&sslmode=require', '')
 
 # Ensure we're using the asyncpg driver
-if database_url.startswith('postgresql://'):
+# Handle both postgresql:// and postgres:// formats
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql+asyncpg://', 1)
+    logger.info(f"Converted postgres:// to postgresql+asyncpg://")
+elif database_url.startswith('postgresql://') and '+asyncpg' not in database_url:
     database_url = database_url.replace('postgresql://', 'postgresql+asyncpg://', 1)
+    logger.info(f"Converted postgresql:// to postgresql+asyncpg://")
+
+logger.info(f"Database URL driver: {database_url.split('://')[0] if '://' in database_url else 'unknown'}")
 
 # Configure SSL context for Azure PostgreSQL
 ssl_context = ssl.create_default_context()
