@@ -491,6 +491,76 @@ async def delete_section(
 # LESSON ENDPOINTS
 # ============================================================================
 
+@router.post("/courses/{course_id}/lessons", response_model=LessonResponse, status_code=status.HTTP_201_CREATED)
+async def create_course_lesson(
+    course_id: UUID,
+    lesson_data: LessonCreate,
+    current_user_id: UUID = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Create a new lesson in a course (creates default section if none exists)"""
+
+    # Verify course exists and user is instructor
+    course_result = await db.execute(select(Course).where(Course.id == course_id))
+    course = course_result.scalar_one_or_none()
+
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    if course.instructor_id != current_user_id:
+        raise HTTPException(status_code=403, detail="Not authorized to modify this course")
+
+    # Get or create default section
+    section_result = await db.execute(
+        select(CourseSection)
+        .where(CourseSection.course_id == course_id)
+        .order_by(CourseSection.order)
+    )
+    section = section_result.scalars().first()
+
+    if not section:
+        # Create default section
+        section = CourseSection(
+            course_id=course_id,
+            title="Course Content",
+            description="Main course content",
+            order=1
+        )
+        db.add(section)
+        await db.commit()
+        await db.refresh(section)
+        logger.info(f"Created default section for course {course_id}")
+
+    # Create lesson
+    new_lesson = Lesson(
+        section_id=section.id,
+        course_id=course_id,
+        title=lesson_data.title,
+        description=lesson_data.description,
+        lesson_type=lesson_data.lesson_type,
+        order=lesson_data.order,
+        content=lesson_data.content,
+        attachments=lesson_data.attachments,
+        resources=lesson_data.resources,
+        is_preview=lesson_data.is_preview,
+        is_downloadable=lesson_data.is_downloadable,
+        requires_completion=lesson_data.requires_completion,
+        video_status=VideoStatus.UPLOADING if lesson_data.lesson_type == "video" else None
+    )
+
+    db.add(new_lesson)
+    await db.commit()
+    await db.refresh(new_lesson)
+
+    # Update course total_lessons count
+    course.total_lessons = (course.total_lessons or 0) + 1
+    await db.commit()
+
+    logger.info(f"Lesson created: {new_lesson.id} in course {course_id}")
+
+    return LessonResponse.model_validate(new_lesson)
+
+
 @router.post("/sections/{section_id}/lessons", response_model=LessonResponse, status_code=status.HTTP_201_CREATED)
 async def create_lesson(
     section_id: UUID,
@@ -542,6 +612,31 @@ async def create_lesson(
     logger.info(f"Lesson created: {new_lesson.id} in section {section_id}")
 
     return LessonResponse.model_validate(new_lesson)
+
+
+@router.get("/courses/{course_id}/lessons", response_model=List[LessonResponse])
+async def get_course_lessons(
+    course_id: UUID,
+    db: AsyncSession = Depends(get_db)
+):
+    """Get all lessons in a course (ordered)"""
+
+    # Verify course exists
+    course_result = await db.execute(select(Course).where(Course.id == course_id))
+    course = course_result.scalar_one_or_none()
+
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    # Get all lessons ordered
+    lessons_result = await db.execute(
+        select(Lesson)
+        .where(Lesson.course_id == course_id)
+        .order_by(Lesson.order)
+    )
+    lessons = lessons_result.scalars().all()
+
+    return [LessonResponse.model_validate(l) for l in lessons]
 
 
 @router.get("/sections/{section_id}/lessons", response_model=List[LessonResponse])

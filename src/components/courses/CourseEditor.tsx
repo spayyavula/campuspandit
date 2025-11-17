@@ -65,7 +65,20 @@ const CourseEditor: React.FC = () => {
       setLoading(true);
       const courseData = await coursesAPI.getCourse(courseId!);
       setCourse(courseData);
-      setLessons(courseData.lessons || []);
+
+      // Fetch lessons separately
+      const lessonsResponse = await fetch(`/api/v1/courses/${courseId}/lessons`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+      });
+
+      if (lessonsResponse.ok) {
+        const lessonsData = await lessonsResponse.json();
+        setLessons(lessonsData);
+      } else {
+        setLessons([]);
+      }
     } catch (err: any) {
       setError('Failed to load course');
       console.error(err);
