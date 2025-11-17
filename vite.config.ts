@@ -175,6 +175,11 @@ export default defineConfig({
           if (id.includes('/src/components/messaging/')) {
             return 'messaging-modules';
           }
+
+          // Course components
+          if (id.includes('/src/components/courses/')) {
+            return 'courses-modules';
+          }
         },
         // Optimize chunk file names
         chunkFileNames: 'assets/[name]-[hash].js',
