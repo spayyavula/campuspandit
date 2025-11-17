@@ -130,7 +130,7 @@ const CourseCreation: React.FC = () => {
 
       // Navigate to course edit page after 2 seconds
       setTimeout(() => {
-        navigate(`/instructor/courses/${response.id}/edit`);
+        navigate(`/courses/${response.id}/edit`);
       }, 2000);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to create course');
