@@ -1,6 +1,6 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { authAPI } from './services/api';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Loading Component
@@ -66,22 +66,12 @@ const CourseCatalog = lazy(() => import('./components/courses/CourseCatalog'));
 const CourseDetail = lazy(() => import('./components/courses/CourseDetail'));
 const LearningDashboard = lazy(() => import('./components/courses/LearningDashboard'));
 const LessonPlayer = lazy(() => import('./components/courses/LessonPlayer'));
+const CourseCreation = lazy(() => import('./components/courses/CourseCreation'));
+const CourseEditor = lazy(() => import('./components/courses/CourseEditor'));
+const InstructorDashboard = lazy(() => import('./components/courses/InstructorDashboard'));
 
-const App: React.FC = () => {
-  const [user, setUser] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check if user is authenticated on mount
-    const currentUser = authAPI.getCurrentUser();
-    const isAuthenticated = authAPI.isAuthenticated();
-
-    if (isAuthenticated && currentUser) {
-      setUser(currentUser);
-    }
-
-    setLoading(false);
-  }, []);
+const AppRoutes: React.FC = () => {
+  const { user, loading, login } = useAuth();
 
   // Show loading state
   if (loading) {
@@ -93,13 +83,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <ErrorBoundary>
-      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/auth" element={!user ? <Auth onAuthStateChange={setUser} /> : <Navigate to="/coach" />} />
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/auth" element={!user ? <Auth onAuthStateChange={login} /> : <Navigate to="/coach" />} />
 
           {/* Protected Routes - Student */}
           <Route path="/coach" element={user ? <AICoach studentId={user.id} /> : <Navigate to="/auth" />} />
@@ -141,15 +129,29 @@ const App: React.FC = () => {
 
           {/* Protected Routes - Courses */}
           <Route path="/courses/my-learning" element={user ? <LearningDashboard /> : <Navigate to="/auth" />} />
+          <Route path="/courses/create" element={user ? <CourseCreation /> : <Navigate to="/auth" />} />
+          <Route path="/courses/:courseId/edit" element={user ? <CourseEditor /> : <Navigate to="/auth" />} />
+          <Route path="/instructor/dashboard" element={user ? <InstructorDashboard /> : <Navigate to="/auth" />} />
+          <Route path="/instructor/courses" element={user ? <InstructorDashboard /> : <Navigate to="/auth" />} />
           <Route path="/courses/:courseId/lessons/:lessonId" element={user ? <LessonPlayer /> : <Navigate to="/auth" />} />
           <Route path="/courses/:courseId" element={user ? <CourseDetail /> : <Navigate to="/auth" />} />
           <Route path="/courses" element={user ? <CourseCatalog /> : <Navigate to="/auth" />} />
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </Suspense>
-      </Router>
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </Suspense>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
     </ErrorBoundary>
   );
 };

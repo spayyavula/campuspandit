@@ -60,48 +60,6 @@
       "purpose": "maskable any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/desktop-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Dashboard view showing learning progress"
-    },
-    {
-      "src": "/screenshots/mobile-1.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Mobile dashboard with course selection"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Quick Battle",
-      "short_name": "Battle",
-      "description": "Start a quick quiz battle",
-      "url": "/gaming?action=battle",
-      "icons": [
-        {
-          "src": "/icons/battle-icon.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "My Courses",
-      "short_name": "Courses",
-      "description": "View your courses",
-      "url": "/courses",
-      "icons": [
-        {
-          "src": "/icons/courses-icon.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
   "related_applications": [],
   "prefer_related_applications": false
 }

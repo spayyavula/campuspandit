@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import datetime, timedelta
+from uuid import UUID
 from loguru import logger
 
 from app.core.database import get_db
@@ -15,7 +16,8 @@ from app.core.security import (
     verify_password,
     create_access_token,
     generate_verification_token,
-    generate_reset_token
+    generate_reset_token,
+    get_current_user
 )
 from app.models.user import User, EmailVerificationToken, PasswordResetToken
 from app.schemas.auth import (
@@ -379,4 +381,27 @@ async def password_reset_confirm(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Password reset failed"
+        )
+
+
+@router.post("/logout", response_model=MessageResponse)
+async def logout(
+    current_user: UUID = Depends(get_current_user)
+):
+    """
+    User logout endpoint
+
+    Logs the logout event. Token invalidation is handled client-side.
+    In the future, this can be extended to implement token blacklisting.
+    """
+    try:
+        logger.info(f"User logged out: {current_user}")
+
+        return MessageResponse(message="Logged out successfully")
+
+    except Exception as e:
+        logger.error(f"Logout error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Logout failed"
         )

@@ -138,23 +138,32 @@ export const authAPI = {
   /**
    * Log out the current user
    */
-  logout(): void {
-    // Clear backend API auth
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('user');
+  async logout(): Promise<void> {
+    try {
+      // Call backend logout endpoint (for logging purposes)
+      await fetchAPI<MessageResponse>('/auth/logout', {
+        method: 'POST',
+      }).catch(() => {
+        // Ignore errors - logout should work even if backend call fails
+      });
+    } finally {
+      // Clear backend API auth
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
 
-    // Also clear Supabase auth (if present)
-    localStorage.removeItem('campuspandit-auth-storage');
+      // Also clear Supabase auth (if present)
+      localStorage.removeItem('campuspandit-auth-storage');
 
-    // Clear any other auth-related items
-    const keysToRemove = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && (key.includes('supabase') || key.includes('auth'))) {
-        keysToRemove.push(key);
+      // Clear any other auth-related items
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('supabase') || key.includes('auth'))) {
+          keysToRemove.push(key);
+        }
       }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
     }
-    keysToRemove.forEach(key => localStorage.removeItem(key));
   },
 
   /**
@@ -205,6 +214,132 @@ export const authAPI = {
       method: 'POST',
       body: JSON.stringify({ token, new_password: newPassword }),
     });
+  },
+};
+
+export const coursesAPI = {
+  /**
+   * Create a new course
+   */
+  async createCourse(data: any): Promise<any> {
+    return await fetchAPI('/courses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Get instructor's courses
+   */
+  async getInstructorCourses(params?: { skip?: number; limit?: number; status_filter?: string }): Promise<any> {
+    const queryParams = new URLSearchParams();
+    if (params?.skip) queryParams.append('skip', params.skip.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.status_filter) queryParams.append('status_filter', params.status_filter);
+
+    const queryString = queryParams.toString();
+    return await fetchAPI(`/instructor/my-courses${queryString ? `?${queryString}` : ''}`);
+  },
+
+  /**
+   * Get course by ID
+   */
+  async getCourse(courseId: string): Promise<any> {
+    return await fetchAPI(`/courses/${courseId}`);
+  },
+
+  /**
+   * Update course
+   */
+  async updateCourse(courseId: string, data: any): Promise<any> {
+    return await fetchAPI(`/courses/${courseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Upload course thumbnail
+   */
+  async uploadThumbnail(courseId: string, file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('access_token');
+    const response = await fetch(`${API_BASE_URL}/courses/${courseId}/upload-thumbnail`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Upload failed' }));
+      throw new APIError(response.status, error.detail || 'Upload failed');
+    }
+
+    return await response.json();
+  },
+
+  /**
+   * Get my enrolled courses
+   */
+  async getMyCourses(): Promise<any> {
+    return await fetchAPI('/courses/my-courses');
+  },
+
+  /**
+   * Get course statistics
+   */
+  async getCourseStatistics(courseId: string): Promise<any> {
+    return await fetchAPI(`/courses/${courseId}/statistics`);
+  },
+
+  /**
+   * Validate course before publishing
+   */
+  async validateCourse(courseId: string): Promise<any> {
+    return await fetchAPI(`/courses/${courseId}/validate`);
+  },
+
+  /**
+   * Publish course
+   */
+  async publishCourse(courseId: string): Promise<any> {
+    return await fetchAPI(`/courses/${courseId}/publish`, {
+      method: 'POST',
+    });
+  },
+
+  /**
+   * Enroll in a course
+   */
+  async enrollInCourse(courseId: string): Promise<any> {
+    return await fetchAPI(`/${courseId}/enroll`, {
+      method: 'POST',
+    });
+  },
+
+  /**
+   * Get all courses (catalog)
+   */
+  async getAllCourses(params?: {
+    skip?: number;
+    limit?: number;
+    category?: string;
+    search?: string;
+    level?: string;
+  }): Promise<any> {
+    const queryParams = new URLSearchParams();
+    if (params?.skip) queryParams.append('skip', params.skip.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.category) queryParams.append('category', params.category);
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.level) queryParams.append('level', params.level);
+
+    const queryString = queryParams.toString();
+    return await fetchAPI(`/courses${queryString ? `?${queryString}` : ''}`);
   },
 };
 

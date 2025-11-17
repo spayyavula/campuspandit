@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   BookOpen, Brain, Target, Users, MessageCircle, BarChart3,
-  Settings, LogOut, Menu, X, Notebook, GraduationCap, Book, PlayCircle
+  Settings, LogOut, Menu, X, Notebook, GraduationCap, Book, PlayCircle, Plus, LayoutDashboard
 } from 'lucide-react';
-import { authAPI } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NavigationProps {
   currentPage?: string;
@@ -13,10 +13,11 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleSignOut = async () => {
     try {
-      authAPI.logout();
+      await logout();
       navigate('/auth');
     } catch (error) {
       console.error('Error signing out:', error);
@@ -26,6 +27,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
   const navLinks = [
     { to: '/coach', icon: Brain, label: 'AI Coach', color: 'purple' },
     { to: '/courses/my-learning', icon: PlayCircle, label: 'My Courses', color: 'gray' },
+    { to: '/courses/create', icon: Plus, label: 'Create Course', color: 'green' },
+    { to: '/instructor/dashboard', icon: LayoutDashboard, label: 'Instructor', color: 'blue' },
     { to: '/weak-areas', icon: Target, label: 'Weak Areas', color: 'gray' },
     { to: '/tutors', icon: Users, label: 'Tutors', color: 'gray' },
     { to: '/messages', icon: MessageCircle, label: 'Messages', color: 'gray' },
