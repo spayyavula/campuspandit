@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   BookOpen, Brain, Target, Users, MessageCircle, BarChart3,
-  Settings, LogOut, Menu, X, Notebook, GraduationCap, Book, PlayCircle, Plus, LayoutDashboard
+  Settings, LogOut, Menu, X, Notebook, GraduationCap, Book, PlayCircle, Plus, LayoutDashboard, Video
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -27,6 +27,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage }) => {
   const navLinks = [
     { to: '/coach', icon: Brain, label: 'AI Coach', color: 'purple' },
     { to: '/courses/my-learning', icon: PlayCircle, label: 'My Courses', color: 'gray' },
+    { to: '/library', icon: Video, label: 'Video Library', color: 'red' },
     { to: '/courses/create', icon: Plus, label: 'Create Course', color: 'green' },
     { to: '/instructor/dashboard', icon: LayoutDashboard, label: 'Instructor', color: 'blue' },
     { to: '/weak-areas', icon: Target, label: 'Weak Areas', color: 'gray' },
