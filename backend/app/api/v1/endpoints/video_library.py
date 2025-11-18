@@ -2,11 +2,13 @@
 Video Library API Endpoints
 Handles recorded sessions and video library functionality
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, File, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func
 from uuid import UUID
 from typing import List, Optional
+import os
+from pathlib import Path
 
 from app.core.database import get_db
 from app.core.security import get_current_user
@@ -210,3 +212,42 @@ async def get_my_sessions(
     sessions = result.scalars().all()
 
     return {"sessions": sessions}
+
+
+@router.post("/upload-video")
+async def upload_video(
+    video: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Upload a video file
+    Returns the video URL for use in creating a session
+    """
+
+    # For now, return a placeholder URL
+    # TODO: Implement actual cloud storage upload (Azure Blob Storage or Cloudflare Stream)
+
+    # Validate file type
+    allowed_types = ['video/webm', 'video/mp4', 'video/quicktime']
+    if video.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid file type. Allowed: {', '.join(allowed_types)}"
+        )
+
+    # Validate file size (max 500MB)
+    max_size = 500 * 1024 * 1024  # 500MB
+    contents = await video.read()
+    if len(contents) > max_size:
+        raise HTTPException(
+            status_code=400,
+            detail="File too large. Maximum size is 500MB"
+        )
+
+    # For now, return a message that video upload is not yet configured
+    # The frontend should allow users to provide video URLs instead
+    return {
+        "message": "Video upload received. Please use a video URL (YouTube, Vimeo, etc.) for now.",
+        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",  # Placeholder
+        "note": "Direct video upload coming soon! For now, please upload to YouTube/Vimeo and provide the URL."
+    }
