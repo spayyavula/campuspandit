@@ -2,7 +2,7 @@
 Video Library API Endpoints
 Handles recorded sessions and video library functionality
 """
-from fastapi import APIRouter, Depends, HTTPException, Query, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Query, File, UploadFile, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func
 from uuid import UUID
@@ -219,8 +219,8 @@ async def get_my_sessions(
 
 @router.post("/upload-video")
 async def upload_video(
+    request: Request,
     video: UploadFile = File(...),
-    user_id: UUID = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -232,6 +232,43 @@ async def upload_video(
 
     Returns the video URL for use in creating a session
     """
+    from app.core.security import decode_access_token
+
+    # Manually extract and validate token from Authorization header
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid authorization header",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
+    token = auth_header.split(" ")[1]
+    token_data = decode_access_token(token)
+    if not token_data:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
+    user_id_str = token_data.get("sub")
+    if not user_id_str:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token payload",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
+    try:
+        user_id = UUID(user_id_str)
+    except ValueError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid user ID format",
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
     logger.info(f"Upload video endpoint called - user_id: {user_id}, filename: {video.filename}")
     from app.services.video_storage_service import video_storage_service
     from io import BytesIO
