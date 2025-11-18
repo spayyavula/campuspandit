@@ -128,16 +128,25 @@ async def create_recorded_session(
     board: Optional[str] = Body(None),
     topics: Optional[List[str]] = Body(None),
     visibility: RecordingVisibility = Body(RecordingVisibility.PUBLIC),
-    current_user: User = Depends(get_current_user),
+    current_user_id: UUID = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Upload a new recorded session"""
+
+    # Fetch the user object to get the name
+    user_result = await db.execute(
+        select(User).where(User.id == current_user_id)
+    )
+    current_user = user_result.scalar_one_or_none()
+
+    if not current_user:
+        raise HTTPException(status_code=404, detail="User not found")
 
     session = RecordedSession(
         title=title,
         description=description,
         recording_type=recording_type,
-        instructor_id=current_user.id,
+        instructor_id=current_user_id,
         instructor_name=f"{current_user.first_name} {current_user.last_name}",
         subject=subject,
         grade_level=grade_level,
