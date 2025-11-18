@@ -392,5 +392,5 @@ const api = {
   },
 };
 
-export { APIError, authAPI, coursesAPI };
+export { APIError };
 export default api;
