@@ -15,7 +15,8 @@ COPY requirements-azure.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements-azure.txt
+    pip install --no-cache-dir -r requirements-azure.txt && \
+    pip install --no-cache-dir python-slugify
 
 # Production stage
 FROM python:3.11-slim

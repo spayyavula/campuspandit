@@ -512,6 +512,25 @@ const CourseEditor: React.FC = () => {
                   />
                 </div>
               )}
+
+              {/* Video URL (for video type) */}
+              {lessonForm.lesson_type === 'video' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Video URL (Optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={lessonForm.video_url || ''}
+                    onChange={(e) => setLessonForm({ ...lessonForm, video_url: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="https://youtube.com/watch?v=... or leave empty to upload later"
+                  />
+                  <p className="mt-2 text-sm text-gray-600">
+                    You can add a video URL now, or upload a video file after creating the lesson.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">

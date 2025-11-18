@@ -96,6 +96,26 @@ class TutoringSession(Base):
     actual_start = Column(DateTime(timezone=True))
     actual_end = Column(DateTime(timezone=True))
 
+    # Video Conferencing
+    video_room_id = Column(String(255))  # Daily.co room name
+    video_room_url = Column(String(500))  # Daily.co room URL
+    video_room_token_tutor = Column(Text)  # JWT token for tutor
+    video_room_token_student = Column(Text)  # JWT token for student
+    recording_enabled = Column(Boolean, default=True)
+    recording_url = Column(String(500))  # URL to recorded session
+    recording_id = Column(String(255))  # Daily.co recording ID
+    recording_duration = Column(Integer)  # Duration in seconds
+
+    # Whiteboard & Collaboration
+    whiteboard_enabled = Column(Boolean, default=True)
+    whiteboard_data = Column(JSONB, default={})  # Store whiteboard state
+    shared_files = Column(JSONB, default=[])  # Files shared during session
+
+    # Session Metrics
+    connection_quality = Column(String(20))  # excellent, good, fair, poor
+    participant_join_times = Column(JSONB, default={})  # Track when users joined/left
+    total_screen_share_duration = Column(Integer)  # Seconds of screen sharing
+
     # Cancellation/Rescheduling
     cancelled_at = Column(DateTime(timezone=True))
     cancelled_by = Column(UUID(as_uuid=True), ForeignKey("users.id"))

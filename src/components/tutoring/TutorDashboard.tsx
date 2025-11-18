@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { tutorAPI, sessionAPI, TutorProfile, TutoringSession } from '../../utils/tutoringAPI';
 import { supabase } from '../../utils/supabase';
+import VideoCallInterface from '../video/VideoCallInterface';
+import { sessionAPI as newSessionAPI } from '../../services/sessionAPI';
 
 /**
  * TutorDashboard Component
@@ -21,6 +23,7 @@ export default function TutorDashboard() {
     averageRating: 0,
     totalEarnings: 0
   });
+  const [activeVideoSession, setActiveVideoSession] = useState<string | null>(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -89,6 +92,28 @@ export default function TutorDashboard() {
     });
   };
 
+  const joinVideoCall = async (sessionId: string) => {
+    try {
+      setActiveVideoSession(sessionId);
+    } catch (error) {
+      console.error('Error joining video call:', error);
+      alert('Failed to join video call. Please try again.');
+    }
+  };
+
+  const handleLeaveCall = () => {
+    setActiveVideoSession(null);
+    loadDashboardData(); // Refresh session data
+  };
+
+  const canJoinSession = (session: TutoringSession) => {
+    const scheduledStart = new Date(session.scheduled_start);
+    const now = new Date();
+    const fifteenMinutesEarly = new Date(scheduledStart.getTime() - 15 * 60 * 1000);
+
+    return now >= fifteenMinutesEarly && session.status !== 'completed' && session.status !== 'cancelled';
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig: any = {
       scheduled: { color: 'bg-blue-100 text-blue-800', icon: Calendar, text: 'Scheduled' },
@@ -126,6 +151,16 @@ export default function TutorDashboard() {
           <p className="text-gray-500">Please complete your tutor registration first.</p>
         </div>
       </div>
+    );
+  }
+
+  // Show video interface if in active call
+  if (activeVideoSession) {
+    return (
+      <VideoCallInterface
+        sessionId={activeVideoSession}
+        onLeave={handleLeaveCall}
+      />
     );
   }
 
@@ -233,13 +268,15 @@ export default function TutorDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {session.meeting_url && (
-                        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                      {canJoinSession(session) ? (
+                        <button
+                          onClick={() => joinVideoCall(session.id!)}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        >
                           <Video className="w-4 h-4" />
-                          Join
+                          Join Session
                         </button>
-                      )}
-                      {session.status === 'scheduled' && (
+                      ) : session.status === 'scheduled' && (
                         <button
                           onClick={() => updateSessionStatus(session.id!, 'confirmed')}
                           className="px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors"

@@ -18,6 +18,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { courseAPI, CourseDetail, Section, Lesson } from '../../services/courseAPI';
+import CertificateViewer from './CertificateViewer';
 
 export default function CourseDetailPage() {
   const { courseId } = useParams<{ courseId: string }>();
@@ -313,6 +314,26 @@ export default function CourseDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Certificate Section - Show if course is completed */}
+      {course.is_enrolled && course.enrollment && course.enrollment.completed_at && course.enrollment.certificate_url && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+              <Award className="w-8 h-8 text-yellow-500" />
+              Your Certificate
+            </h2>
+            <p className="text-gray-600">
+              Congratulations on completing this course! Download and share your certificate.
+            </p>
+          </div>
+          <CertificateViewer
+            enrollmentId={course.enrollment.id}
+            certificateUrl={course.enrollment.certificate_url}
+            issuedAt={course.enrollment.certificate_issued_at}
+          />
+        </div>
+      )}
 
       {/* Course Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
