@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # Try to import Azure SDK
 try:
-    from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions
+    from azure.storage.blob import BlobServiceClient, generate_blob_sas, BlobSasPermissions, ContentSettings
     AZURE_AVAILABLE = True
 except ImportError:
     AZURE_AVAILABLE = False
@@ -216,10 +216,10 @@ class VideoStorageService:
             # Upload with content type
             blob_client.upload_blob(
                 video_content,
-                content_settings={
-                    "content_type": content_type,
-                    "cache_control": "public, max-age=31536000"  # Cache for 1 year
-                },
+                content_settings=ContentSettings(
+                    content_type=content_type,
+                    cache_control="public, max-age=31536000"  # Cache for 1 year
+                ),
                 overwrite=True
             )
 
