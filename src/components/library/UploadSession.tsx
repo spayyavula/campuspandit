@@ -137,11 +137,6 @@ export default function UploadSession() {
         visibility: formData.visibility,
       };
 
-      // Add duration if we have it
-      if (videoDuration > 0) {
-        payload.duration_seconds = videoDuration;
-      }
-
       const response = await api.post('/library/sessions', payload);
 
       alert('Session uploaded successfully!');
