@@ -220,7 +220,8 @@ async def get_my_sessions(
 @router.post("/upload-video")
 async def upload_video(
     video: UploadFile = File(...),
-    current_user: User = Depends(get_current_user)
+    user_id: UUID = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Upload a video file to cloud storage
@@ -259,7 +260,7 @@ async def upload_video(
         result = video_storage_service.upload_video(
             video_file=file_obj,
             filename=video.filename,
-            user_id=str(current_user.id),
+            user_id=str(user_id),
             content_type=video.content_type
         )
 
