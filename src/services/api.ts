@@ -341,7 +341,56 @@ export const coursesAPI = {
     const queryString = queryParams.toString();
     return await fetchAPI(`/courses${queryString ? `?${queryString}` : ''}`);
   },
+
+  /**
+   * Create a new lesson under a course
+   */
+  async createLesson(courseId: string, data: any): Promise<any> {
+    return await fetchAPI(`/courses/${courseId}/lessons`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Get lessons for a course
+   */
+  async getCourseLessons(courseId: string): Promise<any> {
+    return await fetchAPI(`/courses/${courseId}/lessons`);
+  },
 };
 
-export { APIError };
-export default authAPI;
+// General purpose API client
+const api = {
+  async get<T = any>(endpoint: string): Promise<T> {
+    return await fetchAPI<T>(endpoint, { method: 'GET' });
+  },
+
+  async post<T = any>(endpoint: string, data?: any): Promise<T> {
+    return await fetchAPI<T>(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  },
+
+  async put<T = any>(endpoint: string, data?: any): Promise<T> {
+    return await fetchAPI<T>(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  },
+
+  async patch<T = any>(endpoint: string, data?: any): Promise<T> {
+    return await fetchAPI<T>(endpoint, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  },
+
+  async delete<T = any>(endpoint: string): Promise<T> {
+    return await fetchAPI<T>(endpoint, { method: 'DELETE' });
+  },
+};
+
+export { APIError, authAPI, coursesAPI };
+export default api;
