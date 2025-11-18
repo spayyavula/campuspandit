@@ -2,7 +2,7 @@
 Video Library API Endpoints
 Handles recorded sessions and video library functionality
 """
-from fastapi import APIRouter, Depends, HTTPException, Query, File, UploadFile, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, File, UploadFile, Request, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, func
 from uuid import UUID
@@ -119,15 +119,15 @@ async def get_session_detail(
 
 @router.post("/sessions")
 async def create_recorded_session(
-    title: str,
-    description: str,
-    recording_type: RecordingType,
-    subject: str,
-    video_url: Optional[str] = None,
-    grade_level: Optional[str] = None,
-    board: Optional[str] = None,
-    topics: Optional[List[str]] = None,
-    visibility: RecordingVisibility = RecordingVisibility.PUBLIC,
+    title: str = Body(...),
+    description: str = Body(...),
+    recording_type: RecordingType = Body(...),
+    subject: str = Body(...),
+    video_url: Optional[str] = Body(None),
+    grade_level: Optional[str] = Body(None),
+    board: Optional[str] = Body(None),
+    topics: Optional[List[str]] = Body(None),
+    visibility: RecordingVisibility = Body(RecordingVisibility.PUBLIC),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
