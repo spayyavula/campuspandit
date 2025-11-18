@@ -113,6 +113,10 @@ async def get_current_user(
     Raises:
         HTTPException: If authentication fails
     """
+    from loguru import logger
+
+    logger.debug(f"get_current_user called - has credentials: {credentials is not None}")
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -122,14 +126,19 @@ async def get_current_user(
     # Decode the JWT token
     token_data = decode_access_token(credentials.credentials)
     if token_data is None:
+        logger.warning("Failed to decode JWT token")
         raise credentials_exception
 
     user_id: str = token_data.get("sub")
     if user_id is None:
+        logger.warning("No 'sub' in JWT token")
         raise credentials_exception
 
     # Return user ID
     try:
-        return UUID(user_id)
+        uuid_result = UUID(user_id)
+        logger.debug(f"Successfully authenticated user: {uuid_result}")
+        return uuid_result
     except ValueError:
+        logger.warning(f"Invalid UUID format: {user_id}")
         raise credentials_exception

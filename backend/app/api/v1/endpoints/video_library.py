@@ -232,6 +232,7 @@ async def upload_video(
 
     Returns the video URL for use in creating a session
     """
+    logger.info(f"Upload video endpoint called - user_id: {user_id}, filename: {video.filename}")
     from app.services.video_storage_service import video_storage_service
     from io import BytesIO
 
