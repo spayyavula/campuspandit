@@ -126,7 +126,7 @@ async function uploadToBackend(
       reject(new Error('Network error'));
     });
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token'); // Fixed: use correct key
     xhr.open('POST', `${apiUrl}/library/upload-video`);
     if (token) {
       xhr.setRequestHeader('Authorization', `Bearer ${token}`);
