@@ -232,11 +232,15 @@ async def upload_video(
 
     Returns the video URL for use in creating a session
     """
+    logger.info("Upload video endpoint started")
     from app.core.security import decode_access_token
 
     # Manually extract and validate token from Authorization header
     auth_header = request.headers.get("Authorization")
+    logger.info(f"Auth header present: {auth_header is not None}, starts with Bearer: {auth_header.startswith('Bearer ') if auth_header else False}")
+
     if not auth_header or not auth_header.startswith("Bearer "):
+        logger.warning("Missing or invalid authorization header")
         raise HTTPException(
             status_code=401,
             detail="Missing or invalid authorization header",
@@ -244,16 +248,22 @@ async def upload_video(
         )
 
     token = auth_header.split(" ")[1]
+    logger.info(f"Token extracted, length: {len(token)}")
+
     token_data = decode_access_token(token)
     if not token_data:
+        logger.warning("Failed to decode token")
         raise HTTPException(
             status_code=401,
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"}
         )
 
+    logger.info(f"Token decoded successfully: {token_data.keys()}")
+
     user_id_str = token_data.get("sub")
     if not user_id_str:
+        logger.warning("No 'sub' in token")
         raise HTTPException(
             status_code=401,
             detail="Invalid token payload",
@@ -262,7 +272,9 @@ async def upload_video(
 
     try:
         user_id = UUID(user_id_str)
+        logger.info(f"Successfully authenticated user: {user_id}")
     except ValueError:
+        logger.warning(f"Invalid UUID format: {user_id_str}")
         raise HTTPException(
             status_code=401,
             detail="Invalid user ID format",
