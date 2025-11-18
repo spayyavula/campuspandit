@@ -143,7 +143,13 @@ export default function UploadSession() {
       navigate(`/library/${response.data.id}`);
     } catch (error: any) {
       console.error('Error uploading session:', error);
-      alert(error.response?.data?.detail || 'Failed to upload session. Please try again.');
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response,
+        stack: error.stack
+      });
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to upload session. Please try again.';
+      alert(errorMessage);
     } finally {
       setUploading(false);
     }

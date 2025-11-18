@@ -115,10 +115,19 @@ async function uploadToBackend(
 
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        resolve(response.video_url);
+        try {
+          const response = JSON.parse(xhr.responseText);
+          console.log('Upload response:', response);
+          if (!response.video_url) {
+            reject(new Error(`No video_url in response: ${JSON.stringify(response)}`));
+            return;
+          }
+          resolve(response.video_url);
+        } catch (err) {
+          reject(new Error(`Failed to parse response: ${xhr.responseText}`));
+        }
       } else {
-        reject(new Error('Upload failed'));
+        reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.responseText}`));
       }
     });
 
