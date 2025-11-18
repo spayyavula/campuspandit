@@ -142,28 +142,8 @@ export async function uploadVideoSimple(
   videoBlob: Blob,
   onProgress?: (progress: UploadProgress) => void
 ): Promise<string> {
-  // For now, create a local blob URL
-  // In production, this should upload to cloud storage
-  const blobUrl = URL.createObjectURL(videoBlob);
-
-  // Simulate upload progress
-  if (onProgress) {
-    let loaded = 0;
-    const total = videoBlob.size;
-    const interval = setInterval(() => {
-      loaded += total / 10;
-      if (loaded >= total) {
-        clearInterval(interval);
-        onProgress({ loaded: total, total, percentage: 100 });
-      } else {
-        onProgress({ loaded, total, percentage: Math.round((loaded / total) * 100) });
-      }
-    }, 200);
-  }
-
-  // Return the blob URL (temporary solution)
-  // TODO: Replace with actual cloud storage URL
-  return blobUrl;
+  // Try Cloudflare first, fallback to backend
+  return uploadToCloudflareStream(videoBlob, onProgress);
 }
 
 /**
