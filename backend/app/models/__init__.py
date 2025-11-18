@@ -24,6 +24,10 @@ from app.models.crm import (
     ActivityType, ActivityStatus, TaskStatus, Priority,
     CampaignType, CampaignStatus, TicketStatus
 )
+from app.models.video_library import (
+    RecordedSession, SessionView, SessionLike, VideoLibraryCollection,
+    RecordingType, RecordingStatus, RecordingVisibility
+)
 
 __all__ = [
     # User models
@@ -84,4 +88,13 @@ __all__ = [
     "CampaignType",
     "CampaignStatus",
     "TicketStatus",
+    # Video Library models
+    "RecordedSession",
+    "SessionView",
+    "SessionLike",
+    "VideoLibraryCollection",
+    # Video Library Enums
+    "RecordingType",
+    "RecordingStatus",
+    "RecordingVisibility",
 ]

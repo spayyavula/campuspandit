@@ -70,6 +70,12 @@ const CourseCreation = lazy(() => import('./components/courses/CourseCreation'))
 const CourseEditor = lazy(() => import('./components/courses/CourseEditor'));
 const InstructorDashboard = lazy(() => import('./components/courses/InstructorDashboard'));
 
+// Video Library
+const VideoLibrary = lazy(() => import('./components/library/VideoLibrary'));
+const VideoPlayer = lazy(() => import('./components/library/VideoPlayer'));
+const UploadSession = lazy(() => import('./components/library/UploadSession'));
+const RecordingStudio = lazy(() => import('./components/library/RecordingStudio'));
+
 const AppRoutes: React.FC = () => {
   const { user, loading, login } = useAuth();
 
@@ -136,6 +142,12 @@ const AppRoutes: React.FC = () => {
           <Route path="/courses/:courseId/lessons/:lessonId" element={user ? <LessonPlayer /> : <Navigate to="/auth" />} />
           <Route path="/courses/:courseId" element={user ? <CourseDetail /> : <Navigate to="/auth" />} />
           <Route path="/courses" element={user ? <CourseCatalog /> : <Navigate to="/auth" />} />
+
+          {/* Protected Routes - Video Library */}
+          <Route path="/library" element={user ? <VideoLibrary /> : <Navigate to="/auth" />} />
+          <Route path="/library/record" element={user ? <RecordingStudio /> : <Navigate to="/auth" />} />
+          <Route path="/library/upload" element={user ? <UploadSession /> : <Navigate to="/auth" />} />
+          <Route path="/library/:sessionId" element={user ? <VideoPlayer /> : <Navigate to="/auth" />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />

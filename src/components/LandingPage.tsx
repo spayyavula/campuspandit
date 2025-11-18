@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, BookOpen, Users, Target, TrendingUp, Check, Menu, X, Star, MessageCircle, Award, Brain, Zap, Shield, PlayCircle, Video, BarChart3 } from 'lucide-react';
+import { ArrowRight, BookOpen, Users, Target, TrendingUp, Check, Menu, X, Star, MessageCircle, Award, Brain, Zap, Shield, PlayCircle, Video, BarChart3, VideoIcon, Film, Camera } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -82,7 +82,7 @@ const LandingPage: React.FC = () => {
                 Excel in exams.
               </h1>
               <p className="text-lg sm:text-xl text-neutral-600 mb-8 leading-relaxed">
-                Complete learning platform with video courses, AI coaching, live tutoring sessions, real-time messaging, CRM tools, and progress tracking. Everything you need in one place.
+                Complete learning platform with video courses, recording studio, AI coaching, live tutoring sessions, real-time messaging, CRM tools, and progress tracking. Record like Udemy, learn like never before.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <a href="/auth" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
@@ -195,18 +195,32 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature Card 1 - Video Courses */}
+            {/* Feature Card 1 - Recording Studio (NEW!) */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-red-300 hover:border-red-400 hover:shadow-lg transition-all relative">
+              <div className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                NEW!
+              </div>
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-6">
+                <Camera className="w-6 h-6 text-red-500" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Recording Studio</h3>
+              <p className="text-neutral-600 leading-relaxed">
+                Record lessons directly in your browser like Udemy! Webcam, screen, or both. No software needed. Pause/resume. Professional quality.
+              </p>
+            </div>
+
+            {/* Feature Card 2 - Video Library & Courses */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
                 <PlayCircle className="w-6 h-6 text-primary-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Video Courses</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Video Library & Courses</h3>
               <p className="text-neutral-600 leading-relaxed">
-                High-quality video lessons with Cloudflare Stream. Progress tracking. Resume from where you left off. Course completion certificates.
+                Browse recorded sessions and courses. Watch anytime, anywhere. Progress tracking. Like and save favorites. Certificates on completion.
               </p>
             </div>
 
-            {/* Feature Card 2 - AI Coaching */}
+            {/* Feature Card 3 - AI Coaching */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
                 <Brain className="w-6 h-6 text-success-500" />
@@ -217,40 +231,40 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 3 - Live Video Sessions */}
+            {/* Feature Card 4 - Live Video Sessions */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
                 <Video className="w-6 h-6 text-secondary-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Live Tutoring</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Live Tutoring Sessions</h3>
               <p className="text-neutral-600 leading-relaxed">
-                One-on-one video sessions with expert tutors. Screen sharing. Interactive whiteboard. Recorded sessions for review.
+                One-on-one video sessions with expert tutors. Screen sharing. Interactive whiteboard. Sessions auto-saved to library for review.
               </p>
             </div>
 
-            {/* Feature Card 4 - Expert Tutors */}
+            {/* Feature Card 5 - Expert Tutors */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
                 <Users className="w-6 h-6 text-primary-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Global Tutors</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Global Tutor Network</h3>
               <p className="text-neutral-600 leading-relaxed">
-                500+ expert tutors worldwide. Math, Physics, Chemistry, and more. Book sessions anytime. Pay per session.
+                500+ expert tutors worldwide. Math, Physics, Chemistry, and more. Record and share your lessons. Build your library.
               </p>
             </div>
 
-            {/* Feature Card 5 - Real-time Messaging */}
+            {/* Feature Card 6 - Real-time Messaging */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
                 <MessageCircle className="w-6 h-6 text-secondary-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Real-time Chat</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Real-time Messaging</h3>
               <p className="text-neutral-600 leading-relaxed">
                 Slack-like messaging with tutors. Instant doubt solving. File sharing. Discussion channels. Always connected.
               </p>
             </div>
 
-            {/* Feature Card 6 - CRM System */}
+            {/* Feature Card 7 - CRM System */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
                 <BarChart3 className="w-6 h-6 text-primary-500" />
@@ -261,7 +275,7 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 7 - Smart Flashcards */}
+            {/* Feature Card 8 - Smart Flashcards */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
                 <BookOpen className="w-6 h-6 text-success-500" />
@@ -272,7 +286,7 @@ const LandingPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Feature Card 8 - Progress Tracking */}
+            {/* Feature Card 9 - Progress Tracking */}
             <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
                 <TrendingUp className="w-6 h-6 text-secondary-500" />
@@ -371,10 +385,20 @@ const LandingPage: React.FC = () => {
                 Earn on your schedule.
               </h2>
               <p className="text-lg text-neutral-600 mb-8 leading-relaxed">
-                Join 500+ expert tutors teaching Physics, Chemistry, Math, and more. Set your own rates, create your schedule, and build a global student base.
+                Join 500+ expert tutors teaching Physics, Chemistry, Math, and more. Set your own rates, create your schedule, record your lessons like Udemy, and build a global student base.
               </p>
 
               <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Camera className="w-4 h-4 text-red-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-neutral-900 mb-1">🆕 Built-in Recording Studio</h4>
+                    <p className="text-neutral-600">Record lessons in your browser. Webcam, screen, or both. No software needed. Build your video library!</p>
+                  </div>
+                </div>
+
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <Check className="w-4 h-4 text-success-600" />
@@ -400,18 +424,8 @@ const LandingPage: React.FC = () => {
                     <Check className="w-4 h-4 text-success-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-neutral-900 mb-1">Secure Payments</h4>
-                    <p className="text-neutral-600">Get paid on time. Safe and reliable payment processing for every session.</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Check className="w-4 h-4 text-success-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-neutral-900 mb-1">Built-in Tools</h4>
-                    <p className="text-neutral-600">Messaging, scheduling, video calls - everything you need in one platform.</p>
+                    <h4 className="font-semibold text-neutral-900 mb-1">Complete Platform</h4>
+                    <p className="text-neutral-600">Recording studio, video library, messaging, scheduling, whiteboard - everything in one place.</p>
                   </div>
                 </div>
               </div>
@@ -472,7 +486,7 @@ const LandingPage: React.FC = () => {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Access to video courses</span>
+                  <span className="text-neutral-600">Video library & courses access</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
@@ -517,6 +531,10 @@ const LandingPage: React.FC = () => {
                   <span className="text-white">Everything in Free</span>
                 </li>
                 <li className="flex items-start gap-3">
+                  <Camera className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                  <span className="text-white"><strong>Recording Studio</strong> - Create your own courses</span>
+                </li>
+                <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                   <span className="text-white">Live video tutoring sessions</span>
                 </li>
@@ -527,10 +545,6 @@ const LandingPage: React.FC = () => {
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                   <span className="text-white">CRM tools & advanced analytics</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">Book unlimited tutor sessions</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
