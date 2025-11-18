@@ -8,12 +8,15 @@ from sqlalchemy import select, and_, or_, func
 from uuid import UUID
 from typing import List, Optional
 import os
+import logging
 from pathlib import Path
 
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.video_library import RecordedSession, SessionView, SessionLike, RecordingType, RecordingVisibility
 from app.models.user import User
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -220,15 +223,19 @@ async def upload_video(
     current_user: User = Depends(get_current_user)
 ):
     """
-    Upload a video file
+    Upload a video file to cloud storage
+
+    Supports multiple backends:
+    1. Azure Blob Storage (Primary)
+    2. Cloudflare Stream (Fallback)
+
     Returns the video URL for use in creating a session
     """
-
-    # For now, return a placeholder URL
-    # TODO: Implement actual cloud storage upload (Azure Blob Storage or Cloudflare Stream)
+    from app.services.video_storage_service import video_storage_service
+    from io import BytesIO
 
     # Validate file type
-    allowed_types = ['video/webm', 'video/mp4', 'video/quicktime']
+    allowed_types = ['video/webm', 'video/mp4', 'video/quicktime', 'video/x-matroska']
     if video.content_type not in allowed_types:
         raise HTTPException(
             status_code=400,
@@ -244,10 +251,35 @@ async def upload_video(
             detail="File too large. Maximum size is 500MB"
         )
 
-    # For now, return a message that video upload is not yet configured
-    # The frontend should allow users to provide video URLs instead
-    return {
-        "message": "Video upload received. Please use a video URL (YouTube, Vimeo, etc.) for now.",
-        "video_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",  # Placeholder
-        "note": "Direct video upload coming soon! For now, please upload to YouTube/Vimeo and provide the URL."
-    }
+    try:
+        # Create a BytesIO object from the file contents
+        file_obj = BytesIO(contents)
+
+        # Upload to storage
+        result = video_storage_service.upload_video(
+            video_file=file_obj,
+            filename=video.filename,
+            user_id=str(current_user.id),
+            content_type=video.content_type
+        )
+
+        if not result:
+            raise HTTPException(
+                status_code=500,
+                detail="Video upload failed. No storage backend available. Please configure Azure Blob Storage or Cloudflare Stream."
+            )
+
+        return {
+            "message": "Video uploaded successfully",
+            "video_url": result["video_url"],
+            "storage_backend": result.get("storage_backend"),
+            "size_bytes": result.get("size_bytes"),
+            "uploaded_at": result.get("uploaded_at")
+        }
+
+    except Exception as e:
+        logger.error(f"Error uploading video: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to upload video: {str(e)}"
+        )
