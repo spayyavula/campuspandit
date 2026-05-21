@@ -457,7 +457,7 @@ Per-environment resource groups: `campuspandit-rg` (prod), `campuspandit-rg-dev`
 
 CI/CD: [.github/workflows/azure-static-web-apps-ambitious-river-04fdcd510.yml](./.github/workflows/azure-static-web-apps-ambitious-river-04fdcd510.yml)
 
-Production frontend: `https://ambitious-river-04fdcd510.azurestaticapps.net` (and `https://campuspandit.com`).
+Production frontend: [`https://www.campuspandit.ai`](https://www.campuspandit.ai). The legacy `campuspandit.com` domain (a separate WordPress site) is 301-redirected to `www.campuspandit.ai`.
 
 ### Mobile App
 
@@ -548,7 +548,7 @@ Proprietary — all rights reserved. Contact the maintainers for licensing inqui
 
 - Issues: GitHub Issues on this repository
 - Email: support@campuspandit.com
-- Production: [https://campuspandit.com](https://campuspandit.com)
+- Production: [https://www.campuspandit.ai](https://www.campuspandit.ai)
 
 ---
 
