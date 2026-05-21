@@ -1,566 +1,555 @@
 # CampusPandit
 
-A comprehensive Progressive Web App (PWA) for educational content delivery, assessment, and gamified learning across multiple educational boards and competitive exams.
+AI-powered online tutoring platform that connects students with tutors, delivers personalized coaching, and provides a full course/video library — built as a Progressive Web App with a Python FastAPI backend and a React Native mobile companion app.
 
 ![Architecture Diagram](./architecture-diagram.svg)
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Architecture](#architecture)
+- [Repository Layout](#repository-layout)
 - [Features](#features)
+- [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Development Tools](#development-tools)
-- [Database Schema](#database-schema)
+  - [Frontend (Web PWA)](#frontend-web-pwa)
+  - [Backend (FastAPI)](#backend-fastapi)
+  - [Mobile App (Expo)](#mobile-app-expo)
+- [Environment Variables](#environment-variables)
 - [API Documentation](#api-documentation)
+- [Database](#database)
+- [Real-time Messaging](#real-time-messaging)
+- [Payments](#payments)
+- [Video & Live Sessions](#video--live-sessions)
 - [Deployment](#deployment)
+- [Development Scripts](#development-scripts)
+- [Additional Documentation](#additional-documentation)
 - [Contributing](#contributing)
 
 ## Overview
 
-CampusPandit is a modern educational platform designed to support students across different educational boards (Cambridge, IB, CBSE, ISC) and competitive exams (JEE, NEET). It combines traditional learning with gamification elements to enhance student engagement and learning outcomes.
+CampusPandit is a multi-surface platform built around three primary capabilities:
+
+1. **AI-powered tutor matching & coaching** — students get matched with tutors and receive AI-driven study guidance, weak-area analysis, and personalized feedback.
+2. **Live & recorded learning** — instructors host live video sessions, record studio-quality lessons, publish courses, and stream them through Daily.co, Cloudflare Stream, and Azure Blob Storage.
+3. **End-to-end operations** — a built-in CRM (contacts, deals, tickets, marketing campaigns), real-time messaging, multi-gateway payments, and admin tooling for instructors and operators.
 
 ### Key Highlights
 
-- **Multi-Board Support**: Content aligned with Cambridge, IB, CBSE, ISC curricula
-- **Competitive Exam Prep**: Specialized content for JEE and NEET preparation
-- **Gamification**: Tournaments, quiz battles, teams, and achievement system
-- **Progressive Web App**: Offline-first architecture with service workers
-- **Real-time Features**: Live quiz battles and instant progress updates
-- **Admin Dashboard**: Comprehensive content and user management system
+- **AI Coaching**: Personalized study plans, weak-area detection, and adaptive guidance (OpenAI / Anthropic / Gemini).
+- **Tutor Marketplace**: Search, profile, book, and pay tutors with smart scheduling and automated reminders.
+- **Live Video Sessions**: Daily.co integration for 1:1 and group tutoring with recording.
+- **Video Library**: Upload, record in-browser, and stream lessons via Cloudflare Stream / Azure Blob + CDN.
+- **Real-time Messaging**: PostgreSQL `LISTEN/NOTIFY` driven SSE channels — no polling, no separate broker.
+- **CRM Suite**: Contacts, deals pipeline, tickets, activities, marketing campaigns, and reports.
+- **Multi-Gateway Payments**: Stripe, Razorpay, Instamojo, PayU, PayPal, and Shopify.
+- **Progressive Web App**: Offline-first install on desktop and mobile via Workbox.
+- **Mobile App**: Expo / React Native companion app for students and tutors.
 
-## Architecture
+## Repository Layout
 
-The application follows a modern client-server architecture with the following layers:
-
-### Frontend Layer
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite for fast development and optimized builds
-- **Styling**: TailwindCSS with PostCSS
-- **State Management**: React Hooks (useState, useEffect, Context)
-- **Routing**: React Router v6
-- **PWA**: Service Workers with Workbox for offline functionality
-
-### API Layer
-- **Client SDK**: Supabase JavaScript Client
-- **Authentication**: Session-based auth with auto-refresh
-- **API Functions**: Modular API wrappers for questions, collections, and admin operations
-
-### Backend Services
-- **Backend-as-a-Service**: Supabase
-- **Database**: PostgreSQL with Row Level Security (RLS)
-- **Authentication**: Supabase Auth with email/password and OAuth
-- **Storage**: Supabase Storage for file uploads
-- **Real-time**: WebSocket subscriptions for live updates
-- **Edge Functions**: Database triggers and webhooks
-
-### External Integrations
-- **Payment Processing**: Stripe API
-- **Content Quality**: OpenAI API for question validation
-- **Content Sources**: Open Educational Resources (OER)
-
-For a detailed architecture diagram, see [architecture-diagram.svg](./architecture-diagram.svg).
+```
+campuspandit/
+├── src/                          # React 18 + TypeScript PWA (Vite)
+│   ├── components/               # Feature components
+│   │   ├── coaching/             # AI Coach, weak-area manager
+│   │   ├── tutoring/             # Find tutors, booking, registration, dashboards
+│   │   ├── courses/              # Course catalog, creation, editor, player, instructor dashboard
+│   │   ├── library/              # Video library, recording studio, upload, playback
+│   │   ├── messaging/            # Real-time chat UI
+│   │   ├── chat/                 # Chat interface primitives
+│   │   ├── crm/                  # CRM dashboards (contacts, deals, tickets, campaigns…)
+│   │   ├── learning/             # NotebookLM, Google Learn, OpenStax, flashcards
+│   │   ├── matching/             # Tutor matching wizard
+│   │   ├── payment/              # Stripe & multi-gateway payment buttons + history
+│   │   ├── admin/                # Admin panels (coaching, email subscribers)
+│   │   └── ui/                   # Reusable design-system primitives
+│   ├── contexts/AuthContext.tsx
+│   ├── hooks/                    # usePWA, useSSE
+│   ├── services/                 # API clients (courses, sessions, chat, AI matching, coaching)
+│   ├── utils/                    # supabase, crmAPI, messagingAPI, payment gateways, etc.
+│   ├── types/
+│   └── App.tsx                   # Lazy-loaded route map
+│
+├── backend/                      # FastAPI Python backend
+│   ├── main.py                   # App entry, lifespan, CORS, logging
+│   ├── app/
+│   │   ├── api/v1/endpoints/     # auth, matching, chat, channels, coaching,
+│   │   │                         # crm, courses, sessions, video_library, sse, admin
+│   │   ├── core/                 # config, database, security
+│   │   ├── models/               # SQLAlchemy models
+│   │   ├── schemas/              # Pydantic schemas
+│   │   ├── services/             # AI matching, coaching, video storage
+│   │   ├── realtime/pg_listener  # PostgreSQL LISTEN/NOTIFY listener
+│   │   ├── sse/sse_manager       # Server-Sent Events fan-out
+│   │   ├── middleware/           # Auth context middleware
+│   │   └── dependencies/         # FastAPI dependencies
+│   ├── scripts/                  # init_db, realtime triggers, tests
+│   ├── tests/                    # pytest suite
+│   ├── requirements*.txt         # Layered (full, simple, azure, vercel)
+│   └── Dockerfile.azure, docker-compose.yml
+│
+├── mobile-app/                   # Expo / React Native app
+│   ├── App.tsx
+│   ├── src/
+│   │   ├── screens/              # Home, Login, FindTutors, TutorDashboard, Messages, Chat…
+│   │   ├── navigation/
+│   │   ├── services/             # api, messageService, chatBotService
+│   │   ├── hooks/useSession.ts
+│   │   └── config/               # env, supabase
+│   └── app.json                  # Expo config
+│
+├── supabase/
+│   ├── functions/                # Edge functions (Stripe payment intent, checkout, webhook)
+│   └── migrations/               # SQL migrations (CRM, chat, scheduling, payments…)
+│
+├── scripts/                      # Data tooling (question import/scrape, CSV/TSV utilities)
+├── public/                       # PWA manifest, service worker
+├── .github/workflows/            # Azure Container Apps + Azure Static Web Apps CI/CD
+├── architecture-diagram.svg
+└── README.md
+```
 
 ## Features
 
-### Learning Management
-- **Board-Specific Courses**: Curriculum-aligned content for multiple boards
-- **Video Lessons**: Integrated video player with progress tracking
-- **LaTeX Support**: Mathematical equations rendered with KaTeX
-- **Markdown Content**: Rich text content with React Markdown
-- **Progress Tracking**: Detailed analytics on lesson completion and performance
+### AI Coaching
+- Conversational AI coach with subject-aware tutoring
+- Automated weak-area detection from session and quiz history
+- Personalized study recommendations and goal tracking
 
-### Assessment System
-- **Question Types**: MCQ, Structured, Essay, Practical, Data Analysis
-- **Mock Tests**: Full-length mock tests for JEE/NEET
-- **Smart Analytics**: Question-level analytics with difficulty ratings
-- **Instant Feedback**: Immediate results with explanations
-- **Time Tracking**: Per-question and session-level time tracking
+### Tutor Matching & Marketplace
+- Multi-step tutor matching wizard with AI ranking
+- Tutor profiles, registration flow, and dashboards
+- Smart scheduling with configurable reminder cadence (24h / 2h / 30m before)
+- Automated no-show detection (configurable threshold)
 
-### Gamification
-- **Teams**: Create and join teams to compete together
-- **Tournaments**: Subject-specific competitive tournaments
-- **Quiz Battles**: Real-time 1v1 quiz competitions
-- **Achievements**: Unlock badges and rewards
-- **Leaderboards**: Team and individual rankings
-- **Bot Players**: AI opponents with different difficulty levels (Einstein, Newton, Curie, Tesla)
+### Live & Recorded Video
+- Daily.co rooms for live 1:1 and group sessions
+- In-browser recording studio (canvas + camera + screen)
+- Direct upload to Azure Blob Storage or Cloudflare Stream
+- HLS playback with `video.js` + `@videojs/http-streaming`
 
-### Admin Features
-- **User Management**: Role-based access control (Student, Teacher, Admin, Super Admin)
-- **Content Management**: CRUD operations for courses, lessons, and questions
-- **Question Editor**: Rich text editor with LaTeX support
-- **Analytics Dashboard**: System-wide usage statistics
-- **Audit Logs**: Track all administrative actions
-- **Bulk Import**: CSV/TSV import for questions
+### Courses
+- Course catalog with search and filters
+- Instructor course creation & editor (rich text, lessons, modules)
+- Lesson player with progress tracking
+- Learning dashboard for students; instructor dashboard for educators
 
-### PWA Features
-- **Offline Support**: Service worker caching for offline access
-- **Install Prompt**: Add to home screen functionality
-- **Push Notifications**: Engagement notifications
-- **Background Sync**: Sync data when connection is restored
+### Real-time Messaging
+- 1:1 and channel-based chat
+- Server-Sent Events stream backed by Postgres `LISTEN/NOTIFY`
+- Reactions, threads, and presence
+
+### CRM
+- Contacts, Deals pipeline, Tickets, Activities
+- Marketing campaigns with email subscriber management
+- Reports & analytics dashboard
+- RPC-backed dashboard stats
+
+### Learning Tools
+- NotebookLM study guide integration
+- Google "Learn Your Way" pathway browser
+- OpenStax open-textbook hub
+- Flashcard manager with spaced repetition
+
+### Payments
+- Stripe (primary, with Edge Function checkout + webhook)
+- Razorpay, Instamojo, PayU, PayPal, Shopify (multi-gateway button)
+- Payment history and failure/success flows
+- Transaction table with gateway-agnostic schema
+
+### Progressive Web App
+- Installable on desktop and mobile
+- Service worker via Workbox with offline fallbacks
+- App icons generated via `npm run pwa:generate-icons`
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Clients                                                        │
+│   • Web PWA (React 18 + Vite, lazy-loaded routes)               │
+│   • Mobile App (Expo / React Native)                            │
+└────────────────┬──────────────────────────┬─────────────────────┘
+                 │ REST + SSE               │ REST + Supabase JS
+                 ▼                          ▼
+┌─────────────────────────────┐   ┌─────────────────────────────┐
+│  FastAPI Backend            │   │  Supabase                   │
+│  (Azure Container Apps)     │   │   • Auth (JWT)              │
+│   • /api/v1/auth            │   │   • Edge Functions          │
+│   • /api/v1/matching        │   │     (Stripe checkout,       │
+│   • /api/v1/coaching        │   │      webhook, verify)       │
+│   • /api/v1/sessions        │   │   • Storage (assets)        │
+│   • /api/v1/courses         │   └──────────────┬──────────────┘
+│   • /api/v1/library         │                  │
+│   • /api/v1/chat /channels  │                  │
+│   • /api/v1/crm             │                  │
+│   • /api/v1/sse  (SSE)      │                  │
+│   • /api/v1/admin           │                  │
+│   • pg_listener LISTEN/NOTIFY◄──────────────────┘
+└────────┬───────────┬────────┘
+         │           │
+         ▼           ▼
+┌────────────────┐  ┌──────────────────────────────────────────┐
+│  PostgreSQL    │  │  External Services                       │
+│  (Azure /      │  │   • OpenAI / Anthropic / Gemini  (AI)    │
+│   Supabase)    │  │   • Daily.co                  (video)    │
+│                │  │   • Cloudflare Stream + Azure Blob (CDN) │
+│                │  │   • Stripe / Razorpay / PayU / Instamojo │
+│                │  │   • SendGrid (email), Twilio (SMS)       │
+│                │  │   • Firebase (push notifications)        │
+│                │  │   • Sentry (errors)                      │
+└────────────────┘  └──────────────────────────────────────────┘
+```
+
+See [architecture-diagram.svg](./architecture-diagram.svg) for the visual diagram.
 
 ## Tech Stack
 
-### Frontend
-- **Core**: React 18.3, TypeScript 5.5
-- **Build Tool**: Vite 5.4
-- **Styling**: TailwindCSS 3.4, PostCSS
-- **Routing**: React Router DOM 6.22
-- **Content Rendering**:
-  - KaTeX 0.16 (LaTeX math)
-  - React Markdown 9.0 (Markdown content)
-  - React Player 2.13 (Video playback)
-  - React Quill 2.0 (Rich text editing)
-- **UI Libraries**:
-  - Lucide React (Icons)
-  - React Dropzone (File uploads)
-  - React Mosaic (Window management)
-  - React Resizable (Resizable components)
-- **Date Handling**: date-fns 2.30
-- **PWA**: vite-plugin-pwa 0.20, Workbox 7.0
+### Frontend (Web PWA)
+- React 18.3, TypeScript 5.5, Vite 5.4
+- React Router DOM 6 with lazy-loaded routes
+- TailwindCSS 3.4
+- Supabase JS Client 2.39
+- KaTeX 0.16, React Markdown 9, React Quill 2 (rich text)
+- video.js 8 + `@videojs/http-streaming` (HLS)
+- React Player 2.13, React Sketch Canvas 6 (recording studio)
+- Daily.co (`@daily-co/daily-js`, `@daily-co/daily-react`)
+- Stripe (`@stripe/react-stripe-js`, `@stripe/stripe-js`)
+- vite-plugin-pwa 0.20 + Workbox 7
+- Lucide React (icons), react-dropzone, react-mosaic-component, react-resizable
 
-### Backend
-- **BaaS**: Supabase 2.39
-- **Database**: PostgreSQL (via Supabase)
-- **Authentication**: Supabase Auth
-- **Storage**: Supabase Storage
-- **Real-time**: Supabase Real-time
+### Backend (FastAPI)
+- Python 3.11+, FastAPI 0.109, Uvicorn
+- SQLAlchemy 2 (async) + asyncpg, Alembic migrations
+- Pydantic 2 + pydantic-settings
+- JWT auth (`python-jose`, `pyjwt`), passlib + bcrypt
+- OpenAI 1.10, Anthropic 0.8, LangChain 0.1, tiktoken, scikit-learn (AI matching)
+- Celery 5 + Redis (background jobs)
+- SendGrid (email), Twilio (SMS), Firebase Admin (push)
+- Loguru, Sentry SDK, Prometheus client
 
-### Development Tools
-- **Linting**: ESLint 9.9 with React plugins
-- **Type Checking**: TypeScript
-- **Web Scraping**: Puppeteer 22.4, Cheerio 1.0
-- **Data Processing**:
-  - csv-parse, csv-parser, csv-stringify
-  - Natural language processing (natural 8.1)
-- **AI Integration**: OpenAI 5.9
-- **CLI Tools**: Commander 12.0, Chalk 5.3, Ora 8.0
+### Mobile (Expo)
+- Expo SDK 54, React 19, React Native 0.81
+- React Navigation 6 (native-stack + bottom-tabs)
+- Supabase JS, AsyncStorage, SecureStore
+- react-native-paper, react-native-gifted-chat
+- expo-camera, expo-image-picker, expo-device
 
-### External Services
-- **Payments**: Stripe
-- **AI Services**: OpenAI API
-- **Hosting**: Vercel/Netlify/CDN compatible
+### Infrastructure
+- Azure Container Apps (backend)
+- Azure Static Web Apps (frontend)
+- Azure PostgreSQL Flexible Server (primary DB)
+- Azure Container Registry (Docker images)
+- Azure Blob Storage + CDN (video assets)
+- Cloudflare Stream (alternative video backend)
+- Supabase (auth, edge functions, storage)
+- GitHub Actions (CI/CD)
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Supabase account (for backend services)
-- Optional: OpenAI API key (for question quality checks)
-- Optional: Stripe account (for payment features)
+- Python 3.11+ (for backend)
+- PostgreSQL 14+ (local) or Supabase project
+- Optional: Redis (for backend background tasks)
+- Optional: Expo CLI (for mobile app)
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd campuspandit
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Setup**
-
-   Create a `.env` file in the root directory:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_key
-   ```
-
-4. **Database Setup**
-
-   Run the database migrations in your Supabase project to create the required tables. See [Database Schema](#database-schema) section.
-
-5. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-   The app will be available at `http://localhost:5173`
-
-### Build for Production
+### Frontend (Web PWA)
 
 ```bash
-npm run build
-npm run preview  # Preview production build locally
+# From repo root
+npm install
+cp .env.example .env       # Fill in Supabase + Stripe keys
+npm run dev                # Starts Vite at http://localhost:5173
 ```
 
-## Project Structure
+Available scripts (from `package.json`):
 
-```
-campuspandit/
-├── public/                  # Static assets
-│   ├── manifest.json       # PWA manifest
-│   └── sw.js              # Service worker
-├── scripts/                # Development and data tools
-│   ├── scrape-questions.js     # Scrape educational content
-│   ├── import-questions.js     # Import and validate questions
-│   ├── generate-questions.js   # Generate question data
-│   └── convert-questions-for-supabase.js
-├── src/
-│   ├── components/         # React components
-│   │   ├── admin/         # Admin panel components
-│   │   │   ├── Analytics.tsx
-│   │   │   ├── ContentUploader.tsx
-│   │   │   ├── CourseManager.tsx
-│   │   │   ├── StudentManagement.tsx
-│   │   │   └── TeacherManagement.tsx
-│   │   ├── Auth.tsx       # Authentication components
-│   │   ├── Dashboard.tsx  # Main dashboard
-│   │   ├── GameDashboard.tsx  # Gaming features
-│   │   ├── QuizBattle.tsx     # Real-time quiz battles
-│   │   ├── TournamentView.tsx # Tournament system
-│   │   └── ...
-│   ├── config/            # Configuration files
-│   │   └── env.ts
-│   ├── data/              # Static data and content
-│   │   ├── boardCourses.ts    # Board-specific courses
-│   │   ├── competitiveExams.ts
-│   │   ├── courses.ts
-│   │   ├── gameData.ts
-│   │   └── jeeMainContent.ts
-│   ├── hooks/             # Custom React hooks
-│   │   └── usePWA.ts
-│   ├── pages/             # Page components
-│   │   ├── PaymentSuccess.tsx
-│   │   └── Pricing.tsx
-│   ├── types/             # TypeScript type definitions
-│   │   └── index.ts
-│   ├── utils/             # Utility functions
-│   │   ├── supabase.ts    # Supabase client and API
-│   │   ├── api.ts         # API helper functions
-│   │   ├── adminApi.ts    # Admin API functions
-│   │   ├── offline.ts     # Offline support utilities
-│   │   └── progress.ts    # Progress calculation
-│   ├── App.tsx            # Main app component
-│   ├── main.tsx           # Entry point
-│   └── index.css          # Global styles
-├── architecture-diagram.svg  # System architecture diagram
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
-```
+| Script | Description |
+|---|---|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | Run ESLint |
+| `npm run pwa:generate-icons` | Regenerate PWA icons |
+| `npm run import-questions` | Bulk-import questions from CSV (see [Development Scripts](#development-scripts)) |
+| `npm run scrape-questions` | Scrape questions from OER sources |
 
-## Development Tools
-
-### Question Scraping Tool
-
-Automatically scrape educational questions from open educational resources.
+### Backend (FastAPI)
 
 ```bash
-# Basic usage
-npm run scrape-questions -- -o scraped-questions.csv
+cd backend
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS / Linux
+source venv/bin/activate
 
-# Specify sources
-npm run scrape-questions -- -s openstax,quizlet-cc,khan
+pip install -r requirements.txt
+cp .env.example .env       # Fill in DATABASE_URL, SUPABASE_*, AI keys, etc.
 
-# Limit number of questions
-npm run scrape-questions -- -l 100
+# Initialize the database (creates tables + triggers for realtime)
+python scripts/init_db.py
+python scripts/setup_realtime_triggers.py
 
-# Focus on specific topics
-npm run scrape-questions -- -t physics,math
-
-# Get help
-npm run scrape-questions -- --help
+# Start the API
+uvicorn main:app --reload --port 8000
 ```
 
-**Supported Sources**:
-- OpenStax (CC BY 4.0)
-- Quizlet CC (Creative Commons)
-- Khan Academy (CC BY-NC-SA 3.0)
-- OER Commons
-- CK-12 (CC BY-NC 3.0)
+The API will be available at:
+- **Base URL**: `http://localhost:8000`
+- **Swagger UI**: `http://localhost:8000/api/docs`
+- **ReDoc**: `http://localhost:8000/api/redoc`
+- **Health**: `http://localhost:8000/health`
 
-### Question Import Tool
-
-Import and validate questions with AI-powered quality checks.
+#### Docker (optional)
 
 ```bash
-# Basic usage
-npm run import-questions -- -f path/to/questions.csv -o output.json
-
-# With OpenAI quality checks
-npm run import-questions -- -f path/to/questions.csv -k your-openai-api-key
-
-# Upload to Supabase
-npm run import-questions -- -f path/to/questions.csv -u
-
-# Set default values
-npm run import-questions -- -f path/to/questions.csv -s physics -b jee -d medium
-
-# Get help
-npm run import-questions -- --help
+cd backend
+docker compose up --build
 ```
 
-**CSV Format**:
+### Mobile App (Expo)
 
-Required columns:
-- `title`: Question title
-- `content`: Question text
-- `options`: Answer options (comma/semicolon/pipe-separated or JSON array)
-- `correct_answer`: Index (0-based) or text of correct answer
+```bash
+cd mobile-app
+npm install
+npx expo start            # Then press i / a / w for iOS / Android / web
+```
 
-Optional columns:
-- `explanation`, `subject`, `board`, `difficulty`, `grade`, `topic_tags`, `question_type`, `marks`, `time_limit`
+Configure `mobile-app/src/config/env.ts` and `supabase.ts` with your backend URL and Supabase keys.
 
-**Quality Checks**:
-1. Title and content length validation
-2. Spelling error detection
-3. Option count validation
-4. AI-powered ambiguity and clarity checks (with OpenAI API key)
+## Environment Variables
 
-## Database Schema
+### Frontend (`.env`)
 
-### Core Tables
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+VITE_API_URL=http://localhost:8000
+```
 
-#### Questions Management
-- **questions**: Main question table with metadata
-  - Fields: id, title, content, question_type, difficulty, subject, board, grade, topic_tags, marks, time_limit, is_published, metadata
-- **question_options**: Answer options for MCQ questions
-  - Fields: id, question_id, option_text, option_order, is_correct, explanation
-- **question_collections**: Grouped question sets
-  - Fields: id, name, description, is_public, metadata
-- **collection_questions**: Many-to-many relationship
-- **question_analytics**: Performance metrics
-  - Fields: total_attempts, correct_attempts, average_time, difficulty_rating
+See [.env.example](./.env.example) for the complete list (video storage, Daily.co, Gemini, etc.).
 
-#### User Management
-- **users**: Managed by Supabase Auth
-- **profiles**: Extended user information
-- **roles**: Role definitions (student, teacher, admin, super_admin)
-- **user_roles**: User-role assignments
+### Backend (`backend/.env`)
 
-#### Progress Tracking
-- **student_responses**: Individual question responses
-  - Fields: question_id, student_id, response_data, is_correct, score, time_taken, session_id
-- **student_progress**: Overall progress tracking
-- **test_sessions**: Mock test sessions
-- **achievements**: Earned achievements and badges
+Key variables (see [backend/.env.example](./backend/.env.example)):
 
-#### Gaming System
-- **teams**: Team information
-  - Fields: name, description, total_points, rank, badge, color
-- **team_members**: Team membership with points
-- **tournaments**: Tournament definitions
-  - Fields: title, subject, difficulty, start_time, end_time, status, max_participants
-- **tournament_participants**: Participant scores and ranks
-- **quiz_battles**: Real-time battle sessions
-
-#### Content Management
-- **courses**: Course definitions with board alignment
-- **topics**: Topic groupings within courses
-- **lessons**: Individual lesson content
-- **exercises**: Practice exercises
-
-#### Admin & Analytics
-- **audit_logs**: System action logs
-- **system_settings**: Application configuration
-- **subscriptions**: User subscription status
-- **payments**: Payment transaction records
-
-### Database Features
-- **Row Level Security (RLS)**: Fine-grained access control
-- **Real-time Subscriptions**: Live updates for quiz battles and tournaments
-- **Triggers**: Automatic analytics updates
-- **Foreign Key Constraints**: Data integrity
-- **Indexes**: Optimized query performance
+- `DATABASE_URL` — `postgresql+asyncpg://user:pass@host:5432/db`
+- `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_ANON_KEY`
+- `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`
+- `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`
+- `SENDGRID_API_KEY`, `FROM_EMAIL`
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
+- `REDIS_URL`, `CELERY_BROKER_URL`
+- `ALLOWED_ORIGINS` (comma-separated)
+- `REMINDER_INTERVALS=1440,120,30` and `NO_SHOW_THRESHOLD_MINUTES=15`
+- `SENTRY_DSN` (optional)
 
 ## API Documentation
 
-### Authentication API
+Interactive OpenAPI docs are served by FastAPI at `/api/docs` and `/api/redoc`.
 
-```typescript
-// Supabase Auth (built-in)
-await supabase.auth.signUp({ email, password })
-await supabase.auth.signIn({ email, password })
-await supabase.auth.signOut()
-const { data: { user } } = await supabase.auth.getUser()
+### Endpoint Groups (`/api/v1`)
+
+| Prefix | Tag | Purpose |
+|---|---|---|
+| `/auth` | Authentication | Signup, login, token refresh |
+| `/matching` | AI Matching | Tutor matching, ranking |
+| `/chat` | Chat & Messaging | 1:1 messages |
+| `/channels` | Channels | Group channels, threads, reactions |
+| `/coaching` | AI Coaching | Coach conversations, weak-area analysis |
+| `/sse` | Real-time SSE | Server-Sent Event stream |
+| `/admin` | Admin | Admin-only operations |
+| `/crm` | CRM | Contacts, deals, tickets, activities, campaigns, reports |
+| `/sessions` | Video Sessions | Daily.co room lifecycle, recorded sessions |
+| `/courses` | Courses | Course CRUD, lessons, enrollment |
+| `/library` | Video Library | Upload, streaming, video metadata |
+
+### Frontend Service Clients
+
+The web app talks to the backend via wrappers in `src/services/`:
+
+- `api.ts` — generic Axios-style client with auth interceptor
+- `courseAPI.ts` — courses & lessons
+- `sessionAPI.ts` — live sessions and recordings
+- `chat.ts`, `aiMatching.ts`, `coaching.ts`, `cloudflareUpload.ts`
+- `src/utils/crmAPI.ts`, `messagingAPI.ts`, `tutoringAPI.ts`, `flashcardAPI.ts`
+- Payment gateway wrappers: `stripePayment.ts`, `razorpayPayment.ts`, `instamojoPayment.ts`, `payuPayment.ts`, `shopifyPayment.ts`
+
+## Database
+
+### Migrations
+
+Supabase migrations live in [supabase/migrations/](./supabase/migrations/). Apply them with the Supabase CLI:
+
+```bash
+supabase db push
 ```
 
-### Question API
+Backend-managed tables are created on FastAPI startup via SQLAlchemy `Base.metadata.create_all` and refined by [backend/scripts/init_db.py](./backend/scripts/init_db.py).
 
-```typescript
-import { questionAPI } from './utils/supabase'
+### Major Domains
 
-// Get questions with filters
-const questions = await questionAPI.getQuestions({
-  subject: 'physics',
-  board: 'jee',
-  difficulty: 'medium',
-  is_published: true
-})
+- **Auth & Profiles** — `users` (Supabase Auth), `profiles`, `roles`, `user_roles`
+- **Tutoring** — tutors, availability, bookings, smart-scheduling tables
+- **Coaching** — coaching sessions, weak areas, recommendations
+- **Messaging** — `channels`, `channel_messages`, `message_reactions`, `user_channels` view
+- **CRM** — `contacts`, `deals`, `tickets`, `activities`, `campaigns`, `crm_dashboard_stats` RPC
+- **Courses & Library** — `courses`, `lessons`, `enrollments`, `video_sessions`, `recordings`
+- **Payments** — `payment_transactions` (gateway-agnostic), Stripe-only migration applied 2025-10-24
+- **Scheduling** — session reminders, no-show tracking
 
-// Get single question
-const question = await questionAPI.getQuestion(questionId)
+Row Level Security (RLS) policies are defined throughout — see `20251013110000_fix_crm_rls_policies.sql` for an example.
 
-// Create question
-const newQuestion = await questionAPI.createQuestion(questionData, options)
+## Real-time Messaging
 
-// Update question
-await questionAPI.updateQuestion(questionId, updates, newOptions)
+CampusPandit uses **PostgreSQL `LISTEN/NOTIFY` → SSE** instead of a separate message broker:
 
-// Delete question
-await questionAPI.deleteQuestion(questionId)
+1. Database triggers `NOTIFY` on inserts to `channel_messages` and `message_reactions`.
+2. The FastAPI `pg_listener` (`backend/app/realtime/pg_listener.py`) runs as a background task, listens on those channels, and dispatches payloads to the SSE manager.
+3. Clients subscribe to `/api/v1/sse` via `EventSource` — see `src/hooks/useSSE.ts`.
 
-// Submit response
-await questionAPI.submitResponse(
-  questionId,
-  responseData,
-  isCorrect,
-  score,
-  timeTaken,
-  sessionId
-)
+To install triggers on your database:
 
-// Get analytics
-const analytics = await questionAPI.getQuestionAnalytics(questionId)
+```bash
+cd backend
+python scripts/setup_realtime_triggers.py
 ```
 
-### Collection API
+## Payments
 
-```typescript
-import { collectionAPI } from './utils/supabase'
+| Gateway | Frontend | Backend / Edge Function |
+|---|---|---|
+| Stripe | `StripePaymentButton.tsx`, `stripePayment.ts` | Supabase edge fns: `create-stripe-payment-intent`, `stripe-checkout`, `stripe-webhook`, `verify-stripe-payment` |
+| Razorpay | `razorpayPayment.ts` | Webhook handled in backend |
+| Instamojo | `instamojoPayment.ts` | Webhook handled in backend |
+| PayU | `payuPayment.ts` | See `PAYU_INTEGRATION.md` |
+| PayPal | `PayPalHelpInfo.tsx` | See `PAYPAL_SETUP_GUIDE.md` |
+| Shopify | `shopifyPayment.ts` | See `SHOPIFY_PAYMENT_SETUP.md` |
 
-// Get all collections
-const collections = await collectionAPI.getCollections()
+`MultiGatewayPaymentButton.tsx` lets the UI fall back across gateways. All transactions land in `payment_transactions` (migration `20251014000000_create_payment_transactions.sql`).
 
-// Create collection
-const collection = await collectionAPI.createCollection(collectionData)
+## Video & Live Sessions
 
-// Add question to collection
-await collectionAPI.addQuestionToCollection(collectionId, questionId, orderIndex)
-
-// Remove question from collection
-await collectionAPI.removeQuestionFromCollection(collectionId, questionId)
-```
-
-### Admin API
-
-See `src/utils/adminApi.ts` for user management, analytics, and system administration functions.
+- **Live**: Daily.co rooms created via `/api/v1/sessions` and joined with `@daily-co/daily-react`.
+- **Recording**: In-browser via `RecordingStudio.tsx` (canvas + camera + sketch overlay).
+- **Upload**: `UploadSession.tsx` → Azure Blob Storage (primary) or Cloudflare Stream (alternative), wired through `cloudflareUpload.ts` and `backend/app/services/video_storage_service.py`.
+- **Playback**: `VideoPlayer.tsx` uses `video.js` + HLS streaming, served from Azure CDN or Cloudflare.
 
 ## Deployment
 
-### Frontend Deployment
+### Backend → Azure Container Apps
 
-The application is a static React app and can be deployed to any static hosting service:
+CI/CD: [.github/workflows/azure-container-apps-backend.yml](./.github/workflows/azure-container-apps-backend.yml)
 
-**Vercel**:
+- Triggers on `main` / `develop` pushes that touch `backend/**`
+- Builds `backend/Dockerfile.azure`, pushes to Azure Container Registry
+- Updates the target Container App (`campuspandit-backend[-env]`)
+- Verifies via `/health` after rollout
+
+Per-environment resource groups: `campuspandit-rg` (prod), `campuspandit-rg-dev`, `campuspandit-rg-staging`.
+
+### Frontend → Azure Static Web Apps
+
+CI/CD: [.github/workflows/azure-static-web-apps-ambitious-river-04fdcd510.yml](./.github/workflows/azure-static-web-apps-ambitious-river-04fdcd510.yml)
+
+Production frontend: `https://ambitious-river-04fdcd510.azurestaticapps.net` (and `https://campuspandit.com`).
+
+### Mobile App
+
+See [mobile-app/DEPLOYMENT_CHECKLIST.md](./mobile-app/DEPLOYMENT_CHECKLIST.md) and [mobile-app/NETLIFY_DEPLOYMENT_GUIDE.md](./mobile-app/NETLIFY_DEPLOYMENT_GUIDE.md).
+
+### Database
+
+- **Production**: Azure PostgreSQL Flexible Server — see [AZURE_POSTGRESQL_DEPLOYMENT_GUIDE.md](./AZURE_POSTGRESQL_DEPLOYMENT_GUIDE.md) and [AZURE_POSTGRESQL_MIGRATION_GUIDE.md](./AZURE_POSTGRESQL_MIGRATION_GUIDE.md).
+- **Auth & Edge Functions**: Supabase (kept for auth tokens and Stripe webhooks).
+
+## Development Scripts
+
+### Question Tooling
+
 ```bash
-npm install -g vercel
-vercel
+# Scrape questions from open educational resources
+npm run scrape-questions -- -s openstax,khan -l 100 -t physics,math -o scraped.csv
+
+# Import with optional AI quality checks (OpenAI)
+npm run import-questions -- -f questions.csv -k $OPENAI_API_KEY -u
 ```
 
-**Netlify**:
+Supported scrape sources: OpenStax, Quizlet CC, Khan Academy, OER Commons, CK-12.
+
+CSV format (required columns): `title, content, options, correct_answer`. Optional: `explanation, subject, board, difficulty, grade, topic_tags, question_type, marks, time_limit`.
+
+### Backend Utilities
+
 ```bash
-npm run build
-# Upload dist/ folder to Netlify
+cd backend
+python scripts/init_db.py                 # Create tables
+python scripts/setup_realtime_triggers.py # Install NOTIFY triggers
+python scripts/add_missing_columns.py     # Backfill schema drift
+python scripts/test_realtime_messaging.py # End-to-end SSE smoke test
+pytest tests/                              # Run test suite
 ```
 
-**Traditional Hosting**:
-```bash
-npm run build
-# Upload dist/ folder to your web server
-```
+### CSV / TSV Helpers (`scripts/`)
 
-### Backend Setup
+`camel_to_snake_tsv.py`, `csv_to_tsv.py`, `fix_tsv_headers.py`, `rename_*.py`, `add_uuids.py` — assorted data-cleaning tools used during the original Supabase question seed.
 
-1. **Supabase Project**:
-   - Create a new project at [supabase.com](https://supabase.com)
-   - Run database migrations to create tables
-   - Configure Row Level Security policies
-   - Set up authentication providers
+## Additional Documentation
 
-2. **Environment Variables**:
-   - Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in your hosting platform
-   - Configure Stripe keys if using payment features
+Detailed guides live at the repo root:
 
-3. **Database Migrations**:
-   - Use Supabase CLI or Dashboard to run migrations
-   - Set up triggers for analytics updates
-   - Configure storage buckets for file uploads
-
-### PWA Configuration
-
-The app is configured as a PWA with:
-- Service worker for offline caching
-- Manifest file for install prompt
-- Workbox for cache strategies
-
-To customize PWA settings, edit `vite.config.ts`:
-
-```typescript
-VitePWA({
-  registerType: 'autoUpdate',
-  manifest: {
-    name: 'CampusPandit',
-    short_name: 'CampusPandit',
-    // ... other manifest options
-  }
-})
-```
+- **Setup & Quick Start**: [START_HERE.md](./START_HERE.md), [QUICK_START.md](./QUICK_START.md), [START_BACKEND.md](./START_BACKEND.md)
+- **AI**: [AI_COACHING_SYSTEM.md](./AI_COACHING_SYSTEM.md), [AI_MATCHING_GUIDE.md](./AI_MATCHING_GUIDE.md), [QUICKSTART_AI_MATCHING.md](./QUICKSTART_AI_MATCHING.md)
+- **Tutoring & Scheduling**: [TUTORING_SYSTEM_GUIDE.md](./TUTORING_SYSTEM_GUIDE.md), [SMART_SCHEDULING_SETUP.md](./SMART_SCHEDULING_SETUP.md)
+- **Messaging & Chat**: [CHAT_SYSTEM_GUIDE.md](./CHAT_SYSTEM_GUIDE.md), [QUICKSTART_CHAT.md](./QUICKSTART_CHAT.md), [MESSAGING_SYSTEM.md](./MESSAGING_SYSTEM.md), [REALTIME_MESSAGING_COMPLETE.md](./REALTIME_MESSAGING_COMPLETE.md), [DEPLOY_REALTIME_TO_AZURE.md](./DEPLOY_REALTIME_TO_AZURE.md)
+- **CRM**: [CRM_SYSTEM_GUIDE.md](./CRM_SYSTEM_GUIDE.md)
+- **Video**: [VIDEO_LIBRARY_COMPLETE.md](./VIDEO_LIBRARY_COMPLETE.md), [VIDEO_LIBRARY_IMPLEMENTATION.md](./VIDEO_LIBRARY_IMPLEMENTATION.md), [RECORDING_STUDIO_GUIDE.md](./RECORDING_STUDIO_GUIDE.md), [RECORDING_STUDIO_COMPLETE.md](./RECORDING_STUDIO_COMPLETE.md)
+- **Learning**: [GOOGLE_LEARN_YOUR_WAY_INTEGRATION.md](./GOOGLE_LEARN_YOUR_WAY_INTEGRATION.md), [NOTEBOOKLM_STUDY_GUIDE.md](./NOTEBOOKLM_STUDY_GUIDE.md), [RECOMMENDED_TEXTBOOKS.md](./RECOMMENDED_TEXTBOOKS.md)
+- **Payments**: [PAYMENT_GATEWAYS.md](./PAYMENT_GATEWAYS.md), [STRIPE_INTEGRATION_GUIDE.md](./STRIPE_INTEGRATION_GUIDE.md), [PAYU_INTEGRATION.md](./PAYU_INTEGRATION.md), [PAYPAL_SETUP_GUIDE.md](./PAYPAL_SETUP_GUIDE.md), [SHOPIFY_PAYMENT_SETUP.md](./SHOPIFY_PAYMENT_SETUP.md), [PAYMENT_EDGE_FUNCTIONS_SETUP.md](./PAYMENT_EDGE_FUNCTIONS_SETUP.md), [PAYMENT_MIGRATION_GUIDE.md](./PAYMENT_MIGRATION_GUIDE.md)
+- **Mobile**: [MOBILE_APP_SETUP.md](./MOBILE_APP_SETUP.md), [MOBILE_APP_COMPLETE.md](./MOBILE_APP_COMPLETE.md)
+- **Azure / Backend**: [AZURE_DEPLOYMENT_GUIDE.md](./AZURE_DEPLOYMENT_GUIDE.md), [AZURE_POSTGRESQL_DEPLOYMENT_GUIDE.md](./AZURE_POSTGRESQL_DEPLOYMENT_GUIDE.md), [PYTHON_BACKEND_GUIDE.md](./PYTHON_BACKEND_GUIDE.md), [WEBSOCKET_DATABASE_POOL_FIX.md](./WEBSOCKET_DATABASE_POOL_FIX.md)
+- **Design / Marketing**: [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md), [COMPETITOR_ANALYSIS.md](./COMPETITOR_ANALYSIS.md), [EMAIL_MARKETING_SETUP.md](./EMAIL_MARKETING_SETUP.md)
+- **Troubleshooting**: [TESTING_GUIDE.md](./TESTING_GUIDE.md), [TROUBLESHOOTING_API_KEY.md](./TROUBLESHOOTING_API_KEY.md), [CORS_FIX_COMPLETE_SUMMARY.md](./CORS_FIX_COMPLETE_SUMMARY.md), [FRONTEND_CORS_FIX_SUMMARY.md](./FRONTEND_CORS_FIX_SUMMARY.md), [PERFORMANCE_OPTIMIZATIONS.md](./PERFORMANCE_OPTIMIZATIONS.md)
 
 ## Contributing
 
-### Development Workflow
+### Workflow
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Make changes and test thoroughly
-4. Run linting: `npm run lint`
-5. Build to ensure no errors: `npm run build`
-6. Commit changes: `git commit -m "Add my feature"`
-7. Push to branch: `git push origin feature/my-feature`
-8. Create a Pull Request
+1. Fork and create a feature branch: `git checkout -b feature/<name>`
+2. Run linting and tests before pushing:
+   - Frontend: `npm run lint && npm run build`
+   - Backend: `cd backend && pytest && black . && flake8`
+3. Open a Pull Request against `main` (or `develop` for in-progress work)
+4. CI will build the affected surface (frontend / backend) on Azure
 
 ### Code Style
 
-- Follow TypeScript best practices
-- Use functional components with hooks
-- Add TypeScript types for all props and state
-- Write meaningful component and variable names
-- Comment complex logic
-- Keep components small and focused
-
-### Testing
-
-- Test all new features manually
-- Ensure offline functionality works
-- Test across different browsers
-- Verify mobile responsiveness
-- Check accessibility compliance
+- **TypeScript**: Functional components + hooks, typed props, prefer composition over inheritance
+- **Python**: `black` formatting, type hints, async-first with SQLAlchemy 2
+- Keep components small and lazy-load route-level chunks (see [src/App.tsx](./src/App.tsx))
+- Match existing CRM / Coaching / Tutoring module layout for new features
 
 ### Commit Guidelines
 
-- Use clear, descriptive commit messages
-- Start with a verb (Add, Fix, Update, Remove)
-- Reference issue numbers if applicable
-- Keep commits atomic and focused
+- Imperative mood, short summary line (≤ 72 chars)
+- Reference issue numbers where applicable
+- Keep commits atomic; separate refactors from feature work
 
 ## License
 
-[Specify your license here]
+Proprietary — all rights reserved. Contact the maintainers for licensing inquiries.
 
 ## Support
 
-For questions, issues, or feature requests:
-- Open an issue on GitHub
-- Contact: [your-email@example.com]
-- Documentation: [your-docs-url]
-
-## Acknowledgments
-
-- Educational content sources (OpenStax, Khan Academy, etc.)
-- Open source libraries and frameworks
-- Contributors and maintainers
+- Issues: GitHub Issues on this repository
+- Email: support@campuspandit.com
+- Production: [https://campuspandit.com](https://campuspandit.com)
 
 ---
 
-Built with React, TypeScript, Supabase, and modern web technologies.
+Built with React, TypeScript, FastAPI, PostgreSQL, Daily.co, and modern web technologies.
