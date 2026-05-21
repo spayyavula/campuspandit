@@ -79,10 +79,10 @@ const VideoPlayer = lazy(() => import('./components/library/VideoPlayer'));
 const UploadSession = lazy(() => import('./components/library/UploadSession'));
 const RecordingStudio = lazy(() => import('./components/library/RecordingStudio'));
 
+const ParkedRoute: React.FC = () => <Navigate to="/" replace />;
+
 const AppRoutes: React.FC = () => {
   const { user, loading, login } = useAuth();
-
-  const ParkedRoute: React.FC = () => <Navigate to="/" replace />;
 
   // Show loading state
   if (loading) {
