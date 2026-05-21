@@ -78,11 +78,11 @@ const html = `<!doctype html>
       <div class="logo">CP</div>
       <div class="brand-name">CampusPandit</div>
     </div>
-    <h1>AI Coach for <span class="accent">JEE &amp; NEET</span> prep.<br/>Live tutors. Free for 6 months.</h1>
+    <h1>Run your coaching center<br/>like the <span class="accent">big chains.</span><br/>Without becoming one.</h1>
     <div class="footer">
-      <div class="chip"><span class="dot"></span> Personalized weekly plan</div>
-      <div class="chip"><span class="dot"></span> 1:1 tutors on demand</div>
-      <div class="chip"><span class="dot"></span> Video library</div>
+      <div class="chip"><span class="dot"></span> Branded student app</div>
+      <div class="chip"><span class="dot"></span> AI tutor per student</div>
+      <div class="chip"><span class="dot"></span> Center dashboard</div>
     </div>
   </div>
 </body>

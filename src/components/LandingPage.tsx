@@ -1,5 +1,22 @@
 import React, { useState } from 'react';
-import { ArrowRight, BookOpen, Check, Menu, X, Star, MessageCircle, Award, Brain, Shield, PlayCircle, Video, Target, TrendingUp } from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpen,
+  Check,
+  Menu,
+  X,
+  Brain,
+  Shield,
+  Smartphone,
+  BarChart3,
+  Zap,
+  AlertCircle,
+  Users,
+  TrendingUp,
+  Calculator,
+  Sparkles,
+  Building2,
+} from 'lucide-react';
 
 const LandingPage: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -11,28 +28,27 @@ const LandingPage: React.FC = () => {
       <nav className="fixed top-0 left-0 right-0 bg-white border-b border-neutral-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-neutral-900">CampusPandit</span>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-white" />
               </div>
+              <span className="text-xl font-bold text-neutral-900">CampusPandit</span>
             </div>
 
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Features</a>
+              <a href="#features" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Platform</a>
               <a href="#how-it-works" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">How it works</a>
               <a href="#pricing" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Pricing</a>
-              <a href="/tutor/register" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">For tutors</a>
+              <a href="#faq" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">FAQ</a>
+              <a href="/for-students" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">For students</a>
             </div>
 
             <div className="hidden md:flex items-center gap-3">
               <a href="/auth" className="px-4 py-2 text-sm text-primary-500 hover:text-primary-600 transition-colors">
                 Log in
               </a>
-              <a href="/auth" className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-                Sign up free
+              <a href="#apply" className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                Apply for pilot
               </a>
             </div>
 
@@ -50,16 +66,17 @@ const LandingPage: React.FC = () => {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-neutral-200 bg-white animate-slide-down">
             <div className="px-4 py-4 space-y-3">
-              <a href="#features" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Features</a>
+              <a href="#features" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Platform</a>
               <a href="#how-it-works" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">How it works</a>
               <a href="#pricing" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Pricing</a>
-              <a href="/tutor/register" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For tutors</a>
+              <a href="#faq" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">FAQ</a>
+              <a href="/for-students" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For students</a>
               <div className="pt-4 space-y-2">
                 <a href="/auth" className="block w-full px-4 py-2 text-sm text-primary-500 border border-primary-500 rounded-lg hover:bg-primary-50 transition-colors text-center">
                   Log in
                 </a>
-                <a href="/auth" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
-                  Sign up free
+                <a href="#apply" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
+                  Apply for pilot
                 </a>
               </div>
             </div>
@@ -67,185 +84,302 @@ const LandingPage: React.FC = () => {
         )}
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="animate-slide-up">
-              <div className="inline-block mb-6 px-4 py-2 bg-success-50 text-success-700 rounded-full text-sm font-semibold">
-                🎉 First 6 months free — no card required
+              <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-primary-50 text-primary-700 rounded-full text-sm font-semibold">
+                <Sparkles className="w-4 h-4" />
+                Founding 10 — applications open
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-tight mb-6">
-                Crack JEE &amp; NEET<br />
-                with an AI coach that knows<br />
-                your weak spots.
+                Run your coaching center<br />
+                like the big chains.<br />
+                <span className="text-primary-500">Without becoming one.</span>
               </h1>
               <p className="text-lg sm:text-xl text-neutral-600 mb-8 leading-relaxed">
-                Personalized practice, expert tutors on demand, and recorded lessons you can rewatch. Built for Class 11–12 aspirants.
+                Stop losing students to PhysicsWallah and Allen. CampusPandit gives your coaching center a branded student app, an AI tutor for every learner, and one dashboard to run the whole operation. <strong className="text-neutral-900">Pilot setup in 7 days.</strong>
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <a href="/auth" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
-                  Start free for 6 months
+                <a href="#apply" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
+                  Apply for the pilot
                   <ArrowRight className="w-5 h-5" />
                 </a>
-                <a href="/tutors" className="px-8 py-4 border-2 border-neutral-200 text-neutral-900 rounded-lg hover:border-neutral-300 transition-colors font-medium text-center">
-                  Find a tutor
+                <a href="#how-it-works" className="px-8 py-4 border-2 border-neutral-200 text-neutral-900 rounded-lg hover:border-neutral-300 transition-colors font-medium text-center">
+                  See how it works
                 </a>
               </div>
 
-              {/* Trust strip — verifiable claims only */}
               <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-neutral-200">
                 <div>
-                  <div className="text-sm font-semibold text-neutral-900">JEE Main</div>
-                  <div className="text-sm font-semibold text-neutral-900">JEE Advanced</div>
-                  <div className="text-sm font-semibold text-neutral-900">NEET</div>
-                  <div className="text-xs text-neutral-500 mt-1">Aligned syllabi</div>
+                  <div className="text-2xl font-bold text-primary-500">7 days</div>
+                  <div className="text-sm text-neutral-600 mt-1">Branded app live</div>
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-neutral-900">Physics</div>
-                  <div className="text-sm font-semibold text-neutral-900">Chemistry</div>
-                  <div className="text-sm font-semibold text-neutral-900">Math &amp; Biology</div>
-                  <div className="text-xs text-neutral-500 mt-1">Class 11 &amp; 12</div>
+                  <div className="text-2xl font-bold text-primary-500">100%</div>
+                  <div className="text-sm text-neutral-600 mt-1">Your content, your IP</div>
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-neutral-900">AI Coach</div>
-                  <div className="text-sm font-semibold text-neutral-900">Live tutors</div>
-                  <div className="text-sm font-semibold text-neutral-900">Video library</div>
-                  <div className="text-xs text-neutral-500 mt-1">All in one place</div>
+                  <div className="text-2xl font-bold text-primary-500">24×7</div>
+                  <div className="text-sm text-neutral-600 mt-1">AI tutor per student</div>
                 </div>
               </div>
             </div>
 
-            {/* AI Coach mockup — illustrative */}
+            {/* Center-owner dashboard mockup */}
             <div className="relative animate-fade-in">
               <div className="aspect-square bg-gradient-to-br from-primary-50 to-success-50 rounded-3xl p-8 flex items-center justify-center">
-                <div className="bg-white rounded-2xl p-8 shadow-2xl w-full max-w-md">
-                  <div className="space-y-6">
-                    <div className="flex items-center justify-between pb-4 border-b border-neutral-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                          <Brain className="w-6 h-6 text-primary-500" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-neutral-900">AI Coach</div>
-                          <div className="text-sm text-neutral-500">Your weekly plan</div>
-                        </div>
+                <div className="bg-white rounded-2xl p-6 shadow-2xl w-full max-w-md">
+                  <div className="flex items-center justify-between pb-4 border-b border-neutral-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center text-white font-bold">
+                        ST
+                      </div>
+                      <div>
+                        <div className="font-semibold text-neutral-900 text-sm">Sharma Tutorials</div>
+                        <div className="text-xs text-neutral-500">Powered by CampusPandit</div>
                       </div>
                     </div>
+                    <div className="text-xs text-success-600 font-medium">Live</div>
+                  </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-success-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Check className="w-4 h-4 text-success-600" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-neutral-900">Physics — Mechanics</div>
-                          <div className="text-xs text-success-600 mt-1">Mastered — moving to Rotational</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          <TrendingUp className="w-4 h-4 text-primary-600" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-neutral-900">Math — Integration</div>
-                          <div className="text-xs text-neutral-500 mt-1">Improving — 8 problems left this week</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-secondary-100 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Target className="w-4 h-4 text-secondary-600" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-neutral-900">Chemistry — Organic</div>
-                          <div className="text-xs text-neutral-500 mt-1">Practice scheduled for today</div>
-                        </div>
-                      </div>
+                  <div className="grid grid-cols-3 gap-3 my-5">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-neutral-900">247</div>
+                      <div className="text-xs text-neutral-500">Students</div>
                     </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-neutral-900">18</div>
+                      <div className="text-xs text-neutral-500">Tutors</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-success-600">92%</div>
+                      <div className="text-xs text-neutral-500">Attendance</div>
+                    </div>
+                  </div>
 
-                    <div className="pt-4 border-t border-neutral-200">
-                      <div className="text-xs text-neutral-500 mb-2">Study streak</div>
-                      <div className="flex items-center gap-1">
-                        {[...Array(7)].map((_, i) => (
-                          <div
-                            key={i}
-                            className={`h-2 flex-1 rounded-full ${
-                              i < 5 ? 'bg-primary-500' : 'bg-neutral-200'
-                            }`}
-                          />
-                        ))}
+                  <div className="pt-4 border-t border-neutral-200">
+                    <div className="text-xs font-semibold text-neutral-500 uppercase tracking-wide mb-3">
+                      AI Coach: this week's interventions
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 p-2 rounded-lg bg-red-50">
+                        <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 text-xs font-semibold">PR</div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-neutral-900">Priya R. — JEE Main</div>
+                          <div className="text-xs text-red-600">Rotational mech accuracy: 32%</div>
+                        </div>
                       </div>
-                      <div className="text-right text-sm font-semibold text-primary-500 mt-2">5 days 🔥</div>
+                      <div className="flex items-center gap-3 p-2 rounded-lg bg-yellow-50">
+                        <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-700 text-xs font-semibold">AS</div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-neutral-900">Arjun S. — NEET</div>
+                          <div className="text-xs text-yellow-700">Missed 3 mocks — outreach needed</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 p-2 rounded-lg bg-success-50">
+                        <div className="w-8 h-8 bg-success-100 rounded-full flex items-center justify-center text-success-700 text-xs font-semibold">MK</div>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-neutral-900">Manas K. — JEE Adv.</div>
+                          <div className="text-xs text-success-700">Ready for Advanced-level set</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <p className="text-xs text-neutral-400 text-center mt-3">Illustrative preview of the AI Coach dashboard</p>
+              <p className="text-xs text-neutral-400 text-center mt-3">Illustrative center-owner dashboard. Your center's name and brand.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section — 3 cards, student-facing only */}
-      <section id="features" className="py-20 bg-neutral-50 px-4 sm:px-6 lg:px-8">
+      {/* The pain */}
+      <section className="py-20 bg-neutral-50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              Three ways to level up
+              Why coaching centers lose students
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              Coaching, live help, and lessons you can rewatch — designed for the JEE/NEET grind.
+              Three quiet leaks every 50–1,000-student center is fighting right now.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* AI Coach */}
-            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
-                <Brain className="w-6 h-6 text-primary-500" />
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-6">
+                <AlertCircle className="w-6 h-6 text-red-500" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">AI Coach</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">PhysicsWallah has an app. You don't.</h3>
               <p className="text-neutral-600 leading-relaxed">
-                Finds the chapters and problem types you're weakest on, then builds a weekly practice plan around them. Spaced repetition keeps the gains.
+                Parents see a polished branded experience there and group chats with mixed PDFs from you. The perception gap costs renewals.
               </p>
             </div>
 
-            {/* Live Tutors */}
-            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200">
+              <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-6">
+                <Users className="w-6 h-6 text-yellow-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Your tutors can't give 1:1 to 30 students.</h3>
+              <p className="text-neutral-600 leading-relaxed">
+                Weaker students fall behind quietly. By the time you find out at the next mock, they've already decided to switch.
+              </p>
+            </div>
+
+            <div className="bg-white p-8 rounded-2xl border border-neutral-200">
               <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-6">
-                <Video className="w-6 h-6 text-secondary-500" />
+                <BarChart3 className="w-6 h-6 text-secondary-600" />
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Live tutors, on demand</h3>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Six WhatsApp groups and three spreadsheets.</h3>
               <p className="text-neutral-600 leading-relaxed">
-                Stuck at 11pm before a mock? Book a 1:1 video session in minutes. Screen sharing, whiteboard, and the session is saved for later review.
-              </p>
-            </div>
-
-            {/* Video Library */}
-            <div className="bg-white p-8 rounded-2xl border border-neutral-200 hover:border-primary-300 hover:shadow-lg transition-all">
-              <div className="w-12 h-12 bg-success-100 rounded-xl flex items-center justify-center mb-6">
-                <PlayCircle className="w-6 h-6 text-success-500" />
-              </div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-3">Video library</h3>
-              <p className="text-neutral-600 leading-relaxed">
-                Recorded chapter explainers and full courses — rewatch at 1.5×, take notes inline, mark sections for later. Progress synced across devices.
+                Fees, attendance, mock scores, parent comms — all scattered. You can't see who's struggling until it's too late.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8">
+      {/* The solution — 3 pillars */}
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              Get started in minutes
+              One platform. Your brand. Their tech.
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              No credit card, no upload, no setup hassle.
+              CampusPandit closes all three leaks at once — without you hiring a developer.
+            </p>
+          </div>
+
+          <div className="space-y-12">
+            {/* Pillar 1 */}
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-semibold">
+                  <Smartphone className="w-4 h-4" />
+                  Pillar 1
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-4">
+                  Your brand. Your app. Your domain.
+                </h3>
+                <p className="text-lg text-neutral-600 mb-6 leading-relaxed">
+                  Students download <em>your center's name</em>, not ours. Your logo on the splash screen, your domain in the URL, your fees in the checkout. CampusPandit disappears — we're just the engine underneath.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">Custom logo, colors, and domain (your-center.app)</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">Published to Play Store under your brand</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">All payments go to your Razorpay / PayU account</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-gradient-to-br from-primary-50 to-success-50 rounded-2xl p-8 aspect-video flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-white rounded-3xl shadow-lg mx-auto mb-4 flex items-center justify-center">
+                    <Smartphone className="w-10 h-10 text-primary-500" />
+                  </div>
+                  <div className="text-sm text-neutral-500">Your center's app — illustrative</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pillar 2 */}
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="bg-gradient-to-br from-success-50 to-primary-50 rounded-2xl p-8 aspect-video flex items-center justify-center lg:order-1">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-white rounded-3xl shadow-lg mx-auto mb-4 flex items-center justify-center">
+                    <Brain className="w-10 h-10 text-success-600" />
+                  </div>
+                  <div className="text-sm text-neutral-500">AI Coach — illustrative</div>
+                </div>
+              </div>
+              <div className="lg:order-2">
+                <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-success-50 text-success-700 rounded-full text-xs font-semibold">
+                  <Brain className="w-4 h-4" />
+                  Pillar 2
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-4">
+                  An AI tutor for every student — diagnosing weak chapters by PYQ.
+                </h3>
+                <p className="text-lg text-neutral-600 mb-6 leading-relaxed">
+                  Your tutors can't sit with 30 students at once. The AI Coach can. It diagnoses each student's weakest 6 chapters — weighted by how often they appear in actual JEE/NEET PYQs — and runs personalized practice 24×7.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">PYQ-weighted diagnosis (every JEE Main since 2015, NEET since 2017)</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">Auto-escalates to your tutors when AI gets stuck</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">Tracks accuracy chapter-by-chapter, surfaces interventions to you</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-secondary-50 text-secondary-700 rounded-full text-xs font-semibold">
+                  <BarChart3 className="w-4 h-4" />
+                  Pillar 3
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-4">
+                  One dashboard to run the whole center.
+                </h3>
+                <p className="text-lg text-neutral-600 mb-6 leading-relaxed">
+                  Stop juggling six WhatsApp groups and three spreadsheets. Leads, enrollments, fees, attendance, mock scores, parent comms, and tutor scheduling — all in one place. You see who's at risk before they leave.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">Built-in CRM: leads, deals, tickets, renewals</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">Weekly "at-risk students" report for the owner</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-neutral-700">Tutor performance, session attendance, and earnings</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-gradient-to-br from-secondary-50 to-primary-50 rounded-2xl p-8 aspect-video flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-white rounded-3xl shadow-lg mx-auto mb-4 flex items-center justify-center">
+                    <BarChart3 className="w-10 h-10 text-secondary-600" />
+                  </div>
+                  <div className="text-sm text-neutral-500">Center dashboard — illustrative</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section id="how-it-works" className="py-20 bg-neutral-50 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+              From application to launch in 7 days
+            </h2>
+            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+              No engineering work on your side. We do the heavy lifting.
             </p>
           </div>
 
@@ -254,9 +388,9 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-primary-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 1
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Sign up</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Apply</h3>
               <p className="text-neutral-600">
-                Free for 6 months. No card needed.
+                Quick form. We review fit within 48 hours.
               </p>
             </div>
 
@@ -264,9 +398,9 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-primary-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 2
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Take a diagnostic</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">20-min discovery call</h3>
               <p className="text-neutral-600">
-                Quick quiz so the AI Coach can find your weak chapters.
+                We learn your subjects, fees, tutor count, and what you've tried.
               </p>
             </div>
 
@@ -274,258 +408,281 @@ const LandingPage: React.FC = () => {
               <div className="w-16 h-16 bg-primary-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                 3
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Practice daily</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Branded app live</h3>
               <p className="text-neutral-600">
-                Follow the weekly plan. Book a tutor whenever you're stuck.
+                Your logo, colors, and domain — published in 7 days.
               </p>
             </div>
 
             <div className="text-center">
               <div className="w-16 h-16 bg-success-500 text-white rounded-2xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
-                ✓
+                <Zap className="w-7 h-7" />
               </div>
-              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Track progress</h3>
+              <h3 className="text-lg font-semibold text-neutral-900 mb-3">Onboard students</h3>
               <p className="text-neutral-600">
-                Watch your accuracy climb chapter by chapter.
+                Import your roster. AI starts diagnosing weak chapters week 1.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing — INR primary for India market */}
+      {/* ROI */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+              The math is uncomfortably simple
+            </h2>
+            <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+              If you charge ₹15,000/year per student, here's what it takes to break even on CampusPandit.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-primary-50 to-success-50 rounded-3xl p-8 sm:p-12">
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-2xl p-6 text-center">
+                <Calculator className="w-8 h-8 text-primary-500 mx-auto mb-3" />
+                <div className="text-sm text-neutral-500 mb-1">Cost to you</div>
+                <div className="text-3xl font-bold text-neutral-900">₹1,800</div>
+                <div className="text-sm text-neutral-500 mt-1">per student / year</div>
+              </div>
+              <div className="bg-white rounded-2xl p-6 text-center">
+                <TrendingUp className="w-8 h-8 text-success-500 mx-auto mb-3" />
+                <div className="text-sm text-neutral-500 mb-1">Revenue per student</div>
+                <div className="text-3xl font-bold text-neutral-900">₹15,000</div>
+                <div className="text-sm text-neutral-500 mt-1">your annual fee</div>
+              </div>
+              <div className="bg-white rounded-2xl p-6 text-center">
+                <Sparkles className="w-8 h-8 text-secondary-500 mx-auto mb-3" />
+                <div className="text-sm text-neutral-500 mb-1">Break-even</div>
+                <div className="text-3xl font-bold text-neutral-900">1 in 10</div>
+                <div className="text-sm text-neutral-500 mt-1">students retained</div>
+              </div>
+            </div>
+            <p className="text-center text-neutral-700 leading-relaxed">
+              If CampusPandit helps you retain just <strong>1 in 10 students</strong> who would have otherwise churned, the platform pays for itself. Everything beyond that is upside.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
       <section id="pricing" className="py-20 bg-neutral-50 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              Simple pricing, honest billing
+              Founder pricing while we're early
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              Free for the first 6 months. Cancel anytime. Prices in ₹ — international students <a href="#" className="text-primary-500 hover:underline">see USD</a>.
+              We're selecting 10 coaching centers in 2026 to pilot at zero cost. After the pilot, you keep founder pricing for life.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Free */}
-            <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200 hover:border-primary-300 transition-all">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-neutral-900 mb-2">Free</h3>
-                <div className="text-4xl font-bold text-neutral-900 mb-2">₹0</div>
-                <div className="text-sm text-neutral-500">first 6 months</div>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">AI Coach &amp; weekly practice plans</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Smart flashcards with spaced repetition</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Full video library &amp; chapter explainers</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Progress tracking &amp; weak-area reports</span>
-                </li>
-              </ul>
-
-              <a href="/auth" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
-                Get started
-              </a>
-            </div>
-
-            {/* Student Pro — highlighted */}
-            <div className="bg-gradient-to-br from-primary-500 to-primary-600 p-8 rounded-2xl border-2 border-primary-500 shadow-xl relative transform scale-105">
+            {/* Pilot — Highlighted */}
+            <div className="bg-gradient-to-br from-primary-500 to-primary-600 p-8 rounded-2xl shadow-xl relative transform md:scale-105">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <div className="bg-secondary-500 text-white px-4 py-1 rounded-full text-sm font-bold">
-                  Most popular
+                  Founding 10
                 </div>
               </div>
 
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-white mb-2">Student Pro</h3>
-                <div className="text-4xl font-bold text-white mb-2">₹799</div>
-                <div className="text-sm text-primary-100">per month after free period</div>
+              <div className="text-center mb-6 mt-2">
+                <h3 className="text-xl font-bold text-white mb-2">Pilot</h3>
+                <div className="text-4xl font-bold text-white mb-2">₹0</div>
+                <div className="text-sm text-primary-100">first 3 months · up to 100 students</div>
               </div>
 
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">Everything in Free</span>
+                  <span className="text-white">Branded app published in 7 days</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">Unlimited AI Coach conversations</span>
+                  <span className="text-white">AI Coach for every student</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">2 included tutor session credits per month</span>
+                  <span className="text-white">Full center dashboard &amp; CRM</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">Unlimited messaging with your tutors</span>
+                  <span className="text-white">Founder pricing locked in for life</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">Priority support</span>
+                  <span className="text-white">Direct line to the product team</span>
                 </li>
               </ul>
 
-              <a href="/auth" className="block w-full px-6 py-3 text-center bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium">
-                Start free trial
+              <a href="#apply" className="block w-full px-6 py-3 text-center bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium">
+                Apply for the pilot
               </a>
             </div>
 
-            {/* Pay per session */}
-            <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200 hover:border-primary-300 transition-all">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-bold text-neutral-900 mb-2">Pay per session</h3>
-                <div className="text-4xl font-bold text-neutral-900 mb-2">₹499+</div>
-                <div className="text-sm text-neutral-500">per hour with a tutor</div>
+            {/* Growth */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200">
+              <div className="text-center mb-6 mt-2">
+                <h3 className="text-xl font-bold text-neutral-900 mb-2">Growth</h3>
+                <div className="text-4xl font-bold text-neutral-900 mb-2">₹149</div>
+                <div className="text-sm text-neutral-500">per active student / month, billed annually</div>
               </div>
 
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">No subscription required</span>
+                  <span className="text-neutral-600">Everything in Pilot</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Browse tutors by subject and rating</span>
+                  <span className="text-neutral-600">Minimum 100 active students</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Rates set by each tutor — see them upfront</span>
+                  <span className="text-neutral-600">Email support, 24h SLA</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-neutral-600">Session recording included</span>
+                  <span className="text-neutral-600">Quarterly product reviews</span>
                 </li>
               </ul>
 
-              <a href="/tutors" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
-                Browse tutors
+              <a href="#apply" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+                Talk to us
               </a>
             </div>
-          </div>
 
-          <div className="text-center mt-12">
-            <p className="text-sm text-neutral-500">
-              🎉 First 6 months completely free — no credit card required.
-            </p>
+            {/* Center+ */}
+            <div className="bg-white p-8 rounded-2xl border-2 border-neutral-200">
+              <div className="text-center mb-6 mt-2">
+                <h3 className="text-xl font-bold text-neutral-900 mb-2">Center+</h3>
+                <div className="text-4xl font-bold text-neutral-900 mb-2">Custom</div>
+                <div className="text-sm text-neutral-500">multi-branch · 500+ students</div>
+              </div>
+
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Multi-branch admin &amp; reporting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Dedicated success manager</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">API access &amp; integrations</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-neutral-600">Custom AI fine-tuning on your content</span>
+                </li>
+              </ul>
+
+              <a href="#apply" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+                Contact sales
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof — early-cohort framing, no fabricated outcomes */}
-      <section className="py-20 bg-gradient-to-br from-primary-50 to-success-50 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      {/* FAQ */}
+      <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              From the early cohort
+              Owner questions, answered
             </h2>
-            <p className="text-sm text-neutral-500 max-w-2xl mx-auto">
-              Quotes from students using CampusPandit during our 2025 beta.
-            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-secondary-500 text-secondary-500" />
-                ))}
-              </div>
-              <p className="text-neutral-700 mb-6 leading-relaxed">
-                "The AI Coach actually pointed out that I was weaker in rotational mechanics than I thought. Drilling that for two weeks changed my mock scores."
+          <div className="space-y-6">
+            <details className="bg-white border border-neutral-200 rounded-2xl p-6 group">
+              <summary className="font-semibold text-neutral-900 cursor-pointer flex items-center justify-between">
+                How long does it take to launch our branded app?
+                <span className="text-neutral-400 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <p className="text-neutral-600 leading-relaxed mt-4">
+                Seven days from the discovery call to a Play Store-published app with your logo, colors, and domain. iOS follows in ~3 weeks (Apple's review timeline is slower than Google's).
               </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold">
-                  RK
-                </div>
-                <div>
-                  <div className="font-semibold text-neutral-900">Rahul K.</div>
-                  <div className="text-sm text-neutral-500">Class 12, JEE aspirant</div>
-                </div>
-              </div>
-            </div>
+            </details>
 
-            {/* Testimonial 2 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-secondary-500 text-secondary-500" />
-                ))}
-              </div>
-              <p className="text-neutral-700 mb-6 leading-relaxed">
-                "Being able to message my tutor between sessions is the best part. I get unstuck in 10 minutes instead of waiting a week."
+            <details className="bg-white border border-neutral-200 rounded-2xl p-6 group">
+              <summary className="font-semibold text-neutral-900 cursor-pointer flex items-center justify-between">
+                Do we own our content and student data?
+                <span className="text-neutral-400 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <p className="text-neutral-600 leading-relaxed mt-4">
+                Yes. All recordings, notes, student records, and CRM data belong to your center. We're processors, not owners. Full export available in CSV/MP4/PDF on request, and immediately on contract exit.
               </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-success-400 to-success-600 flex items-center justify-center text-white font-semibold">
-                  PS
-                </div>
-                <div>
-                  <div className="font-semibold text-neutral-900">Priya S.</div>
-                  <div className="text-sm text-neutral-500">Class 12, NEET aspirant</div>
-                </div>
-              </div>
-            </div>
+            </details>
 
-            {/* Testimonial 3 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-secondary-500 text-secondary-500" />
-                ))}
-              </div>
-              <p className="text-neutral-700 mb-6 leading-relaxed">
-                "Rewatching session recordings at 1.5× is underrated. I've gone back through tricky organic chemistry sessions four times."
+            <details className="bg-white border border-neutral-200 rounded-2xl p-6 group">
+              <summary className="font-semibold text-neutral-900 cursor-pointer flex items-center justify-between">
+                Can the AI Coach be tuned to our curriculum?
+                <span className="text-neutral-400 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <p className="text-neutral-600 leading-relaxed mt-4">
+                The base model is already PYQ-weighted for JEE Main, JEE Advanced, and NEET. For Center+ clients we fine-tune on your past mock papers, assignment sets, and chapter weightages — so the AI speaks in your center's voice and emphasizes what you teach.
               </p>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary-400 to-secondary-600 flex items-center justify-center text-white font-semibold">
-                  AV
-                </div>
-                <div>
-                  <div className="font-semibold text-neutral-900">Ankit V.</div>
-                  <div className="text-sm text-neutral-500">Class 11, JEE aspirant</div>
-                </div>
-              </div>
-            </div>
+            </details>
+
+            <details className="bg-white border border-neutral-200 rounded-2xl p-6 group">
+              <summary className="font-semibold text-neutral-900 cursor-pointer flex items-center justify-between">
+                How are payments handled?
+                <span className="text-neutral-400 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <p className="text-neutral-600 leading-relaxed mt-4">
+                Students pay your center directly via Razorpay, PayU, or Instamojo — accounts you own. We invoice you separately for the platform fee. We never sit between you and your students' money.
+              </p>
+            </details>
+
+            <details className="bg-white border border-neutral-200 rounded-2xl p-6 group">
+              <summary className="font-semibold text-neutral-900 cursor-pointer flex items-center justify-between">
+                What happens after the 3-month pilot?
+                <span className="text-neutral-400 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <p className="text-neutral-600 leading-relaxed mt-4">
+                You move to the Growth plan at founder pricing — locked in for as long as you stay. You can cancel any time; we'll hand back all your data and de-list the branded app gracefully.
+              </p>
+            </details>
+
+            <details className="bg-white border border-neutral-200 rounded-2xl p-6 group">
+              <summary className="font-semibold text-neutral-900 cursor-pointer flex items-center justify-between">
+                Why should we trust you with zero customers?
+                <span className="text-neutral-400 group-open:rotate-180 transition-transform">▾</span>
+              </summary>
+              <p className="text-neutral-600 leading-relaxed mt-4">
+                Honest answer: that's exactly why the pilot is free and founder pricing is permanent. We're trading early proof points for our first 10 logos — you're trading 3 months of zero-risk usage for software that would otherwise cost ₹1.5L+/year. If it doesn't work for your center, we shake hands and part ways.
+              </p>
+            </details>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      {/* Apply / CTA */}
+      <section id="apply" className="py-20 bg-gradient-to-br from-primary-500 to-primary-700 px-4 sm:px-6 lg:px-8 text-white">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block mb-6 px-6 py-3 bg-success-50 text-success-700 rounded-full text-lg font-bold">
-            🎉 First 6 months absolutely free
+          <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 bg-white/15 backdrop-blur rounded-full text-sm font-semibold">
+            <Sparkles className="w-4 h-4" />
+            10 spots · founder pricing for life
           </div>
-          <h2 className="text-3xl sm:text-5xl font-bold text-neutral-900 mb-6">
-            Stop guessing what to study.
+          <h2 className="text-3xl sm:text-5xl font-bold mb-6">
+            Apply to be a founding pilot.
           </h2>
-          <p className="text-lg text-neutral-600 mb-8">
-            Let the AI Coach tell you. Free for 6 months — no card required.
+          <p className="text-lg text-primary-100 mb-8 leading-relaxed">
+            We're choosing 10 coaching centers (50–1,000 students, JEE/NEET focus) for the 2026 pilot cohort. Three months free, fully branded app, AI Coach for every student, founder pricing locked in for life.
           </p>
-          <a href="/auth" className="inline-flex px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors items-center justify-center gap-2 font-medium text-lg">
-            Start free for 6 months
+          <a
+            href="mailto:founders@campuspandit.com?subject=Pilot%20application&body=Center%20name%3A%0AOwner%20name%3A%0ALocation%3A%0ANumber%20of%20students%3A%0ASubjects%20taught%3A%0AWebsite%2FInstagram%3A%0AWhat%20do%20you%20use%20today%3F%0A"
+            className="inline-flex px-8 py-4 bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors items-center justify-center gap-2 font-medium text-lg"
+          >
+            Apply via email
             <ArrowRight className="w-5 h-5" />
           </a>
-          <p className="text-sm text-neutral-500 mt-4">No credit card required • Full access for 6 months</p>
-
-          <div className="mt-16 pt-8 border-t border-neutral-200">
-            <p className="text-sm text-neutral-500">
-              Are you a tutor?{' '}
-              <a href="/tutor/register" className="text-primary-500 hover:underline font-medium">
-                Teach on CampusPandit →
-              </a>
-            </p>
-          </div>
+          <p className="text-sm text-primary-100 mt-4">We respond within 48 hours · No sales calls without your ask</p>
         </div>
       </section>
 
@@ -541,20 +698,17 @@ const LandingPage: React.FC = () => {
                 <span className="text-lg font-bold">CampusPandit</span>
               </div>
               <p className="text-neutral-400 text-sm">
-                AI-powered JEE &amp; NEET prep — coaching, tutors, and lessons in one place.
-              </p>
-              <p className="text-neutral-500 text-xs mt-4">
-                Powered by free educational resources including OpenStax and NotebookLM.
+                White-label coaching center platform — branded app, AI tutor, and one dashboard to run the operation.
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
+              <h4 className="font-semibold mb-4">Platform</h4>
               <ul className="space-y-2 text-sm text-neutral-400">
                 <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
                 <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="/tutors" className="hover:text-white transition-colors">Find a tutor</a></li>
-                <li><a href="/tutor/register" className="hover:text-white transition-colors">Become a tutor</a></li>
+                <li><a href="#how-it-works" className="hover:text-white transition-colors">How it works</a></li>
+                <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
               </ul>
             </div>
 
@@ -563,15 +717,15 @@ const LandingPage: React.FC = () => {
               <ul className="space-y-2 text-sm text-neutral-400">
                 <li><a href="#" className="hover:text-white transition-colors">About</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="/for-students" className="hover:text-white transition-colors">For students</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
+              <h4 className="font-semibold mb-4">Trust</h4>
               <ul className="space-y-2 text-sm text-neutral-400">
-                <li><a href="#" className="hover:text-white transition-colors">Help center</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Data ownership</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Security</a></li>
@@ -583,16 +737,20 @@ const LandingPage: React.FC = () => {
             <p className="text-sm text-neutral-400">
               © {currentYear} CampusPandit. All rights reserved.
             </p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="text-neutral-400 hover:text-white transition-colors" aria-label="Contact">
-                <MessageCircle className="w-5 h-5" />
+            <div className="flex items-center gap-4 text-sm text-neutral-400">
+              <a href="mailto:founders@campuspandit.com" className="hover:text-white transition-colors">
+                founders@campuspandit.com
               </a>
-              <a href="#" className="text-neutral-400 hover:text-white transition-colors" aria-label="Achievements">
-                <Award className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-neutral-400 hover:text-white transition-colors" aria-label="Security">
-                <Shield className="w-5 h-5" />
-              </a>
+              <span className="hidden md:inline">·</span>
+              <span className="flex items-center gap-1">
+                <Building2 className="w-4 h-4" />
+                Built for Indian coaching centers
+              </span>
+              <span className="hidden md:inline">·</span>
+              <span className="flex items-center gap-1">
+                <Shield className="w-4 h-4" />
+                Your data, your IP
+              </span>
             </div>
           </div>
         </div>

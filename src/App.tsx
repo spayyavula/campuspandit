@@ -18,6 +18,9 @@ import LandingPage from './components/LandingPage';
 import { Auth } from './components/Auth';
 import ComingSoon from './components/ComingSoon';
 
+// Secondary public landing (student-facing variant of the B2B homepage)
+const LandingPageStudent = lazy(() => import('./components/LandingPageStudent'));
+
 // Lazy load all other routes for better performance
 // Coaching
 const AICoach = lazy(() => import('./components/coaching/AICoach'));
@@ -93,6 +96,7 @@ const AppRoutes: React.FC = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/for-students" element={<LandingPageStudent />} />
         <Route path="/auth" element={!user ? <Auth onAuthStateChange={login} /> : <Navigate to="/coach" />} />
 
           {/* Protected Routes - Student */}
