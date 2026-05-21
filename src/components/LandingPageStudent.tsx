@@ -28,11 +28,8 @@ const LandingPageStudent: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <a href="/auth" className="px-4 py-2 text-sm text-primary-500 hover:text-primary-600 transition-colors">
-                Log in
-              </a>
-              <a href="/auth" className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
-                Sign up free
+              <a href="mailto:founders@campuspandit.ai?subject=Tell%20us%20about%20your%20coaching%20center&body=I%20study%20at%20a%20coaching%20center%20that%20might%20benefit%20from%20CampusPandit.%0A%0ACoaching%20center%20name%3A%0ALocation%3A%0AWebsite%2FInstagram%3A%0A" className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+                Tell your coaching center about CampusPandit
               </a>
             </div>
 
@@ -55,11 +52,8 @@ const LandingPageStudent: React.FC = () => {
               <a href="#pricing" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Pricing</a>
               <a href="/tutor/register" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For tutors</a>
               <div className="pt-4 space-y-2">
-                <a href="/auth" className="block w-full px-4 py-2 text-sm text-primary-500 border border-primary-500 rounded-lg hover:bg-primary-50 transition-colors text-center">
-                  Log in
-                </a>
-                <a href="/auth" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
-                  Sign up free
+                <a href="mailto:founders@campuspandit.ai?subject=Tell%20us%20about%20your%20coaching%20center&body=I%20study%20at%20a%20coaching%20center%20that%20might%20benefit%20from%20CampusPandit.%0A%0ACoaching%20center%20name%3A%0ALocation%3A%0AWebsite%2FInstagram%3A%0A" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
+                  Tell your coaching center about CampusPandit
                 </a>
               </div>
             </div>
@@ -84,8 +78,8 @@ const LandingPageStudent: React.FC = () => {
                 Personalized practice, expert tutors on demand, and recorded lessons you can rewatch. Built for Class 11–12 aspirants.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <a href="/auth" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
-                  Start free for 6 months
+                <a href="mailto:founders@campuspandit.ai?subject=Tell%20us%20about%20your%20coaching%20center&body=I%20study%20at%20a%20coaching%20center%20that%20might%20benefit%20from%20CampusPandit.%0A%0ACoaching%20center%20name%3A%0ALocation%3A%0AWebsite%2FInstagram%3A%0A" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
+                  Tell your coaching center about CampusPandit
                   <ArrowRight className="w-5 h-5" />
                 </a>
                 <a href="/tutors" className="px-8 py-4 border-2 border-neutral-200 text-neutral-900 rounded-lg hover:border-neutral-300 transition-colors font-medium text-center">
@@ -333,8 +327,8 @@ const LandingPageStudent: React.FC = () => {
                 </li>
               </ul>
 
-              <a href="/auth" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
-                Get started
+              <a href="mailto:founders@campuspandit.ai?subject=Tell%20us%20about%20your%20coaching%20center&body=I%20study%20at%20a%20coaching%20center%20that%20might%20benefit%20from%20CampusPandit.%0A%0ACoaching%20center%20name%3A%0ALocation%3A%0AWebsite%2FInstagram%3A%0A" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+                Tell your coaching center about CampusPandit
               </a>
             </div>
 
@@ -375,8 +369,8 @@ const LandingPageStudent: React.FC = () => {
                 </li>
               </ul>
 
-              <a href="/auth" className="block w-full px-6 py-3 text-center bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium">
-                Start free trial
+              <a href="mailto:founders@campuspandit.ai?subject=Tell%20us%20about%20your%20coaching%20center&body=I%20study%20at%20a%20coaching%20center%20that%20might%20benefit%20from%20CampusPandit.%0A%0ACoaching%20center%20name%3A%0ALocation%3A%0AWebsite%2FInstagram%3A%0A" className="block w-full px-6 py-3 text-center bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium">
+                Tell your coaching center about CampusPandit
               </a>
             </div>
 
@@ -512,8 +506,8 @@ const LandingPageStudent: React.FC = () => {
           <p className="text-lg text-neutral-600 mb-8">
             Let the AI Coach tell you. Free for 6 months — no card required.
           </p>
-          <a href="/auth" className="inline-flex px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors items-center justify-center gap-2 font-medium text-lg">
-            Start free for 6 months
+          <a href="mailto:founders@campuspandit.ai?subject=Tell%20us%20about%20your%20coaching%20center&body=I%20study%20at%20a%20coaching%20center%20that%20might%20benefit%20from%20CampusPandit.%0A%0ACoaching%20center%20name%3A%0ALocation%3A%0AWebsite%2FInstagram%3A%0A" className="inline-flex px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors items-center justify-center gap-2 font-medium text-lg">
+            Tell your coaching center about CampusPandit
             <ArrowRight className="w-5 h-5" />
           </a>
           <p className="text-sm text-neutral-500 mt-4">No credit card required • Full access for 6 months</p>
