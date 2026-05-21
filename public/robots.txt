@@ -80,4 +80,4 @@ User-agent: FacebookBot
 Allow: /
 
 # Sitemap
-Sitemap: https://campuspandit.com/sitemap.xml
+Sitemap: https://www.campuspandit.ai/sitemap.xml
