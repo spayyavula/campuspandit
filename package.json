@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:seo": "vite build && node scripts/prerender.js",
+    "prerender": "node scripts/prerender.js",
+    "og:generate": "node scripts/generate-og-image.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "pwa:generate-icons": "node scripts/generate-icons.js",
