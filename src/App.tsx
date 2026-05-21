@@ -25,6 +25,11 @@ const LandingPageStudent = lazy(() => import('./components/LandingPageStudent'))
 const Blog = lazy(() => import('./components/Blog'));
 const BlogPost = lazy(() => import('./components/BlogPost'));
 
+// Content pages
+const PreparationMaterials = lazy(() => import('./components/PreparationMaterials'));
+const Roadmap = lazy(() => import('./components/Roadmap'));
+const Ideas = lazy(() => import('./components/Ideas'));
+
 // Lazy load all other routes for better performance
 // Coaching
 const AICoach = lazy(() => import('./components/coaching/AICoach'));
@@ -105,6 +110,9 @@ const AppRoutes: React.FC = () => {
         <Route path="/for-students" element={<LandingPageStudent />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/materials" element={<PreparationMaterials />} />
+        <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/ideas" element={<Ideas />} />
         <Route path="/auth" element={<ParkedRoute />} />
 
           {/* Protected Routes - Student */}
