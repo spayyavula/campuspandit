@@ -44,10 +44,7 @@ const LandingPage: React.FC = () => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <a href="/auth" className="px-4 py-2 text-sm text-primary-500 hover:text-primary-600 transition-colors">
-                Log in
-              </a>
-              <a href="#apply" className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
+              <a href="/apply" className="px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors">
                 Apply for pilot
               </a>
             </div>
@@ -72,10 +69,7 @@ const LandingPage: React.FC = () => {
               <a href="#faq" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">FAQ</a>
               <a href="/for-students" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For students</a>
               <div className="pt-4 space-y-2">
-                <a href="/auth" className="block w-full px-4 py-2 text-sm text-primary-500 border border-primary-500 rounded-lg hover:bg-primary-50 transition-colors text-center">
-                  Log in
-                </a>
-                <a href="#apply" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
+                <a href="/apply" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
                   Apply for pilot
                 </a>
               </div>
@@ -102,7 +96,7 @@ const LandingPage: React.FC = () => {
                 Stop losing students to PhysicsWallah and Allen. CampusPandit gives your coaching center a branded student app, an AI tutor for every learner, and one dashboard to run the whole operation. <strong className="text-neutral-900">Pilot setup in 7 days.</strong>
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <a href="#apply" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
+                <a href="/apply" className="px-8 py-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium">
                   Apply for the pilot
                   <ArrowRight className="w-5 h-5" />
                 </a>
@@ -517,7 +511,7 @@ const LandingPage: React.FC = () => {
                 </li>
               </ul>
 
-              <a href="#apply" className="block w-full px-6 py-3 text-center bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium">
+              <a href="/apply" className="block w-full px-6 py-3 text-center bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium">
                 Apply for the pilot
               </a>
             </div>
@@ -549,7 +543,7 @@ const LandingPage: React.FC = () => {
                 </li>
               </ul>
 
-              <a href="#apply" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+              <a href="/apply" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
                 Talk to us
               </a>
             </div>
@@ -581,7 +575,7 @@ const LandingPage: React.FC = () => {
                 </li>
               </ul>
 
-              <a href="#apply" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
+              <a href="/apply" className="block w-full px-6 py-3 text-center bg-neutral-100 text-neutral-900 rounded-lg hover:bg-neutral-200 transition-colors font-medium">
                 Contact sales
               </a>
             </div>
@@ -675,11 +669,8 @@ const LandingPage: React.FC = () => {
           <p className="text-lg text-primary-100 mb-8 leading-relaxed">
             We're choosing 10 coaching centers (50–1,000 students, JEE/NEET focus) for the 2026 pilot cohort. Three months free, fully branded app, AI Coach for every student, founder pricing locked in for life.
           </p>
-          <a
-            href="mailto:founders@campuspandit.com?subject=Pilot%20application&body=Center%20name%3A%0AOwner%20name%3A%0ALocation%3A%0ANumber%20of%20students%3A%0ASubjects%20taught%3A%0AWebsite%2FInstagram%3A%0AWhat%20do%20you%20use%20today%3F%0A"
-            className="inline-flex px-8 py-4 bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors items-center justify-center gap-2 font-medium text-lg"
-          >
-            Apply via email
+          <a href="/apply" className="inline-flex px-8 py-4 bg-white text-primary-600 rounded-lg hover:bg-primary-50 transition-colors items-center justify-center gap-2 font-medium text-lg">
+            Open application form
             <ArrowRight className="w-5 h-5" />
           </a>
           <p className="text-sm text-primary-100 mt-4">We respond within 48 hours · No sales calls without your ask</p>
@@ -738,8 +729,8 @@ const LandingPage: React.FC = () => {
               © {currentYear} CampusPandit. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-sm text-neutral-400">
-              <a href="mailto:founders@campuspandit.com" className="hover:text-white transition-colors">
-                founders@campuspandit.com
+              <a href="mailto:founders@campuspandit.ai" className="hover:text-white transition-colors">
+                founders@campuspandit.ai
               </a>
               <span className="hidden md:inline">·</span>
               <span className="flex items-center gap-1">
