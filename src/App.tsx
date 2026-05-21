@@ -82,6 +82,8 @@ const RecordingStudio = lazy(() => import('./components/library/RecordingStudio'
 const AppRoutes: React.FC = () => {
   const { user, loading, login } = useAuth();
 
+  const ParkedRoute: React.FC = () => <Navigate to="/" replace />;
+
   // Show loading state
   if (loading) {
     return (
@@ -97,61 +99,61 @@ const AppRoutes: React.FC = () => {
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/for-students" element={<LandingPageStudent />} />
-        <Route path="/auth" element={!user ? <Auth onAuthStateChange={login} /> : <Navigate to="/coach" />} />
+        <Route path="/auth" element={<ParkedRoute />} />
 
           {/* Protected Routes - Student */}
-          <Route path="/coach" element={user ? <AICoach studentId={user.id} /> : <Navigate to="/auth" />} />
-          <Route path="/weak-areas" element={user ? <WeakAreaManager studentId={user.id} /> : <Navigate to="/auth" />} />
-          <Route path="/tutors" element={user ? <FindTutors /> : <Navigate to="/auth" />} />
-          <Route path="/tutor/profile/:tutorId" element={user ? <TutorProfile /> : <Navigate to="/auth" />} />
-          <Route path="/tutoring/tutor/:tutorId" element={user ? <TutorBooking /> : <Navigate to="/auth" />} />
-          <Route path="/tutor/register" element={user ? <TutorRegistration /> : <Navigate to="/auth" />} />
-          <Route path="/tutor/dashboard" element={user ? <TutorDashboard /> : <Navigate to="/auth" />} />
-          <Route path="/messages" element={user ? <MessagingApp userId={user.id} /> : <Navigate to="/auth" />} />
-          <Route path="/preferences" element={user ? <EmailPreferences /> : <Navigate to="/auth" />} />
-          <Route path="/notebooklm" element={user ? <NotebookLMGuide studentId={user.id} /> : <Navigate to="/auth" />} />
-          <Route path="/google-learn" element={user ? <GoogleLearnYourWay studentId={user.id} /> : <Navigate to="/auth" />} />
-          <Route path="/openstax" element={user ? <OpenStaxHub studentId={user.id} /> : <Navigate to="/auth" />} />
-          <Route path="/flashcards" element={user ? <FlashcardManager studentId={user.id} /> : <Navigate to="/auth" />} />
+          <Route path="/coach" element={<ParkedRoute />} />
+          <Route path="/weak-areas" element={<ParkedRoute />} />
+          <Route path="/tutors" element={<ParkedRoute />} />
+          <Route path="/tutor/profile/:tutorId" element={<ParkedRoute />} />
+          <Route path="/tutoring/tutor/:tutorId" element={<ParkedRoute />} />
+          <Route path="/tutor/register" element={<ParkedRoute />} />
+          <Route path="/tutor/dashboard" element={<ParkedRoute />} />
+          <Route path="/messages" element={<ParkedRoute />} />
+          <Route path="/preferences" element={<ParkedRoute />} />
+          <Route path="/notebooklm" element={<ParkedRoute />} />
+          <Route path="/google-learn" element={<ParkedRoute />} />
+          <Route path="/openstax" element={<ParkedRoute />} />
+          <Route path="/flashcards" element={<ParkedRoute />} />
 
           {/* Protected Routes - Admin */}
-          <Route path="/admin/coaching" element={user ? <ComingSoon featureName="Coaching Admin" /> : <Navigate to="/auth" />} />
-          <Route path="/admin/emails" element={user ? <EmailSubscribers /> : <Navigate to="/auth" />} />
-          <Route path="/admin/tutors" element={user ? <TutorManagementAdmin /> : <Navigate to="/auth" />} />
+          <Route path="/admin/coaching" element={<ParkedRoute />} />
+          <Route path="/admin/emails" element={<ParkedRoute />} />
+          <Route path="/admin/tutors" element={<ParkedRoute />} />
 
           {/* Protected Routes - CRM */}
-          <Route path="/crm" element={user ? <CRMDashboard userId={user.id} /> : <Navigate to="/auth" />} />
-          <Route path="/crm/contacts" element={user ? <ContactsManager /> : <Navigate to="/auth" />} />
-          <Route path="/crm/contacts/new" element={user ? <ContactsManager /> : <Navigate to="/auth" />} />
-          <Route path="/crm/deals" element={user ? <DealsPipeline /> : <Navigate to="/auth" />} />
-          <Route path="/crm/deals/new" element={user ? <DealsPipeline /> : <Navigate to="/auth" />} />
-          <Route path="/crm/activities" element={user ? <ActivitiesManager /> : <Navigate to="/auth" />} />
-          <Route path="/crm/activities/new" element={user ? <ActivitiesManager /> : <Navigate to="/auth" />} />
-          <Route path="/crm/tickets" element={user ? <TicketsManager /> : <Navigate to="/auth" />} />
-          <Route path="/crm/tickets/new" element={user ? <TicketsManager /> : <Navigate to="/auth" />} />
-          <Route path="/crm/campaigns" element={user ? <MarketingCampaigns /> : <Navigate to="/auth" />} />
-          <Route path="/crm/reports" element={user ? <ReportsAnalytics /> : <Navigate to="/auth" />} />
+          <Route path="/crm" element={<ParkedRoute />} />
+          <Route path="/crm/contacts" element={<ParkedRoute />} />
+          <Route path="/crm/contacts/new" element={<ParkedRoute />} />
+          <Route path="/crm/deals" element={<ParkedRoute />} />
+          <Route path="/crm/deals/new" element={<ParkedRoute />} />
+          <Route path="/crm/activities" element={<ParkedRoute />} />
+          <Route path="/crm/activities/new" element={<ParkedRoute />} />
+          <Route path="/crm/tickets" element={<ParkedRoute />} />
+          <Route path="/crm/tickets/new" element={<ParkedRoute />} />
+          <Route path="/crm/campaigns" element={<ParkedRoute />} />
+          <Route path="/crm/reports" element={<ParkedRoute />} />
 
           {/* Protected Routes - Payment */}
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failure" element={<PaymentFailure />} />
-          <Route path="/payment/history" element={user ? <PaymentHistory /> : <Navigate to="/auth" />} />
+          <Route path="/payment/history" element={<ParkedRoute />} />
 
           {/* Protected Routes - Courses */}
-          <Route path="/courses/my-learning" element={user ? <LearningDashboard /> : <Navigate to="/auth" />} />
-          <Route path="/courses/create" element={user ? <CourseCreation /> : <Navigate to="/auth" />} />
-          <Route path="/courses/:courseId/edit" element={user ? <CourseEditor /> : <Navigate to="/auth" />} />
-          <Route path="/instructor/dashboard" element={user ? <InstructorDashboard /> : <Navigate to="/auth" />} />
-          <Route path="/instructor/courses" element={user ? <InstructorDashboard /> : <Navigate to="/auth" />} />
-          <Route path="/courses/:courseId/lessons/:lessonId" element={user ? <LessonPlayer /> : <Navigate to="/auth" />} />
-          <Route path="/courses/:courseId" element={user ? <CourseDetail /> : <Navigate to="/auth" />} />
-          <Route path="/courses" element={user ? <CourseCatalog /> : <Navigate to="/auth" />} />
+          <Route path="/courses/my-learning" element={<ParkedRoute />} />
+          <Route path="/courses/create" element={<ParkedRoute />} />
+          <Route path="/courses/:courseId/edit" element={<ParkedRoute />} />
+          <Route path="/instructor/dashboard" element={<ParkedRoute />} />
+          <Route path="/instructor/courses" element={<ParkedRoute />} />
+          <Route path="/courses/:courseId/lessons/:lessonId" element={<ParkedRoute />} />
+          <Route path="/courses/:courseId" element={<ParkedRoute />} />
+          <Route path="/courses" element={<ParkedRoute />} />
 
           {/* Protected Routes - Video Library */}
-          <Route path="/library" element={user ? <VideoLibrary /> : <Navigate to="/auth" />} />
-          <Route path="/library/record" element={user ? <RecordingStudio /> : <Navigate to="/auth" />} />
-          <Route path="/library/upload" element={user ? <UploadSession /> : <Navigate to="/auth" />} />
-          <Route path="/library/:sessionId" element={user ? <VideoPlayer /> : <Navigate to="/auth" />} />
+          <Route path="/library" element={<ParkedRoute />} />
+          <Route path="/library/record" element={<ParkedRoute />} />
+          <Route path="/library/upload" element={<ParkedRoute />} />
+          <Route path="/library/:sessionId" element={<ParkedRoute />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
