@@ -77,6 +77,14 @@ export const useSSE = ({
   };
 
   const connect = useCallback(() => {
+    // Defense-in-depth: if the consumer app is parked, never open an EventSource.
+    // The route-level ParkedRoute should already prevent this hook from mounting,
+    // but in case a future change re-mounts MessagingApp by accident, short-circuit.
+    if (import.meta.env.VITE_CONSUMER_APP_PARKED === 'true') {
+      setIsConnected(false);
+      return;
+    }
+
     // Prevent concurrent connection attempts
     if (isConnectingRef.current || eventSource.current?.readyState === EventSource.OPEN) {
       console.log('SSE: Already connected or connecting, skipping...');
