@@ -25,7 +25,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, '..', 'dist');
 const PORT = 4173;
 
-const ROUTES = ['/'];
+const ROUTES = [
+  '/',
+  '/for-students',
+  '/blog',
+  '/blog/running-a-coaching-center-like-a-saas',
+  '/blog/jee-prep-the-honest-version',
+  '/materials',
+  '/roadmap',
+  '/ideas',
+  '/apply',
+  '/apply/thanks',
+];
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',

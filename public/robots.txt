@@ -3,13 +3,22 @@
 
 User-agent: *
 Allow: /
+Allow: /for-students
+Allow: /blog/
+Allow: /materials
+Allow: /roadmap
+Allow: /ideas
+Allow: /apply
 Disallow: /auth
 Disallow: /coach
-Disallow: /tutor/dashboard
-Disallow: /crm/
-Disallow: /admin/
-Disallow: /payment/
-Disallow: /instructor/
+Disallow: /messages
+Disallow: /crm
+Disallow: /courses
+Disallow: /library
+Disallow: /tutor
+Disallow: /instructor
+Disallow: /admin
+Disallow: /preferences
 
 # Traditional search engines (explicit)
 User-agent: Googlebot
