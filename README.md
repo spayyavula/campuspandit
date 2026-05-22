@@ -1,5 +1,14 @@
 # CampusPandit
 
+## Pilot Status (2026-05-22 → ~2026-08-21)
+
+CampusPandit is in a **3-month observe window** — consumer app parked, B2B
+Founding 10 landing live at https://www.campuspandit.ai. See the spec at
+[`docs/superpowers/specs/2026-05-22-park-consumer-app-supabase-migration-design.md`](docs/superpowers/specs/2026-05-22-park-consumer-app-supabase-migration-design.md)
+for the full plan, kill/keep gates, and Stage 2 conditional rollout.
+
+Domain glossary: [`CONTEXT.md`](CONTEXT.md).
+
 AI-powered online tutoring platform that connects students with tutors, delivers personalized coaching, and provides a full course/video library — built as a Progressive Web App with a Python FastAPI backend and a React Native mobile companion app.
 
 ![Architecture Diagram](./architecture-diagram.svg)
