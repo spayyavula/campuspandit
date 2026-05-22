@@ -40,6 +40,9 @@ const LandingPage: React.FC = () => {
               <a href="#how-it-works" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">How it works</a>
               <a href="#pricing" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Pricing</a>
               <a href="#faq" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">FAQ</a>
+              <a href="/blog" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Blog</a>
+              <a href="/roadmap" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Roadmap</a>
+              <a href="/ideas" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Ideas</a>
               <a href="/for-students" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">For students</a>
             </div>
 
@@ -67,6 +70,9 @@ const LandingPage: React.FC = () => {
               <a href="#how-it-works" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">How it works</a>
               <a href="#pricing" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Pricing</a>
               <a href="#faq" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">FAQ</a>
+              <a href="/blog" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Blog</a>
+              <a href="/roadmap" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Roadmap</a>
+              <a href="/ideas" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Ideas</a>
               <a href="/for-students" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For students</a>
               <div className="pt-4 space-y-2">
                 <a href="/apply" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
@@ -256,10 +262,10 @@ const LandingPage: React.FC = () => {
                   Pillar 1
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-bold text-neutral-900 mb-4">
-                  Your brand. Your app. Your domain.
+                  Your brand. Your web app in 7 days · native app by month 2.
                 </h3>
                 <p className="text-lg text-neutral-600 mb-6 leading-relaxed">
-                  Students download <em>your center's name</em>, not ours. Your logo on the splash screen, your domain in the URL, your fees in the checkout. CampusPandit disappears — we're just the engine underneath.
+                  Students access <em>your center's name</em>, not ours. Your logo on the splash screen, your domain in the URL, your fees in the checkout. CampusPandit disappears — we're just the engine underneath. Branded web app launches in 7 days; native Play Store wrapper rolls out in pilot month 2–3.
                 </p>
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
@@ -268,7 +274,7 @@ const LandingPage: React.FC = () => {
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-neutral-700">Published to Play Store under your brand</span>
+                    <span className="text-neutral-700">Branded web app in 7 days · native Play Store app in pilot month 2–3</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
@@ -344,11 +350,11 @@ const LandingPage: React.FC = () => {
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-neutral-700">Weekly "at-risk students" report for the owner</span>
+                    <span className="text-neutral-700">Weekly "at-risk students" report — rolling out in pilot month 2</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <Check className="w-5 h-5 text-success-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-neutral-700">Tutor performance, session attendance, and earnings</span>
+                    <span className="text-neutral-700">Tutor performance roll-up — rolling out in pilot month 2</span>
                   </li>
                 </ul>
               </div>
@@ -491,7 +497,7 @@ const LandingPage: React.FC = () => {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
-                  <span className="text-white">Branded app published in 7 days</span>
+                  <span className="text-white">Branded student web app published in 7 days</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
