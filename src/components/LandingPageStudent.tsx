@@ -25,6 +25,10 @@ const LandingPageStudent: React.FC = () => {
               <a href="#how-it-works" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">How it works</a>
               <a href="#pricing" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Pricing</a>
               <a href="/tutor/register" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">For tutors</a>
+              <a href="/blog" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Blog</a>
+              <a href="/materials" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Materials</a>
+              <a href="/roadmap" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Roadmap</a>
+              <a href="/ideas" className="text-sm text-neutral-600 hover:text-primary-500 transition-colors">Ideas</a>
             </div>
 
             <div className="hidden md:flex items-center gap-3">
@@ -51,6 +55,10 @@ const LandingPageStudent: React.FC = () => {
               <a href="#how-it-works" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">How it works</a>
               <a href="#pricing" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Pricing</a>
               <a href="/tutor/register" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">For tutors</a>
+              <a href="/blog" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Blog</a>
+              <a href="/materials" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Materials</a>
+              <a href="/roadmap" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Roadmap</a>
+              <a href="/ideas" className="block py-2 text-sm text-neutral-600 hover:text-primary-500">Ideas</a>
               <div className="pt-4 space-y-2">
                 <a href="mailto:founders@campuspandit.ai?subject=Tell%20us%20about%20your%20coaching%20center&body=I%20study%20at%20a%20coaching%20center%20that%20might%20benefit%20from%20CampusPandit.%0A%0ACoaching%20center%20name%3A%0ALocation%3A%0AWebsite%2FInstagram%3A%0A" className="block w-full px-4 py-2 text-sm bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-center">
                   Tell your coaching center about CampusPandit
