@@ -27,9 +27,15 @@ const PORT = 4173;
 
 const ROUTES = [
   '/',
+  '/for-students',
   '/blog',
   '/blog/running-a-coaching-center-like-a-saas',
   '/blog/jee-prep-the-honest-version',
+  '/materials',
+  '/roadmap',
+  '/ideas',
+  '/apply',
+  '/apply/thanks',
 ];
 
 const MIME = {
