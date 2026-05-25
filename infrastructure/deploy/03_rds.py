@@ -1,8 +1,10 @@
 """03_rds.py — Secrets Manager secret + RDS Multi-AZ + security group."""
 import json
 import logging
+import os
 import secrets
 import string
+import time
 
 import click
 
@@ -41,11 +43,18 @@ def _generate_password(length: int = 32) -> str:
 def up() -> None:
     """Provision Secrets Manager secret + RDS instance. Idempotent."""
     # --- Secrets Manager ---
+    # B1 fix: password must flow from the secret into create_db_instance directly.
+    # ManageMasterUserPassword=True is mutually exclusive with MasterUserPassword.
     secret_arn: str
+    password: str
     try:
         existing = sm.describe_secret(SecretId=RDS_SECRET_NAME)
         secret_arn = existing["ARN"]
-        logger.info("Secret already exists: %s — leaving as-is.", secret_arn)
+        logger.info("Secret already exists: %s — reading password for RDS call.", secret_arn)
+        secret_data = json.loads(
+            sm.get_secret_value(SecretId=RDS_SECRET_NAME)["SecretString"]
+        )
+        password = secret_data["password"]
     except sm.exceptions.ResourceNotFoundException:
         password = _generate_password()
         secret_value = json.dumps({
@@ -68,8 +77,8 @@ def up() -> None:
 
     # --- Security group for RDS ---
     vpc_id = _default_vpc_id()
-    sg_id = _get_sg_id(SG_NAME)
-    if not sg_id:
+    rds_sg_id = _get_sg_id(SG_NAME)
+    if not rds_sg_id:
         resp = ec2.create_security_group(
             GroupName=SG_NAME,
             Description="CampusPandit RDS — allows port 5432 from proxy-sg only",
@@ -79,12 +88,12 @@ def up() -> None:
                 "Tags": TAGS,
             }],
         )
-        sg_id = resp["GroupId"]
-        logger.info("Created RDS security group: %s", sg_id)
+        rds_sg_id = resp["GroupId"]
+        logger.info("Created RDS security group: %s", rds_sg_id)
     else:
-        logger.info("RDS security group already exists: %s", sg_id)
+        logger.info("RDS security group already exists: %s", rds_sg_id)
 
-    state.set("/campuspandit/deploy/rds/security_group_id", sg_id)
+    state.set("/campuspandit/deploy/rds/security_group_id", rds_sg_id)
 
     # --- RDS instance ---
     try:
@@ -101,15 +110,15 @@ def up() -> None:
             MultiAZ=True,
             AllocatedStorage=20,
             StorageType="gp3",
+            StorageEncrypted=True,
             MasterUsername="campuspandit_admin",
-            ManageMasterUserPassword=True,
-            MasterUserSecret={"SecretArn": secret_arn},
+            MasterUserPassword=password,  # B1: direct password; no ManageMasterUserPassword
             DBName="campuspandit",
             BackupRetentionPeriod=7,
             DeletionProtection=True,
             EnableIAMDatabaseAuthentication=True,
             PubliclyAccessible=True,  # TEMP — flip OFF in Phase 3 step 5
-            VpcSecurityGroupIds=[sg_id],
+            VpcSecurityGroupIds=[rds_sg_id],
             Tags=TAGS,
         )
         wait_for_rds_available(RDS_INSTANCE_ID)
@@ -134,23 +143,39 @@ def up() -> None:
 
 def down() -> None:
     """Tear down RDS instance and secret. Idempotent."""
-    # Disable deletion protection first
+    force = os.environ.get("CAMPUSPANDIT_TEARDOWN_FORCE") == "1"  # B2
+
+    # Disable deletion protection first (so the delete call works at all)
     try:
         rds.modify_db_instance(
             DBInstanceIdentifier=RDS_INSTANCE_ID,
             DeletionProtection=False,
             ApplyImmediately=True,
         )
-        logger.info("Disabled deletion protection on %s.", RDS_INSTANCE_ID)
+        logger.info("Disabled deletion protection on %s", RDS_INSTANCE_ID)
     except rds.exceptions.DBInstanceNotFoundFault:
         pass
 
+    # B2: honour --force flag for final snapshot decision
+    delete_kwargs: dict = {
+        "DBInstanceIdentifier": RDS_INSTANCE_ID,
+        "DeleteAutomatedBackups": False,
+    }
+    if force:
+        delete_kwargs["SkipFinalSnapshot"] = True
+        logger.warning("--force: skipping final snapshot for %s", RDS_INSTANCE_ID)
+    else:
+        delete_kwargs["SkipFinalSnapshot"] = False
+        delete_kwargs["FinalDBSnapshotIdentifier"] = (
+            f"{RDS_INSTANCE_ID}-final-{int(time.time())}"
+        )
+        logger.info(
+            "Final snapshot will be taken as %s",
+            delete_kwargs["FinalDBSnapshotIdentifier"],
+        )
+
     safe_delete(
-        lambda: rds.delete_db_instance(
-            DBInstanceIdentifier=RDS_INSTANCE_ID,
-            SkipFinalSnapshot=True,
-            DeleteAutomatedBackups=False,
-        ),
+        lambda: rds.delete_db_instance(**delete_kwargs),
         rds.exceptions.DBInstanceNotFoundFault,
     )
     logger.info("RDS instance delete initiated (or already absent).")
@@ -165,14 +190,16 @@ def down() -> None:
     )
     logger.info("Secret scheduled for deletion (or already absent).")
 
-    # Delete security group
+    # Delete security group — B3: catch only InvalidGroup.NotFound, not broad ClientError
     sg_id = state.get("/campuspandit/deploy/rds/security_group_id")
     if sg_id:
-        safe_delete(
-            lambda: ec2.delete_security_group(GroupId=sg_id),
-            ec2.exceptions.ClientError,
-        )
-        logger.info("RDS security group %s deleted (or already absent).", sg_id)
+        try:
+            ec2.delete_security_group(GroupId=sg_id)
+            logger.info("Deleted RDS security group %s", sg_id)
+        except ec2.exceptions.ClientError as e:
+            if e.response["Error"]["Code"] != "InvalidGroup.NotFound":
+                raise
+            logger.info("RDS security group %s already absent", sg_id)
 
     for param in [
         "/campuspandit/deploy/rds/endpoint",
