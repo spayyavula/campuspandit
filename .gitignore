@@ -56,3 +56,7 @@ backend/apply_schema.py
 
 # Database dump artifacts
 campuspandit-azure-*.dump
+
+# Python bytecode caches
+__pycache__/
+*.pyc
