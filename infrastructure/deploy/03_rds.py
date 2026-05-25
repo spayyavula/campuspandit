@@ -81,7 +81,7 @@ def up() -> None:
     if not rds_sg_id:
         resp = ec2.create_security_group(
             GroupName=SG_NAME,
-            Description="CampusPandit RDS — allows port 5432 from proxy-sg only",
+            Description="CampusPandit RDS - allows port 5432 from proxy-sg only",
             VpcId=vpc_id,
             TagSpecifications=[{
                 "ResourceType": "security-group",

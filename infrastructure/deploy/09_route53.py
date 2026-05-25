@@ -32,7 +32,7 @@ def up() -> None:
             Name=DOMAIN,
             CallerReference=str(int(time.time())),
             HostedZoneConfig={
-                "Comment": "CampusPandit production zone — managed by boto3-deploy",
+                "Comment": "CampusPandit production zone - managed by boto3-deploy",
                 "PrivateZone": False,
             },
         )

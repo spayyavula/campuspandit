@@ -18,7 +18,7 @@ def wait_for_rds_available(instance_id: str) -> None:
     logger.info("RDS instance %s is available.", instance_id)
 
 
-def wait_for_rds_proxy_available(proxy_name: str, timeout_seconds: int = 300) -> None:
+def wait_for_rds_proxy_available(proxy_name: str, timeout_seconds: int = 900) -> None:
     """Poll until RDS Proxy reaches 'available' state (no boto3 waiter exists)."""
     logger.info("Waiting for RDS Proxy %s to become available ...", proxy_name)
     rds = SESSION.client("rds")

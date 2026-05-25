@@ -59,7 +59,7 @@ def up() -> None:
     if not proxy_sg_id:
         resp = ec2.create_security_group(
             GroupName=PROXY_SG_NAME,
-            Description="CampusPandit RDS Proxy — inbound 5432 from lambda-sg",
+            Description="CampusPandit RDS Proxy - inbound 5432 from lambda-sg",
             VpcId=vpc_id,
             TagSpecifications=[{
                 "ResourceType": "security-group",

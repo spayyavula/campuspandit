@@ -63,12 +63,19 @@ def _build_layer_zip() -> bytes:
     with tempfile.TemporaryDirectory() as tmpdir:
         python_dir = os.path.join(tmpdir, "python")
         os.makedirs(python_dir)
-        logger.info("Installing Lambda layer dependencies ...")
+        logger.info("Installing Lambda layer dependencies (target: linux/x86_64, cp312) ...")
+        # Force Linux x86_64 wheels regardless of build host (Windows/macOS would
+        # otherwise pull host-native binaries that fail at Lambda cold start with
+        # "Runtime.ImportModuleError: no pq wrapper available").
         subprocess.run(
             [
                 sys.executable, "-m", "pip", "install",
                 "-r", str(requirements_file),
                 "-t", python_dir,
+                "--platform", "manylinux2014_x86_64",
+                "--only-binary=:all:",
+                "--python-version", "3.12",
+                "--implementation", "cp",
                 "--quiet",
             ],
             check=True,
@@ -138,7 +145,7 @@ def up() -> None:
     if not lambda_sg_id:
         resp = ec2.create_security_group(
             GroupName=LAMBDA_SG_NAME,
-            Description="CampusPandit Lambda — no inbound; outbound 5432 to proxy-sg",
+            Description="CampusPandit Lambda - no inbound; outbound 5432 to proxy-sg",
             VpcId=vpc_id,
             TagSpecifications=[{
                 "ResourceType": "security-group",
