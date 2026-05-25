@@ -1,6 +1,7 @@
 """01_iam.py — CI user + Lambda exec role + RDS Proxy role."""
 import json
 import logging
+from pathlib import Path
 
 import click
 
@@ -118,12 +119,18 @@ def up() -> None:
     existing_keys = iam.list_access_keys(UserName=CI_USER_NAME)["AccessKeyMetadata"]
     if not existing_keys:
         key = iam.create_access_key(UserName=CI_USER_NAME)["AccessKey"]
-        logger.info(
-            "ACCESS KEY CREATED — copy these now (secret shown once):\n"
-            "  AWS_ACCESS_KEY_ID     = %s\n"
-            "  AWS_SECRET_ACCESS_KEY = %s",
-            key["AccessKeyId"],
-            key["SecretAccessKey"],
+        creds_dir = Path.home() / ".campuspandit"
+        creds_dir.mkdir(mode=0o700, exist_ok=True)
+        creds_path = creds_dir / "ci_credentials.txt"
+        creds_path.write_text(
+            f"AWS_ACCESS_KEY_ID={key['AccessKeyId']}\n"
+            f"AWS_SECRET_ACCESS_KEY={key['SecretAccessKey']}\n"
+        )
+        creds_path.chmod(0o600)
+        logger.warning(
+            "Access key written to %s (mode 0600). Copy to GitHub Actions secrets "
+            "(AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY), then delete this file.",
+            creds_path,
         )
     else:
         logger.info(
