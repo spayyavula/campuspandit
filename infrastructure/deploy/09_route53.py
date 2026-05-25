@@ -43,17 +43,13 @@ def up() -> None:
 
     state.set("/campuspandit/deploy/route53/zone_id", zone_id)
 
-    # Capture NS records so the user can update their registrar
-    rrsets = r53.list_resource_record_sets(
-        HostedZoneId=zone_id,
-        StartRecordType="NS",
-        MaxItems="1",
-    )
-    ns_values: list[str] = []
-    for rrset in rrsets.get("ResourceRecordSets", []):
-        if rrset["Type"] == "NS":
-            ns_values = [r["Value"].rstrip(".") for r in rrset["ResourceRecords"]]
-            break
+    # Capture NS records so the user can update their registrar.
+    # get_hosted_zone returns the DelegationSet.NameServers directly; this is the
+    # canonical Route 53 API for "what nameservers does this zone use", and avoids
+    # the InvalidInput error that list_resource_record_sets raises when filtering
+    # by StartRecordType without also providing StartRecordName.
+    delegation = r53.get_hosted_zone(Id=zone_id).get("DelegationSet", {})
+    ns_values = [ns.rstrip(".") for ns in delegation.get("NameServers", [])]
 
     ns_string = ",".join(ns_values)
     state.set("/campuspandit/deploy/route53/name_servers", ns_string)

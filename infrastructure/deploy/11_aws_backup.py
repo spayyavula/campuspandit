@@ -19,11 +19,16 @@ DEFAULT_BACKUP_ROLE = (
 
 
 def _get_vault_arn() -> str | None:
-    try:
-        resp = backup.describe_backup_vault(BackupVaultName=BACKUP_VAULT_NAME)
-        return resp["BackupVaultArn"]
-    except backup.exceptions.ResourceNotFoundException:
-        return None
+    # AWS Backup returns AccessDeniedException (not ResourceNotFoundException) from
+    # describe_backup_vault when the vault doesn't exist - an info-leak prevention
+    # quirk that swallows the "missing resource" signal. Use list_backup_vaults
+    # instead, which always succeeds and lets us probe by name.
+    paginator = backup.get_paginator("list_backup_vaults")
+    for page in paginator.paginate():
+        for vault in page.get("BackupVaultList", []):
+            if vault["BackupVaultName"] == BACKUP_VAULT_NAME:
+                return vault["BackupVaultArn"]
+    return None
 
 
 def _get_plan_id() -> str | None:
