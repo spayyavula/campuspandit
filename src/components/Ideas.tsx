@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ThumbsUp } from 'lucide-react';
-import { supabaseObserve } from '../utils/supabaseObserve';
+import { api, ApiError } from '../lib/api';
 
 type Audience = 'coaching_center' | 'prospective_cc_via_student' | 'both';
 
@@ -28,33 +28,31 @@ const Ideas: React.FC = () => {
   }, []);
 
   async function loadPublished() {
-    const { data, error: e } = await supabaseObserve
-      .from('feature_requests')
-      .select('id, title, description, audience, upvotes, created_at')
-      .eq('is_published', true)
-      .order('created_at', { ascending: false })
-      .limit(10);
-    if (e) console.error('Failed to load published ideas:', e);
-    if (data) setPublished(data as Idea[]);
+    try {
+      const data = await api.get<Idea[]>('/feature-requests');
+      setPublished(data);
+    } catch (e) {
+      console.error('Failed to load published ideas:', e);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
-    const { error: insertError } = await supabaseObserve
-      .from('feature_requests')
-      .insert({
+    try {
+      await api.post('/feature-requests', {
         title: title.trim(),
         description: description.trim() || null,
         audience,
         submitter_email: email.trim() || null,
       });
-    setSubmitting(false);
-    if (insertError) {
-      setError(insertError.message);
+    } catch (e) {
+      setSubmitting(false);
+      setError(e instanceof ApiError ? e.body : (e as Error).message);
       return;
     }
+    setSubmitting(false);
     setSubmitted(true);
     setTitle(''); setDescription(''); setEmail('');
     // Plausible custom event (no-op until Plausible script is added in Phase 3.9.2)
