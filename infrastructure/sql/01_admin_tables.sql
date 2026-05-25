@@ -2,6 +2,10 @@
 -- Source-of-truth schema for the 4 observe-window admin tables.
 -- Matches the table contracts in docs/superpowers/specs/2026-05-22-park-consumer-app-supabase-migration-design.md §5.
 
+-- gen_random_uuid() lives in pgcrypto; RDS Postgres 16 has it available but does not pre-enable it.
+-- Without this line, the first INSERT to any table fails with "function gen_random_uuid() does not exist".
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS pilot_applications (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at      timestamptz NOT NULL DEFAULT now(),
