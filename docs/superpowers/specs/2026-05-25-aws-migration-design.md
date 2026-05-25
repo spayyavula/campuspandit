@@ -27,14 +27,14 @@ This spec is the same scope as the 2026-05-22 spec, on a different cloud — not
 - Revive the FastAPI backend or the legacy consumer-app features
 - Build the teacher-dashboard / multi-tenant B2B platform (out of scope per [[bandwidth-and-park]])
 - Migrate non-Postgres data (there isn't any meaningful blob/object storage in use)
-- Production-grade IaC for Phase 1 (deferred — see §3, decision D1)
+- Declarative IaC (Terraform/CDK) — see §3, decision D1. Imperative boto3 scripts are the chosen form of IaC; upgrading to a declarative tool is a future option if multi-environment management gets complex.
 - Build Cognito magic-link end-to-end (deferred — see §3, decision D3)
 
 ## 3. Decisions
 
 | ID | Decision | Choice |
 |----|----------|--------|
-| D1 | IaC vs click-ops for Phase 1 | Click-ops + checked-in runbook (`infrastructure/AWS_SETUP.md`). Add CDK only if a 2nd environment is needed. |
+| D1 | IaC vs click-ops for Phase 1 | **Imperative boto3 scripts** under `infrastructure/deploy/` — `python deploy.py up` provisions every resource; `python deploy.py down` tears down. Rejected click-ops (drift risk against the runbook) and CDK (heavier abstraction layer than a side bet warrants); imperative boto3 is the right granularity. Initial click-ops decision was cost-driven; $25k credits make the upfront tooling investment worth it for the reproducibility + dev/staging environment story. |
 | D2 | DNS registrar / authoritative DNS | Move `campuspandit.ai` zone to Route 53. Keeps one console with the user's other AWS project; ACM DNS validation is automatic. |
 | D3 | Cognito magic-link auth | Provision an empty user pool now; defer custom-auth Lambda triggers + SES sender until Stage 2 actually fires per the stage-gate rule. |
 | D4 | Frontend hosting | Amplify Hosting (1:1 ergonomics with Azure SWA: Git-connected, auto-build, auto SSL, branch previews, custom headers). |
@@ -131,9 +131,9 @@ Estimated ~1 week of focused work. Phases are sequential — do not parallelize 
 3. Create CloudWatch billing alarm at $200/mo on root account (email-only notification).
 4. Verify the user can `aws sts get-caller-identity` from their laptop with the new keys.
 
-### Phase 1 — Infra provisioning (~half-day, click-ops)
+### Phase 1 — Infra provisioning (~1-2 days to write scripts; ~30 min to run)
 
-Done in AWS console, documented step-by-step in a new file `infrastructure/AWS_SETUP.md` with screenshots:
+Imperative boto3 scripts under `infrastructure/deploy/`. Each script is idempotent (check-then-create) and uses SSM Parameter Store to share state between scripts. The orchestrator `deploy.py up` runs them in dependency order. `deploy.py down` is the inverse. Resource definitions follow:
 
 1. **VPC** — accept the default VPC for the region; do not create a custom VPC for Phase 1.
 2. **RDS** — `db.t4g.small`, 20 GB gp3, **Multi-AZ**, Postgres 16, deletion protection ON, automated backups 7-day. Public-access ON for Phase 3 only (laptop `pg_restore`); flipped OFF at end of Phase 3, never re-enabled. Master user `campuspandit_admin`, credentials stored in **Secrets Manager** secret `campuspandit/prod/db_master` with rotation enabled (30-day cycle). Lives in the default VPC's subnets; security group `rds-sg` allows port 5432 ingress only from `proxy-sg` (defined in step 3).
@@ -176,7 +176,7 @@ Branch: `aws-platform`. Cherry-pick the content-layer commits from `observe-wind
 | Port hosting config | Move CSP + security headers + SPA fallback + cache rules from `staticwebapp.config.json` into `amplify.yml` `customHeaders` + Amplify console redirect rules. Delete `staticwebapp.config.json`. |
 | Archive backend | Create branch `legacy/backend-archive` from current `main` (preserves the FastAPI code intact for future reference). On `aws-platform`, `git rm -r backend/` so it no longer ships with the working tree. |
 | Delete workflows | `.github/workflows/azure-static-web-apps-ambitious-river-04fdcd510.yml` and `.github/workflows/azure-container-apps-backend.yml` |
-| Add infra runbook | New file `infrastructure/AWS_SETUP.md` (D1) |
+| Add boto3 deploy automation | New directory `infrastructure/deploy/` with `deploy.py`, `teardown.py`, 11 provisioning scripts, shared helpers (D1) |
 | Mark 2026-05-22 spec superseded | One-line "Superseded by 2026-05-25-aws-migration-design.md for hosting + data layer" at the top |
 
 PR #1 (`observe-window-park`) gets closed without merge after `aws-platform` ships; commits live forever in git history.
@@ -267,7 +267,7 @@ The 7-day hold between Phase 5 and Phase 6 is the explicit rollback window. Afte
 
 - The Cognito magic-link flow (D3 deferred — separate follow-up spec if Stage 2 fires)
 - Migration of the legacy consumer-app data beyond what the 4 admin tables need (most legacy tables are unused once the consumer app is parked; they migrate via `pg_restore` for completeness but no app reads them)
-- Production-grade IaC (D1 deferred)
+- Declarative IaC like Terraform/CDK (D1 chose imperative boto3 instead — sufficient for the side-bet scope; upgrade if/when multi-env management justifies it)
 - Multi-region or cross-region DR (Multi-AZ RDS + AWS Backup is enough; cross-region is overkill for a side bet even with credit headroom)
 - WAF / Shield / GuardDuty (revisit only if a B2B lead asks for it, per [[b2b-pivot]])
 
