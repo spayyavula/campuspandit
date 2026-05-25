@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabaseObserve } from '../utils/supabaseObserve';
+import { api, ApiError } from '../lib/api';
 
 const SUBJECT_OPTIONS = ['Physics', 'Chemistry', 'Math', 'Biology', 'JEE Combined', 'NEET Combined', 'Other'];
 
@@ -42,9 +42,9 @@ const PilotApplication: React.FC = () => {
       return;
     }
 
-    const { error: insertError } = await supabaseObserve
-      .from('pilot_applications')
-      .insert({
+    let insertError: { message: string } | null = null;
+    try {
+      await api.post('/pilot-applications', {
         center_name: form.center_name.trim(),
         owner_name: form.owner_name.trim(),
         location: form.location.trim(),
@@ -56,6 +56,9 @@ const PilotApplication: React.FC = () => {
         contact_phone: form.contact_phone.trim() || null,
         message: form.message.trim() || null,
       });
+    } catch (e) {
+      insertError = { message: e instanceof ApiError ? e.body : (e as Error).message };
+    }
 
     setSubmitting(false);
 
