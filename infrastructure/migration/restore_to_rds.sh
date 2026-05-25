@@ -4,4 +4,4 @@
 set -euo pipefail
 : "${RDS_URL:?RDS_URL must be set}"
 : "${DUMP_FILE:?DUMP_FILE must be set}"
-pg_restore --no-owner --no-acl --dbname="${RDS_URL}" --verbose "${DUMP_FILE}"
+pg_restore --no-owner --no-acl --exit-on-error --dbname="${RDS_URL}" --verbose "${DUMP_FILE}"
