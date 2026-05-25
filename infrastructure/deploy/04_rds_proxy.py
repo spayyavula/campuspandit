@@ -174,11 +174,14 @@ def down() -> None:
 
     proxy_sg_id = state.get("/campuspandit/deploy/proxy/security_group_id")
     if proxy_sg_id:
-        safe_delete(
-            lambda: ec2.delete_security_group(GroupId=proxy_sg_id),
-            ec2.exceptions.ClientError,
-        )
-        logger.info("Proxy security group deleted (or already absent).")
+        # B3: catch only InvalidGroup.NotFound, not broad ClientError
+        try:
+            ec2.delete_security_group(GroupId=proxy_sg_id)
+            logger.info("Deleted proxy security group %s", proxy_sg_id)
+        except ec2.exceptions.ClientError as e:
+            if e.response["Error"]["Code"] != "InvalidGroup.NotFound":
+                raise
+            logger.info("Proxy security group %s already absent", proxy_sg_id)
 
     for param in [
         "/campuspandit/deploy/proxy/endpoint",
