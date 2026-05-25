@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 from pathlib import Path
 
@@ -80,6 +81,21 @@ def _build_layer_zip() -> bytes:
                     arc_name = os.path.relpath(full_path, tmpdir)
                     zf.write(full_path, arc_name)
         return buf.getvalue()
+
+
+def _wait_for_eni_cleanup(sg_id: str, timeout: int = 1500) -> None:
+    """Poll until all Lambda ENIs detach from sg_id (can take up to 20 min)."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        enis = ec2.describe_network_interfaces(
+            Filters=[{"Name": "group-id", "Values": [sg_id]}]
+        )["NetworkInterfaces"]
+        if not enis:
+            logger.info("All ENIs cleared from sg %s", sg_id)
+            return
+        logger.info("Waiting for %d ENI(s) to detach from sg %s ...", len(enis), sg_id)
+        time.sleep(30)
+    raise RuntimeError(f"ENI cleanup timed out for sg {sg_id} after {timeout}s")
 
 
 def _build_function_zip(handler: str) -> bytes:
@@ -195,22 +211,19 @@ def up() -> None:
         logger.info("Added lambda-sg → proxy-sg ingress rule on port 5432.")
 
     # --- Lambda layer ---
-    layer_arn = state.get("/campuspandit/deploy/lambdas/layer_arn")
-    if not layer_arn:
-        logger.info("Building and publishing Lambda layer ...")
-        layer_zip = _build_layer_zip()
-        layer_resp = lmb.publish_layer_version(
-            LayerName=LAYER_NAME,
-            Description="psycopg[binary] + pydantic for campuspandit Lambdas",
-            Content={"ZipFile": layer_zip},
-            CompatibleRuntimes=["python3.12"],
-            CompatibleArchitectures=["x86_64"],
-        )
-        layer_arn = layer_resp["LayerVersionArn"]
-        logger.info("Lambda layer published: %s", layer_arn)
-        state.set("/campuspandit/deploy/lambdas/layer_arn", layer_arn)
-    else:
-        logger.info("Lambda layer already exists: %s", layer_arn)
+    # I3: always rebuild + republish so requirements.txt changes are picked up
+    logger.info("Building Lambda layer (rebuilds every run)")
+    layer_zip = _build_layer_zip()
+    layer_resp = lmb.publish_layer_version(
+        LayerName=LAYER_NAME,
+        Description="psycopg[binary] + pydantic for campuspandit Lambdas",
+        Content={"ZipFile": layer_zip},
+        CompatibleRuntimes=["python3.12"],
+        CompatibleArchitectures=["x86_64"],
+    )
+    layer_arn = layer_resp["LayerVersionArn"]
+    logger.info("Lambda layer published: %s", layer_arn)
+    state.set("/campuspandit/deploy/lambdas/layer_arn", layer_arn)
 
     # --- Lambda functions ---
     env_vars = {
@@ -232,6 +245,7 @@ def up() -> None:
                 FunctionName=fn_name,
                 ZipFile=fn_zip,
             )
+            lmb.get_waiter("function_updated").wait(FunctionName=fn_name)  # I4
             lmb.update_function_configuration(
                 FunctionName=fn_name,
                 Layers=[layer_arn],
@@ -318,11 +332,15 @@ def down() -> None:
 
     lambda_sg_id = state.get("/campuspandit/deploy/lambdas/security_group_id")
     if lambda_sg_id:
-        safe_delete(
-            lambda: ec2.delete_security_group(GroupId=lambda_sg_id),
-            ec2.exceptions.ClientError,
-        )
-        logger.info("Lambda security group deleted (or already absent).")
+        # B3: wait for Lambda ENIs to detach before deleting the SG
+        _wait_for_eni_cleanup(lambda_sg_id)
+        try:
+            ec2.delete_security_group(GroupId=lambda_sg_id)
+            logger.info("Deleted Lambda security group %s", lambda_sg_id)
+        except ec2.exceptions.ClientError as e:
+            if e.response["Error"]["Code"] != "InvalidGroup.NotFound":
+                raise
+            logger.info("Lambda security group %s already absent", lambda_sg_id)
         state.delete("/campuspandit/deploy/lambdas/security_group_id")
 
     logger.info("06_lambdas: down complete.")
