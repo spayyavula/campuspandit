@@ -53,3 +53,6 @@ backup-*.sql
 API_DOMAIN_SETUP.md
 DEPLOYMENT_STATUS.md
 backend/apply_schema.py
+
+# Database dump artifacts
+campuspandit-azure-*.dump
