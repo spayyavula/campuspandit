@@ -1,0 +1,3 @@
+# Ensure shell scripts always use LF line endings, even when authored on Windows.
+# Shell scripts run on Linux migration runners — CRLF would break the shebang.
+*.sh text eol=lf
