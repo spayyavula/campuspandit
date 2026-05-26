@@ -17,6 +17,7 @@ import {
   Sparkles,
   Building2,
 } from 'lucide-react';
+import Seo from './Seo';
 
 const LandingPage: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,6 +25,11 @@ const LandingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Seo
+        title="CampusPandit — White-Label Coaching Platform for JEE & NEET Centers | AI Tutor + Branded App"
+        description="Run your coaching center like the big chains. CampusPandit gives small & mid-sized JEE/NEET centers a branded student app, an AI tutor for every learner, and one dashboard for the whole operation. Founder pilot — apply for one of ten 2026 slots."
+        canonical="https://www.campuspandit.ai/"
+      />
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 bg-white border-b border-neutral-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
