@@ -1,9 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowRight } from 'lucide-react';
+import Seo from './Seo';
 
 const PilotApplicationThanks: React.FC = () => (
   <div className="min-h-screen bg-white">
+    <Seo
+      title="Application Received — CampusPandit"
+      description="Your founder pilot application is in. We'll reply within 2 business days with next steps."
+      canonical="https://www.campuspandit.ai/apply/thanks"
+      noindex
+    />
     <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 text-center">
       <CheckCircle className="w-16 h-16 text-success-500 mx-auto mb-6" />
       <h1 className="text-4xl font-bold text-neutral-900 mb-4">Application received</h1>

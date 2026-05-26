@@ -1,5 +1,6 @@
 import React from 'react';
 import { items, type RoadmapColumn, type RoadmapAudience } from '../data/roadmap';
+import Seo from './Seo';
 
 const COLUMNS: { id: RoadmapColumn; label: string; desc: string }[] = [
   { id: 'now', label: 'Now', desc: 'Active work this quarter.' },
@@ -15,6 +16,11 @@ const AUDIENCE_BADGE: Record<RoadmapAudience, { label: string; bg: string; text:
 
 const Roadmap: React.FC = () => (
   <div className="min-h-screen bg-white">
+    <Seo
+      title="Product Roadmap — CampusPandit"
+      description="What we're shipping next on CampusPandit and what's queued behind it. Built in public for the Founding 10 cohort."
+      canonical="https://www.campuspandit.ai/roadmap"
+    />
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
       <h1 className="text-4xl font-bold text-neutral-900 mb-4">Roadmap</h1>
       <p className="text-lg text-neutral-600 mb-12">

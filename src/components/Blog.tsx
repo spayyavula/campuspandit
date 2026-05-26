@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { posts, type BlogAudience } from '../data/blog-index';
+import Seo from './Seo';
 
 const Blog: React.FC = () => {
   const [filter, setFilter] = useState<BlogAudience | 'all'>('all');
@@ -10,6 +11,11 @@ const Blog: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Seo
+        title="CampusPandit Blog — Coaching Centers, JEE/NEET, and Building Edtech in India"
+        description="Honest writing on running a coaching center, JEE/NEET prep, and the edtech stack behind CampusPandit."
+        canonical="https://www.campuspandit.ai/blog"
+      />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <h1 className="text-4xl font-bold text-neutral-900 mb-6">Blog</h1>
 

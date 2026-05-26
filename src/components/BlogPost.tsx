@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { postBySlug } from '../data/blog-index';
+import Seo from './Seo';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -11,6 +12,12 @@ const BlogPost: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Seo
+        title={`${post.title} — CampusPandit Blog`}
+        description={post.seoDescription}
+        canonical={`https://www.campuspandit.ai/blog/${post.slug}`}
+        ogType="article"
+      />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <Link to="/blog" className="text-sm text-primary-500 hover:underline mb-6 inline-block">
           ← All posts

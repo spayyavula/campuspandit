@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api, ApiError } from '../lib/api';
+import Seo from './Seo';
 
 const SUBJECT_OPTIONS = ['Physics', 'Chemistry', 'Math', 'Biology', 'JEE Combined', 'NEET Combined', 'Other'];
 
@@ -80,6 +81,11 @@ const PilotApplication: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Seo
+        title="Apply for the Founding 10 — CampusPandit Pilot Cohort"
+        description="Apply for one of ten 2026 founder slots. Free for the first three months, up to 100 students, founder pricing locked in for life. Branded app live in 7 days."
+        canonical="https://www.campuspandit.ai/apply"
+      />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <h1 className="text-4xl font-bold text-neutral-900 mb-4">Apply for the Founding 10 pilot</h1>
         <p className="text-lg text-neutral-600 mb-10">

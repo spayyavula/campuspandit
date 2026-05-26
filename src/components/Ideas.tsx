@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ThumbsUp } from 'lucide-react';
 import { api, ApiError } from '../lib/api';
+import Seo from './Seo';
 
 type Audience = 'coaching_center' | 'prospective_cc_via_student' | 'both';
 
@@ -64,6 +65,11 @@ const Ideas: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Seo
+        title="Feature Requests & Ideas — CampusPandit"
+        description="Vote on feature requests for the CampusPandit coaching center platform, or submit your own. Roadmap drivers come from here."
+        canonical="https://www.campuspandit.ai/ideas"
+      />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <h1 className="text-4xl font-bold text-neutral-900 mb-4">Ideas</h1>
         <p className="text-lg text-neutral-600 mb-10">

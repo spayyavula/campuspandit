@@ -1,11 +1,17 @@
 import React from 'react';
 import { ExternalLink, FileText } from 'lucide-react';
 import { materials, type MaterialSubject } from '../data/materials';
+import Seo from './Seo';
 
 const SUBJECTS: MaterialSubject[] = ['Physics', 'Chemistry', 'Math', 'Biology', 'Mixed'];
 
 const PreparationMaterials: React.FC = () => (
   <div className="min-h-screen bg-white">
+    <Seo
+      title="JEE & NEET Preparation Materials — Free PYQ-Indexed Resources | CampusPandit"
+      description="Free preparation materials for JEE Main, JEE Advanced, and NEET UG aspirants — chapter notes, PYQ-weighted topic lists, and mock paper templates."
+      canonical="https://www.campuspandit.ai/materials"
+    />
     <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
       <h1 className="text-4xl font-bold text-neutral-900 mb-4">Preparation Materials</h1>
       <p className="text-lg text-neutral-600 mb-12">

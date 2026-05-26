@@ -51,9 +51,18 @@ async function readDist(rel) {
   return fs.readFile(path.join(DIST, rel), 'utf8');
 }
 
+function decodeHtmlEntities(s) {
+  return s
+    .replaceAll('&amp;', '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'");
+}
+
 function extractTitle(html) {
   const m = html.match(/<title[^>]*>([^<]*)<\/title>/i);
-  return m ? m[1].trim() : null;
+  return m ? decodeHtmlEntities(m[1].trim()) : null;
 }
 
 function extractCanonical(html) {
