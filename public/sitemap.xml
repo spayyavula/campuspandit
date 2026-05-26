@@ -3,29 +3,66 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.campuspandit.ai/</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.campuspandit.ai/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.campuspandit.ai/" />
   </url>
   <url>
-    <loc>https://www.campuspandit.ai/tutors</loc>
-    <changefreq>daily</changefreq>
+    <loc>https://www.campuspandit.ai/for-students</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en-IN" href="https://www.campuspandit.ai/for-students" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.campuspandit.ai/for-students" />
+  </url>
+  <url>
+    <loc>https://www.campuspandit.ai/apply</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.campuspandit.ai/courses</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <loc>https://www.campuspandit.ai/blog/running-a-coaching-center-like-a-saas</loc>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.campuspandit.ai/tutor/register</loc>
+    <loc>https://www.campuspandit.ai/blog/jee-prep-the-honest-version</loc>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.campuspandit.ai/blog</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.campuspandit.ai/materials</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.campuspandit.ai/auth</loc>
+    <loc>https://www.campuspandit.ai/roadmap</loc>
+    <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.campuspandit.ai/ideas</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.campuspandit.ai/apply/thanks</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>
