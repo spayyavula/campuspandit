@@ -270,6 +270,7 @@ The 7-day hold between Phase 5 and Phase 6 is the explicit rollback window. Afte
 - Declarative IaC like Terraform/CDK (D1 chose imperative boto3 instead — sufficient for the side-bet scope; upgrade if/when multi-env management justifies it)
 - Multi-region or cross-region DR (Multi-AZ RDS + AWS Backup is enough; cross-region is overkill for a side bet even with credit headroom)
 - WAF / Shield / GuardDuty (revisit only if a B2B lead asks for it, per [[b2b-pivot]])
+- Reviving the legacy SSE / real-time messaging backend on AWS (per D12 + §2 non-goals). If Stage 2 fires and the consumer app un-parks, a follow-up spec must pick: (a) compute host that supports long-lived streams — API Gateway HTTP + Lambda will not work; candidates are App Runner, ECS Fargate behind ALB, or Lambda Function URL response streaming (15-min cap, EventSource auto-reconnects); (b) notify path — `LISTEN/NOTIFY` requires a session-pinned Postgres connection that **bypasses RDS Proxy** (the proxy unpins on `LISTEN`), so either the listener connects directly to the RDS writer endpoint, or LISTEN/NOTIFY is replaced with SNS/EventBridge fan-out from the write Lambdas; (c) EventSource auth — the browser API cannot set custom headers, so use a signed cookie issued by Cognito rather than a query-param JWT. Client-side `src/hooks/useSSE.ts` and the `VITE_CONSUMER_APP_PARKED` short-circuit are preserved on `main` and ready to re-enable once a backend exists.
 
 ## 12. References
 
