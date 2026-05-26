@@ -85,6 +85,23 @@ function hasNoindex(html) {
   return /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex[^"']*["']/i.test(html);
 }
 
+function countMetaByName(html, attr, value) {
+  // Count <meta {attr}="{value}" ...> occurrences (case-insensitive attr, value exact)
+  const re = new RegExp(`<meta[^>]+${attr}=["']${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>`, 'gi');
+  return (html.match(re) || []).length;
+}
+
+const SINGLE_META = [
+  { attr: 'property', value: 'og:title' },
+  { attr: 'property', value: 'og:url' },
+  { attr: 'property', value: 'og:description' },
+  { attr: 'property', value: 'og:image' },
+  { attr: 'property', value: 'og:type' },
+  { attr: 'name', value: 'twitter:title' },
+  { attr: 'name', value: 'twitter:description' },
+  { attr: 'name', value: 'twitter:image' },
+];
+
 async function verifyRoute(route) {
   let html;
   try {
@@ -106,6 +123,17 @@ async function verifyRoute(route) {
   const jsonLdCount = countJsonLd(html);
   if (jsonLdCount < route.jsonLdMin) fail(route.path, `expected at least ${route.jsonLdMin} JSON-LD blocks, found ${jsonLdCount}`);
   else pass(route.path, `JSON-LD count OK (${jsonLdCount})`);
+
+  // Assert each per-route OG/Twitter meta appears exactly once. Catches the class of bug
+  // where someone re-adds a per-page OG to index.html and silently breaks social previews
+  // (scrapers take the FIRST occurrence, which would be the homepage copy).
+  for (const m of SINGLE_META) {
+    const count = countMetaByName(html, m.attr, m.value);
+    if (count !== 1) {
+      fail(route.path, `expected exactly 1 <meta ${m.attr}="${m.value}">, found ${count}`);
+    }
+    // don't print a pass line per meta — would be ~80 noisy lines per run
+  }
 
   if (route.requiresArticle && !hasJsonLdOfType(html, 'Article')) {
     fail(route.path, 'missing Article JSON-LD');

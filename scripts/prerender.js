@@ -54,7 +54,7 @@ const MIME = {
   '.txt': 'text/plain; charset=utf-8',
 };
 
-function startServer() {
+function startServer(shellHtml) {
   return new Promise((resolve, reject) => {
     const server = http.createServer(async (req, res) => {
       try {
@@ -68,8 +68,13 @@ function startServer() {
         try {
           stat = await fs.stat(filePath);
         } catch {
-          // SPA fallback to index.html
-          filePath = path.join(DIST, 'index.html');
+          // SPA fallback — always serve the ORIGINAL shell, not whatever
+          // dist/index.html currently contains. Otherwise after the first
+          // route prerenders and overwrites dist/index.html, every later
+          // route falls back to the previous route's prerendered content
+          // and React's hydration race causes the wrong component to win.
+          res.writeHead(200, { 'Content-Type': MIME['.html'] });
+          return res.end(shellHtml);
         }
         if (stat && stat.isDirectory()) {
           filePath = path.join(filePath, 'index.html');
@@ -91,12 +96,37 @@ function startServer() {
 async function prerenderRoute(browser, route) {
   const page = await browser.newPage();
   try {
+    // Block all non-localhost requests. Third-party assets like Plausible
+    // analytics and Google Fonts are loaded via <script defer> / <link>;
+    // when their CDNs are slow or unreachable they stall DOMContentLoaded
+    // (defer scripts MUST load before DCL fires). We only need our own
+    // bundle + HTML for prerender — analytics + fonts are runtime concerns.
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      try {
+        const u = new URL(req.url());
+        if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') {
+          req.continue();
+        } else {
+          req.abort();
+        }
+      } catch {
+        req.abort();
+      }
+    });
+
     const url = `http://localhost:${PORT}${route}`;
     console.log(`  → ${url}`);
-    await page.goto(url, { waitUntil: 'networkidle0', timeout: 30_000 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
 
     // Wait for the React tree to mount — every public route renders an <h1>.
     await page.waitForSelector('h1', { timeout: 10_000 });
+
+    // Wait for react-helmet-async to commit per-route head changes. Helmet
+    // writes to <head> in a useEffect after React's first commit, so the h1
+    // can be in the DOM before the per-route title/canonical/og are. Every
+    // route's <Seo /> emits at least one meta with data-rh="true".
+    await page.waitForSelector('[data-rh]', { timeout: 5_000 });
 
     // Snapshot the fully-rendered HTML.
     const html = await page.content();
@@ -120,8 +150,12 @@ async function main() {
     console.error(`No dist/ directory at ${DIST}. Run \`npm run build\` first.`);
     process.exit(1);
   }
+  // Cache the freshly-built shell BEFORE the first route prerender overwrites
+  // dist/index.html — the static server's SPA fallback uses this cached copy
+  // so non-root routes never receive a stale prerendered page as their shell.
+  const shellHtml = await fs.readFile(path.join(DIST, 'index.html'), 'utf8');
   console.log('Starting static server on port', PORT);
-  const server = await startServer();
+  const server = await startServer(shellHtml);
   console.log('Launching headless browser…');
   const browser = await puppeteer.launch({
     headless: 'new',
