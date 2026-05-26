@@ -43,6 +43,7 @@ const Seo: React.FC<SeoProps> = ({
       <meta property="og:type" content={ogType} />
       <meta property="og:image" content={ogImage} />
 
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
