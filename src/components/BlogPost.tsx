@@ -10,6 +10,42 @@ const BlogPost: React.FC = () => {
   const post = postBySlug(slug);
   if (!post) return <Navigate to="/blog" replace />;
 
+  const article = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.seoDescription,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      '@type': 'Organization',
+      name: 'CampusPandit',
+      url: 'https://www.campuspandit.ai',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'CampusPandit',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.campuspandit.ai/icons/icon-512x512.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://www.campuspandit.ai/blog/${post.slug}`,
+    },
+  };
+
+  const breadcrumbs = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.campuspandit.ai/' },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://www.campuspandit.ai/blog' },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `https://www.campuspandit.ai/blog/${post.slug}` },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Seo
@@ -17,6 +53,7 @@ const BlogPost: React.FC = () => {
         description={post.seoDescription}
         canonical={`https://www.campuspandit.ai/blog/${post.slug}`}
         ogType="article"
+        jsonLd={[article, breadcrumbs]}
       />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <Link to="/blog" className="text-sm text-primary-500 hover:underline mb-6 inline-block">

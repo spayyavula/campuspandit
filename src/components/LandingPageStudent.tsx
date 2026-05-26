@@ -6,12 +6,22 @@ const LandingPageStudent: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const currentYear = new Date().getFullYear();
 
+  const studentBreadcrumbs = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.campuspandit.ai/' },
+      { '@type': 'ListItem', position: 2, name: 'For Students', item: 'https://www.campuspandit.ai/for-students' },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Seo
         title="Is Your JEE/NEET Coaching Center Using the Right Tech? — CampusPandit"
         description="Students: if your coaching center still runs on WhatsApp, paper attendance, and Saturday tests, here's what they could be running instead. Tell them about CampusPandit — branded app, AI Coach, parent dashboard."
         canonical="https://www.campuspandit.ai/for-students"
+        jsonLd={studentBreadcrumbs}
       />
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 bg-white border-b border-neutral-200 z-50">
