@@ -668,6 +668,65 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Founder section — Indian coaching directors will Google the founder within 5 minutes
+          of the meeting ending. Give them something to find that controls the narrative.
+          TODO: replace /founder-sreekanth.jpg with the actual file (drop into /public/).
+          TODO: replace the 3 sentences below with your real bio (education, prior work, why this). */}
+      <section id="founder" className="py-20 bg-white px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-10 items-center">
+            <div className="md:col-span-1 flex justify-center">
+              <img
+                src="/founder-sreekanth.jpg"
+                alt="Sreekanth Payyavula, founder of CampusPandit"
+                className="w-48 h-48 rounded-full object-cover border-4 border-neutral-100 shadow-md"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <p className="text-sm font-semibold text-primary-600 mb-2 uppercase tracking-wide">
+                Who's building this
+              </p>
+              <h2 className="text-3xl font-bold text-neutral-900 mb-4">
+                Sreekanth Payyavula
+              </h2>
+              <div className="space-y-3 text-neutral-700 leading-relaxed">
+                <p>
+                  {/* TODO: Replace with your real first sentence. Suggested shape: "I'm Sreekanth. Previously [prior company / role / domain]." */}
+                  I'm Sreekanth Payyavula. I've spent the last 15+ years building software in enterprise tech and edtech — most recently working on AI infrastructure and product engineering.
+                </p>
+                <p>
+                  {/* TODO: Replace with your real second sentence. Suggested shape: motivation — what you've seen in the market that needs fixing. */}
+                  I started CampusPandit because mid-tier JEE and NEET coaching centers — the ones with 200-800 students, where most Indian aspirants actually study — compete unfairly against well-funded chains with technology that wasn't built for them. They get the leftover SaaS designed for B2C apps or large institutes.
+                </p>
+                <p>
+                  {/* TODO: Replace with your real third sentence. Suggested shape: thesis — what success looks like, why now. */}
+                  Building this so a 250-student institute in Hyderabad can run with the same operating quality as a 25,000-student chain — without losing what makes them theirs. Based in Hyderabad. If you run a center, I'd rather hear from you directly than guess.
+                </p>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3 text-sm">
+                <a
+                  href="https://www.linkedin.com/in/spayyavula"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-600 hover:text-primary-700 hover:underline"
+                >
+                  {/* TODO: confirm the LinkedIn URL matches your actual profile. */}
+                  LinkedIn
+                </a>
+                <span className="text-neutral-400">·</span>
+                <a
+                  href="mailto:founders@campuspandit.ai"
+                  className="text-primary-600 hover:text-primary-700 hover:underline"
+                >
+                  founders@campuspandit.ai
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Apply / CTA */}
       <section id="apply" className="py-20 bg-gradient-to-br from-primary-500 to-primary-700 px-4 sm:px-6 lg:px-8 text-white">
         <div className="max-w-4xl mx-auto text-center">
@@ -736,6 +795,15 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Trust promise — directly addresses the segment's deepest paranoia (platforms going
+              direct-to-student or monetizing roster data). Adjacent to "Your data, your IP" for emphasis. */}
+          <div className="border-t border-neutral-800 pt-8 pb-6 text-center">
+            <p className="text-sm text-neutral-300">
+              <Shield className="inline w-4 h-4 mr-2 align-text-bottom" />
+              We never market to your students. We never use your data to acquire customers. Your roster stays yours.
+            </p>
+          </div>
+
           <div className="border-t border-neutral-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-neutral-400">
               © {currentYear} CampusPandit. All rights reserved.
@@ -747,7 +815,7 @@ const LandingPage: React.FC = () => {
               <span className="hidden md:inline">·</span>
               <span className="flex items-center gap-1">
                 <Building2 className="w-4 h-4" />
-                Built for Indian coaching centers
+                Built in Hyderabad for Indian coaching centers
               </span>
               <span className="hidden md:inline">·</span>
               <span className="flex items-center gap-1">

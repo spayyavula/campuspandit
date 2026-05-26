@@ -88,9 +88,42 @@ const PilotApplication: React.FC = () => {
       />
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
         <h1 className="text-4xl font-bold text-neutral-900 mb-4">Apply for the Founding 10 pilot</h1>
-        <p className="text-lg text-neutral-600 mb-10">
+        <p className="text-lg text-neutral-600 mb-6">
           Tell us about your coaching center. We review within 48 hours and reach out for a 20-minute call if there&apos;s fit.
         </p>
+
+        {/* Direct-contact panel — WhatsApp is the channel of choice for 45+ Indian SMB owners.
+            TODO: replace the +91XXXXXXXXXX placeholders with the founder's actual WhatsApp number before going live. */}
+        <div className="mb-10 p-5 border border-neutral-200 rounded-lg bg-neutral-50">
+          <p className="text-sm font-semibold text-neutral-900 mb-2">
+            Prefer to talk first?
+          </p>
+          <p className="text-sm text-neutral-600 mb-3">
+            Skip the form. WhatsApp or call the founder directly — fastest way to set up a 20-min discovery call.
+          </p>
+          <div className="flex flex-wrap gap-3 text-sm">
+            <a
+              href="https://wa.me/91XXXXXXXXXX?text=Hi%20Sreekanth%2C%20interested%20in%20the%20CampusPandit%20Founding%2010%20pilot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-success-500 text-white rounded-lg hover:bg-success-600 transition font-medium"
+            >
+              WhatsApp Sreekanth
+            </a>
+            <a
+              href="tel:+91XXXXXXXXXX"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 text-neutral-900 rounded-lg hover:bg-neutral-100 transition font-medium"
+            >
+              Call directly
+            </a>
+            <a
+              href="mailto:founders@campuspandit.ai"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 text-neutral-900 rounded-lg hover:bg-neutral-100 transition font-medium"
+            >
+              Email
+            </a>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <Field label="Coaching center name" required>
