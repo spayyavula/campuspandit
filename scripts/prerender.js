@@ -95,8 +95,8 @@ async function prerenderRoute(browser, route) {
     console.log(`  → ${url}`);
     await page.goto(url, { waitUntil: 'networkidle0', timeout: 30_000 });
 
-    // Wait for the React tree to mount — LandingPage renders a <nav>.
-    await page.waitForSelector('nav', { timeout: 10_000 });
+    // Wait for the React tree to mount — every public route renders an <h1>.
+    await page.waitForSelector('h1', { timeout: 10_000 });
 
     // Snapshot the fully-rendered HTML.
     const html = await page.content();
