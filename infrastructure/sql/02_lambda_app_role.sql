@@ -17,11 +17,20 @@
 
 CREATE USER lambda_app;
 
--- INSERT-only on the write-path tables
+-- INSERT on the write-path tables.
 GRANT INSERT ON pilot_applications TO lambda_app;
 GRANT INSERT ON feature_requests TO lambda_app;
 GRANT INSERT ON engagement_signals TO lambda_app;
 GRANT INSERT ON feature_request_votes TO lambda_app;
 
--- SELECT only what the GET /feature-requests endpoint needs
+-- SELECT on every write-path table: all write handlers use "INSERT ... RETURNING id",
+-- and RETURNING requires SELECT on the returned column. Granting SELECT only on
+-- feature_requests (the original mistake) left the pilot/engagement/vote write paths
+-- failing at runtime with "42501 permission denied for table". GET /feature-requests
+-- also relies on the feature_requests SELECT grant.
+-- NOTE: if write-only least privilege is preferred, instead drop RETURNING from the
+-- handlers (generate the uuid in Python) and keep only the feature_requests SELECT.
+GRANT SELECT ON pilot_applications TO lambda_app;
 GRANT SELECT ON feature_requests TO lambda_app;
+GRANT SELECT ON engagement_signals TO lambda_app;
+GRANT SELECT ON feature_request_votes TO lambda_app;
