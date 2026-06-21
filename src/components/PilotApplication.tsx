@@ -92,8 +92,7 @@ const PilotApplication: React.FC = () => {
           Tell us about your coaching center. We review within 48 hours and reach out for a 20-minute call if there&apos;s fit.
         </p>
 
-        {/* Direct-contact panel — WhatsApp is the channel of choice for 45+ Indian SMB owners.
-            TODO: replace the +91XXXXXXXXXX placeholders with the founder's actual WhatsApp number before going live. */}
+        {/* Direct-contact panel — WhatsApp is the channel of choice for 45+ Indian SMB owners. */}
         <div className="mb-10 p-5 border border-neutral-200 rounded-lg bg-neutral-50">
           <p className="text-sm font-semibold text-neutral-900 mb-2">
             Prefer to talk first?
@@ -103,7 +102,7 @@ const PilotApplication: React.FC = () => {
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             <a
-              href="https://wa.me/91XXXXXXXXXX?text=Hi%20Sreekanth%2C%20interested%20in%20the%20CampusPandit%20Founding%2010%20pilot"
+              href="https://wa.me/919885723286?text=Hi%20Sreekanth%2C%20interested%20in%20the%20CampusPandit%20Founding%2010%20pilot"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-success-500 text-white rounded-lg hover:bg-success-600 transition font-medium"
@@ -111,10 +110,16 @@ const PilotApplication: React.FC = () => {
               WhatsApp Sreekanth
             </a>
             <a
-              href="tel:+91XXXXXXXXXX"
+              href="tel:+919885723286"
               className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 text-neutral-900 rounded-lg hover:bg-neutral-100 transition font-medium"
             >
-              Call directly
+              Call (India)
+            </a>
+            <a
+              href="tel:+13142616728"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-300 text-neutral-900 rounded-lg hover:bg-neutral-100 transition font-medium"
+            >
+              Call (US)
             </a>
             <a
               href="mailto:founders@campuspandit.ai"
